@@ -308,7 +308,6 @@ private:
 
     bool try_push_mpmc(T&& value) {
         size_t head = head_.value.load(std::memory_order_relaxed);
-        size_t spins = 0;
 
         for (;;) {
             slot& s = buffer_[head & mask_];
@@ -316,26 +315,26 @@ private:
             intptr_t diff = static_cast<intptr_t>(seq) - static_cast<intptr_t>(head);
 
             if (diff == 0) {
-                if (head_.value.compare_exchange_weak(head, head + 1, std::memory_order_acq_rel)) {
+                if (head_.value.compare_exchange_weak(
+                        head, head + 1, std::memory_order_relaxed, std::memory_order_relaxed)) {
                     new (&s.storage) T(std::move(value));
                     s.sequence.store(head + 1, std::memory_order_release);
                     maybe_notify(head_, head_notify_pending_);
                     return true;
                 }
+                // CAS failed — head was reloaded, retry immediately
             } else if (diff < 0) {
+                // Queue full
                 return false;
             } else {
+                // Another producer already claimed this slot; reload head
                 head = head_.value.load(std::memory_order_relaxed);
-                spins = 0;
             }
-
-            adaptive_pause(spins++);
         }
     }
 
     bool try_pop_mpmc(T& value) {
         size_t tail = tail_.value.load(std::memory_order_relaxed);
-        size_t spins = 0;
 
         for (;;) {
             slot& s = buffer_[tail & mask_];
@@ -348,21 +347,22 @@ private:
             intptr_t diff = static_cast<intptr_t>(seq) - static_cast<intptr_t>(tail + 1);
 
             if (diff == 0) {
-                if (tail_.value.compare_exchange_weak(tail, tail + 1, std::memory_order_acq_rel)) {
+                if (tail_.value.compare_exchange_weak(
+                        tail, tail + 1, std::memory_order_relaxed, std::memory_order_relaxed)) {
                     value = std::move(*reinterpret_cast<T*>(&s.storage));
                     reinterpret_cast<T*>(&s.storage)->~T();
                     s.sequence.store(tail + mask_ + 1, std::memory_order_release);
                     maybe_notify(tail_, tail_notify_pending_);
                     return true;
                 }
+                // CAS failed — tail was reloaded, retry immediately
             } else if (diff < 0) {
+                // Queue empty
                 return false;
             } else {
+                // Another consumer already took this slot; reload tail
                 tail = tail_.value.load(std::memory_order_relaxed);
-                spins = 0;
             }
-
-            adaptive_pause(spins++);
         }
     }
 

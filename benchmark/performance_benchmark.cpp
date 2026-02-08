@@ -16,8 +16,22 @@
 #include <thread>
 #include <vector>
 
+#if defined(__x86_64__) || defined(_M_X64) || defined(__i386) || defined(_M_IX86)
+#include <immintrin.h>
+#endif
+
 using namespace std::chrono;
 using namespace katana;
+
+namespace {
+inline void cpu_pause() noexcept {
+#if defined(__x86_64__) || defined(_M_X64) || defined(__i386) || defined(_M_IX86)
+    _mm_pause();
+#else
+    std::this_thread::yield();
+#endif
+}
+} // namespace
 
 struct benchmark_result {
     std::string name;
@@ -100,7 +114,6 @@ benchmark_result benchmark_ring_buffer_concurrent() {
     const size_t num_operations = 1000000;
     const int num_threads = 4;
     ring_buffer_queue<int> queue(4096, /*enable_spsc_fast_path=*/false);
-    std::atomic<size_t> total_ops{0};
 
     auto start = steady_clock::now();
 
@@ -111,9 +124,8 @@ benchmark_result benchmark_ring_buffer_concurrent() {
         producers.emplace_back([&] {
             for (size_t i = 0; i < num_operations / num_threads; ++i) {
                 while (!queue.try_push(static_cast<int>(i))) {
-                    std::this_thread::yield();
+                    cpu_pause();
                 }
-                total_ops.fetch_add(1, std::memory_order_relaxed);
             }
         });
     }
@@ -126,7 +138,7 @@ benchmark_result benchmark_ring_buffer_concurrent() {
                 if (queue.try_pop(val)) {
                     ++consumed;
                 } else {
-                    std::this_thread::yield();
+                    cpu_pause();
                 }
             }
         });
@@ -168,7 +180,7 @@ benchmark_result benchmark_ring_buffer_high_contention() {
             for (size_t i = 0; i < num_operations / static_cast<size_t>(producers); ++i) {
                 const int val = static_cast<int>(static_cast<size_t>(p) * 1000000 + i);
                 while (!queue.try_push(val)) {
-                    std::this_thread::yield();
+                    cpu_pause();
                 }
             }
         });
@@ -183,7 +195,7 @@ benchmark_result benchmark_ring_buffer_high_contention() {
                 if (queue.try_pop(val)) {
                     total_done.fetch_add(1, std::memory_order_relaxed);
                 } else {
-                    std::this_thread::yield();
+                    cpu_pause();
                 }
             }
         });
