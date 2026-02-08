@@ -4,7 +4,11 @@
 #include <string>
 #include <vector>
 
+#include "bench_utils.hpp"
 #include "katana/core/serde.hpp"
+
+using bench_util::do_not_optimize;
+using bench_util::clobber_memory;
 
 namespace {
 
@@ -37,7 +41,7 @@ int main() {
         std::string clean = "simple_value_without_special_chars";
         bench("escape_json_string (clean, return)", N, [&] {
             auto v = katana::serde::escape_json_string(clean);
-            (void)v;
+            do_not_optimize(v);
         });
     }
     {
@@ -47,13 +51,14 @@ int main() {
         bench("escape_json_string_into (clean, append)", N, [&] {
             buf.clear();
             katana::serde::escape_json_string_into(clean, buf);
+            clobber_memory();
         });
     }
     {
         std::string dirty = "has \"quotes\" and \nnewline \t tab";
         bench("escape_json_string (dirty, return)", N, [&] {
             auto v = katana::serde::escape_json_string(dirty);
-            (void)v;
+            do_not_optimize(v);
         });
     }
     {
@@ -63,6 +68,7 @@ int main() {
         bench("escape_json_string_into (dirty, append)", N, [&] {
             buf.clear();
             katana::serde::escape_json_string_into(dirty, buf);
+            clobber_memory();
         });
     }
 
@@ -71,33 +77,33 @@ int main() {
     {
         std::string s16(16, 'a');
         bench("needs_json_escaping (16 byte clean)", N, [&] {
-            (void)katana::serde::needs_json_escaping(s16);
+            do_not_optimize(katana::serde::needs_json_escaping(s16));
         });
     }
     {
         std::string s64(64, 'a');
         bench("needs_json_escaping (64 byte clean)", N, [&] {
-            (void)katana::serde::needs_json_escaping(s64);
+            do_not_optimize(katana::serde::needs_json_escaping(s64));
         });
     }
     {
         std::string s256(256, 'a');
         bench("needs_json_escaping (256 byte clean)", N, [&] {
-            (void)katana::serde::needs_json_escaping(s256);
+            do_not_optimize(katana::serde::needs_json_escaping(s256));
         });
     }
     {
         std::string s64(64, 'a');
         s64[63] = '\\'; // escape at end
         bench("needs_json_escaping (64 byte, escape at end)", N, [&] {
-            (void)katana::serde::needs_json_escaping(s64);
+            do_not_optimize(katana::serde::needs_json_escaping(s64));
         });
     }
     {
         std::string s64(64, 'a');
         s64[0] = '\\'; // escape at start
         bench("needs_json_escaping (64 byte, escape at start)", N, [&] {
-            (void)katana::serde::needs_json_escaping(s64);
+            do_not_optimize(katana::serde::needs_json_escaping(s64));
         });
     }
 
@@ -125,6 +131,7 @@ int main() {
             json.append("admin");
             json.push_back('"');
             json.push_back('}');
+            do_not_optimize(json.data());
         });
     }
     {
@@ -140,6 +147,7 @@ int main() {
                 json.append(buf, static_cast<size_t>(ptr - buf));
             }
             json.push_back(']');
+            do_not_optimize(json.data());
         });
     }
 

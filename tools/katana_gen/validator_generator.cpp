@@ -204,6 +204,10 @@ void generate_validator_for_schema(std::ostream& out,
         auto struct_name = schema_identifier(doc, &s);
         out << "[[nodiscard]] inline std::optional<validation_error> validate_" << struct_name << "(const "
             << struct_name << "& arr) {\n";
+        // Suppress unused parameter warning when no array constraints
+        if (!s.min_items && !s.max_items && !s.unique_items) {
+            out << "    (void)arr;\n";
+        }
         if (s.min_items) {
             out << "    if (arr.size() < " << *s.min_items
                 << ") return validation_error{\"\", validation_error_code::array_too_small, "
@@ -244,7 +248,13 @@ void generate_validator_for_schema(std::ostream& out,
         bool is_enum = prop.type->kind == schema_kind::string && !prop.type->enum_values.empty();
 
         // Check if this property needs any validation
-        if (prop.required && !is_enum) {
+        // Only string/array required fields generate actual validation code
+        if (prop.required && !is_enum && prop.type->kind == schema_kind::string) {
+            has_validation = true;
+            break;
+        }
+        if (prop.required && prop.type->kind == schema_kind::array &&
+            prop.type->min_items && *prop.type->min_items > 0) {
             has_validation = true;
             break;
         }

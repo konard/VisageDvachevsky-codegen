@@ -285,38 +285,33 @@ public:
         uint64_t path_hash = hash_string(path);
         switch (path_hash) {
             case HASH_TEXT_UPPERCASE:
-                if (path == "/text/uppercase" && 
-                    req.http_method == katana::http::method::post) {
-                    // Hash matched, path matched, method matched - inline dispatch!
-                    return dispatch_text_uppercase(req, ctx, handler_);
+                if (path == "/text/uppercase") {
+                    if (req.http_method == katana::http::method::post)
+                        return dispatch_text_uppercase(req, ctx, handler_);
                 }
                 break;
             case HASH_TEXT_LOWERCASE:
-                if (path == "/text/lowercase" && 
-                    req.http_method == katana::http::method::post) {
-                    // Hash matched, path matched, method matched - inline dispatch!
-                    return dispatch_text_lowercase(req, ctx, handler_);
+                if (path == "/text/lowercase") {
+                    if (req.http_method == katana::http::method::post)
+                        return dispatch_text_lowercase(req, ctx, handler_);
                 }
                 break;
             case HASH_TEXT_REVERSE:
-                if (path == "/text/reverse" && 
-                    req.http_method == katana::http::method::post) {
-                    // Hash matched, path matched, method matched - inline dispatch!
-                    return dispatch_text_reverse(req, ctx, handler_);
+                if (path == "/text/reverse") {
+                    if (req.http_method == katana::http::method::post)
+                        return dispatch_text_reverse(req, ctx, handler_);
                 }
                 break;
             case HASH_TEXT_STATS:
-                if (path == "/text/stats" && 
-                    req.http_method == katana::http::method::post) {
-                    // Hash matched, path matched, method matched - inline dispatch!
-                    return dispatch_text_stats(req, ctx, handler_);
+                if (path == "/text/stats") {
+                    if (req.http_method == katana::http::method::post)
+                        return dispatch_text_stats(req, ctx, handler_);
                 }
                 break;
             case HASH_TEXT_TRANSFORM:
-                if (path == "/text/transform" && 
-                    req.http_method == katana::http::method::post) {
-                    // Hash matched, path matched, method matched - inline dispatch!
-                    return dispatch_text_transform(req, ctx, handler_);
+                if (path == "/text/transform") {
+                    if (req.http_method == katana::http::method::post)
+                        return dispatch_text_transform(req, ctx, handler_);
                 }
                 break;
             default:

@@ -125,10 +125,9 @@ public:
         uint64_t path_hash = hash_string(path);
         switch (path_hash) {
             case HASH_REGISTER_USER:
-                if (path == "/user/register" && 
-                    req.http_method == katana::http::method::post) {
-                    // Hash matched, path matched, method matched - inline dispatch!
-                    return dispatch_register_user(req, ctx, handler_);
+                if (path == "/user/register") {
+                    if (req.http_method == katana::http::method::post)
+                        return dispatch_register_user(req, ctx, handler_);
                 }
                 break;
             default:

@@ -64,6 +64,7 @@ using katana::format_validators::is_valid_datetime;
 }
 
 [[nodiscard]] inline std::optional<validation_error> validate_SumResponse(const SumResponse& obj) {
+    (void)obj;
     return std::nullopt;
 }
 
@@ -209,6 +210,7 @@ using katana::format_validators::is_valid_datetime;
 }
 
 [[nodiscard]] inline std::optional<validation_error> validate_Item_Tags_t(const Item_Tags_t& arr) {
+    (void)arr;
     return std::nullopt;
 }
 
@@ -281,10 +283,12 @@ using katana::format_validators::is_valid_datetime;
 }
 
 [[nodiscard]] inline std::optional<validation_error> validate_ItemList(const ItemList& obj) {
+    (void)obj;
     return std::nullopt;
 }
 
 [[nodiscard]] inline std::optional<validation_error> validate_ItemList_Items_t(const ItemList_Items_t& arr) {
+    (void)arr;
     return std::nullopt;
 }
 

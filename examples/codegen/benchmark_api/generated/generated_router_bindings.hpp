@@ -50,7 +50,6 @@ constexpr uint64_t HASH_COMPUTE_SUM = hash_string("/compute/sum");
 constexpr uint64_t HASH_COMPUTE_STATS = hash_string("/compute/stats");
 constexpr uint64_t HASH_REGISTER_USER = hash_string("/users/register");
 constexpr uint64_t HASH_LIST_ITEMS = hash_string("/items");
-constexpr uint64_t HASH_CREATE_ITEM = hash_string("/items");
 constexpr uint64_t HASH_ECHO = hash_string("/echo");
 constexpr uint64_t HASH_HEALTH_CHECK = hash_string("/health");
 
@@ -163,9 +162,28 @@ inline katana::result<katana::http::response> dispatch_list_items(const katana::
     if (!response_content_type) {
         return katana::http::response::error(katana::problem_details::not_acceptable("unsupported Accept header"));
     }
+    auto p_limit = query_param(req.uri, "limit");
+    std::optional<int64_t> limit;
+    if (p_limit) {
+        int64_t tmp = 0;
+        auto [ptr, ec] = std::from_chars(p_limit->data(), p_limit->data() + p_limit->size(), tmp);
+        if (ec != std::errc()) return katana::http::response::error(katana::problem_details::bad_request("invalid param limit"));
+        limit = tmp;
+    }
+    auto p_offset = query_param(req.uri, "offset");
+    std::optional<int64_t> offset;
+    if (p_offset) {
+        int64_t tmp = 0;
+        auto [ptr, ec] = std::from_chars(p_offset->data(), p_offset->data() + p_offset->size(), tmp);
+        if (ec != std::errc()) return katana::http::response::error(katana::problem_details::bad_request("invalid param offset"));
+        offset = tmp;
+    }
+    auto p_category = query_param(req.uri, "category");
+    std::optional<std::string_view> category = std::nullopt;
+    if (p_category) category = *p_category;
     // Set handler context for zero-boilerplate access
     katana::http::handler_context::scope context_scope(req, ctx);
-    auto result = handler.list_items();
+    auto result = handler.list_items(limit, offset, category);
     if (response_content_type && !result.headers.get(katana::http::field::content_type)) {
         result.set_header("Content-Type", *response_content_type);
     }
@@ -178,6 +196,12 @@ inline katana::result<katana::http::response> dispatch_create_item(const katana:
     if (!response_content_type) {
         return katana::http::response::error(katana::problem_details::not_acceptable("unsupported Accept header"));
     }
+    auto p_X_Request_Id = req.headers.get("X-Request-Id");
+    if (!p_X_Request_Id) return katana::http::response::error(katana::problem_details::bad_request("missing param X-Request-Id"));
+    auto X_Request_Id = p_X_Request_Id ? *p_X_Request_Id : std::string_view{};
+    auto p_session = cookie_param(req, "session");
+    std::optional<std::string_view> session = std::nullopt;
+    if (p_session) session = *p_session;
     auto content_type_index = find_content_type(req.headers.get(katana::http::field::content_type), route_4_consumes);
     if (!content_type_index) return katana::http::response::error(katana::problem_details::unsupported_media_type("unsupported Content-Type"));
     std::optional<CreateItemRequest> parsed_body;
@@ -198,7 +222,7 @@ inline katana::result<katana::http::response> dispatch_create_item(const katana:
     }
     // Set handler context for zero-boilerplate access
     katana::http::handler_context::scope context_scope(req, ctx);
-    auto result = handler.create_item(*parsed_body);
+    auto result = handler.create_item(X_Request_Id, session, *parsed_body);
     if (response_content_type && !result.headers.get(katana::http::field::content_type)) {
         result.set_header("Content-Type", *response_content_type);
     }
@@ -424,52 +448,41 @@ public:
         uint64_t path_hash = hash_string(path);
         switch (path_hash) {
             case HASH_COMPUTE_SUM:
-                if (path == "/compute/sum" && 
-                    req.http_method == katana::http::method::post) {
-                    // Hash matched, path matched, method matched - inline dispatch!
-                    return dispatch_compute_sum(req, ctx, handler_);
+                if (path == "/compute/sum") {
+                    if (req.http_method == katana::http::method::post)
+                        return dispatch_compute_sum(req, ctx, handler_);
                 }
                 break;
             case HASH_COMPUTE_STATS:
-                if (path == "/compute/stats" && 
-                    req.http_method == katana::http::method::post) {
-                    // Hash matched, path matched, method matched - inline dispatch!
-                    return dispatch_compute_stats(req, ctx, handler_);
+                if (path == "/compute/stats") {
+                    if (req.http_method == katana::http::method::post)
+                        return dispatch_compute_stats(req, ctx, handler_);
                 }
                 break;
             case HASH_REGISTER_USER:
-                if (path == "/users/register" && 
-                    req.http_method == katana::http::method::post) {
-                    // Hash matched, path matched, method matched - inline dispatch!
-                    return dispatch_register_user(req, ctx, handler_);
+                if (path == "/users/register") {
+                    if (req.http_method == katana::http::method::post)
+                        return dispatch_register_user(req, ctx, handler_);
                 }
                 break;
             case HASH_LIST_ITEMS:
-                if (path == "/items" && 
-                    req.http_method == katana::http::method::get) {
-                    // Hash matched, path matched, method matched - inline dispatch!
-                    return dispatch_list_items(req, ctx, handler_);
-                }
-                break;
-            case HASH_CREATE_ITEM:
-                if (path == "/items" && 
-                    req.http_method == katana::http::method::post) {
-                    // Hash matched, path matched, method matched - inline dispatch!
-                    return dispatch_create_item(req, ctx, handler_);
+                if (path == "/items") {
+                    if (req.http_method == katana::http::method::get)
+                        return dispatch_list_items(req, ctx, handler_);
+                    if (req.http_method == katana::http::method::post)
+                        return dispatch_create_item(req, ctx, handler_);
                 }
                 break;
             case HASH_ECHO:
-                if (path == "/echo" && 
-                    req.http_method == katana::http::method::post) {
-                    // Hash matched, path matched, method matched - inline dispatch!
-                    return dispatch_echo(req, ctx, handler_);
+                if (path == "/echo") {
+                    if (req.http_method == katana::http::method::post)
+                        return dispatch_echo(req, ctx, handler_);
                 }
                 break;
             case HASH_HEALTH_CHECK:
-                if (path == "/health" && 
-                    req.http_method == katana::http::method::get) {
-                    // Hash matched, path matched, method matched - inline dispatch!
-                    return dispatch_health_check(req, ctx, handler_);
+                if (path == "/health") {
+                    if (req.http_method == katana::http::method::get)
+                        return dispatch_health_check(req, ctx, handler_);
                 }
                 break;
             default:

@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace katana_gen {
@@ -307,12 +308,15 @@ std::string generate_router_bindings(const document& doc) {
         }
     }
 
-    // Generate pre-computed hash constants for static routes
+    // Generate pre-computed hash constants for static routes (deduplicated by path)
     if (!static_routes.empty()) {
         out << "// Pre-computed path hashes for static routes\n";
+        std::unordered_set<std::string> emitted_paths;
         for (const auto& route : static_routes) {
-            out << "constexpr uint64_t HASH_" << to_upper_snake_case(route.operation_id)
-                << " = hash_string(\"" << route.path << "\");\n";
+            if (emitted_paths.insert(route.path).second) {
+                out << "constexpr uint64_t HASH_" << to_upper_snake_case(route.operation_id)
+                    << " = hash_string(\"" << route.path << "\");\n";
+            }
         }
         out << "\n";
     }
@@ -467,8 +471,10 @@ std::string generate_router_bindings(const document& doc) {
                         break;
                     }
                 }
+            }
 
-                // Query/header/cookie params (for dynamic routes)
+            // Query/header/cookie params (for ALL routes, not just dynamic ones)
+            {
                 for (const auto& param : op.parameters) {
                     if (param.in == katana::openapi::param_location::path || !param.type) {
                         continue;
@@ -749,16 +755,16 @@ std::string generate_router_bindings(const document& doc) {
                     first_arg = false;
                     dispatch_functions << sanitize_identifier(param.name);
                 }
-                // query/header/cookie args
-                for (const auto& param : op.parameters) {
-                    if (param.in == katana::openapi::param_location::path || !param.type) {
-                        continue;
-                    }
-                    if (!first_arg)
-                        dispatch_functions << ", ";
-                    first_arg = false;
-                    dispatch_functions << sanitize_identifier(param.name);
+            }
+            // query/header/cookie args (for ALL routes)
+            for (const auto& param : op.parameters) {
+                if (param.in == katana::openapi::param_location::path || !param.type) {
+                    continue;
                 }
+                if (!first_arg)
+                    dispatch_functions << ", ";
+                first_arg = false;
+                dispatch_functions << sanitize_identifier(param.name);
             }
             // body arg
             if (has_body) {
@@ -832,17 +838,24 @@ std::string generate_router_bindings(const document& doc) {
         out << "        uint64_t path_hash = hash_string(path);\n";
         out << "        switch (path_hash) {\n";
 
-        // For each static route, we'll call the handler directly via fallback router
-        // The hash gives us O(1) routing decision
+        // Group static routes by path to handle multiple methods per path
+        // (e.g., GET /items and POST /items share the same hash)
+        std::unordered_map<std::string, std::vector<const static_route*>> routes_by_path;
         for (const auto& route : static_routes) {
-            out << "            case HASH_" << to_upper_snake_case(route.operation_id) << ":\n";
-            out << "                if (path == \"" << route.path << "\" && \n";
-            out << "                    req.http_method == katana::http::method::" << route.method
-                << ") {\n";
-            out << "                    // Hash matched, path matched, method matched - inline "
-                   "dispatch!\n";
-            out << "                    return dispatch_" << route.method_name
-                << "(req, ctx, handler_);\n";
+            routes_by_path[route.path].push_back(&route);
+        }
+
+        std::unordered_set<std::string> emitted_case_paths;
+        for (const auto& route : static_routes) {
+            if (!emitted_case_paths.insert(route.path).second) {
+                continue; // Already emitted case for this path
+            }
+            out << "            case HASH_" << to_upper_snake_case(routes_by_path[route.path][0]->operation_id) << ":\n";
+            out << "                if (path == \"" << route.path << "\") {\n";
+            for (const auto* r : routes_by_path[route.path]) {
+                out << "                    if (req.http_method == katana::http::method::" << r->method << ")\n";
+                out << "                        return dispatch_" << r->method_name << "(req, ctx, handler_);\n";
+            }
             out << "                }\n";
             out << "                break;\n";
         }

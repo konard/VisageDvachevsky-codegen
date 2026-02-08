@@ -298,42 +298,6 @@ using UserResponse_Created_at_t = arena_string<>;
 
 using ItemCategory = ItemCategory_enum;
 
-/// Data type with 8 fields
-struct Item {
-    // Compile-time metadata for validation
-    struct metadata {
-        static constexpr bool ID_REQUIRED = true;
-        static constexpr bool NAME_REQUIRED = true;
-        static constexpr bool DESCRIPTION_REQUIRED = false;
-        static constexpr bool PRICE_REQUIRED = true;
-        static constexpr bool STOCK_REQUIRED = false;
-        static constexpr bool CATEGORY_REQUIRED = true;
-        static constexpr bool TAGS_REQUIRED = false;
-        static constexpr bool METADATA_REQUIRED = false;
-    };
-
-
-    explicit Item(monotonic_arena* arena = nullptr)
-        : arena_(arena),
-          name(arena_allocator<char>(arena)),
-          description(arena_allocator<char>(arena)),
-          tags(arena_allocator<arena_string<>>(arena)) {}
-
-    monotonic_arena* arena_;
-    int64_t id;
-    arena_string<> name;
-    /// Optional field
-    arena_string<> description;
-    double price;
-    /// Optional field
-    int64_t stock = {};
-    ItemCategory_enum category;
-    /// Optional field
-    arena_vector<arena_string<>> tags;
-    /// Optional field
-    ItemMetadata metadata = {};
-};
-
 using Item_Id_t = int64_t;
 
 using Item_Name_t = arena_string<>;
@@ -383,50 +347,6 @@ using ItemMetadata_Dimensions_t = arena_string<>;
 using ItemMetadata_Manufacturer_t = arena_string<>;
 
 using ItemMetadata_Sku_t = arena_string<>;
-
-/// Data type with 7 fields
-struct CreateItemRequest {
-    // Compile-time metadata for validation
-    struct metadata {
-        static constexpr bool NAME_REQUIRED = true;
-        static constexpr size_t NAME_MIN_LENGTH = 1;
-        static constexpr size_t NAME_MAX_LENGTH = 200;
-        static constexpr bool DESCRIPTION_REQUIRED = false;
-        static constexpr size_t DESCRIPTION_MAX_LENGTH = 2000;
-        static constexpr bool PRICE_REQUIRED = true;
-        static constexpr double PRICE_MINIMUM = 0;
-        static constexpr double PRICE_EXCLUSIVE_MAXIMUM = 1e+06;
-        static constexpr bool STOCK_REQUIRED = false;
-        static constexpr double STOCK_MINIMUM = 0;
-        static constexpr double STOCK_MAXIMUM = 999999;
-        static constexpr bool CATEGORY_REQUIRED = true;
-        static constexpr bool TAGS_REQUIRED = false;
-        static constexpr size_t TAGS_MAX_ITEMS = 20;
-        static constexpr bool METADATA_REQUIRED = false;
-    };
-
-    static_assert(metadata::NAME_MIN_LENGTH <= metadata::NAME_MAX_LENGTH, "name: min_length must be <= max_length");
-    static_assert(metadata::STOCK_MINIMUM <= metadata::STOCK_MAXIMUM, "stock: minimum must be <= maximum");
-
-    explicit CreateItemRequest(monotonic_arena* arena = nullptr)
-        : arena_(arena),
-          name(arena_allocator<char>(arena)),
-          description(arena_allocator<char>(arena)),
-          tags(arena_allocator<arena_string<>>(arena)) {}
-
-    monotonic_arena* arena_;
-    arena_string<> name;
-    /// Optional field
-    arena_string<> description;
-    double price;
-    /// Optional field
-    int64_t stock = {};
-    ItemCategory_enum category;
-    /// Optional field
-    arena_vector<arena_string<>> tags;
-    /// Optional field
-    ItemMetadata metadata = {};
-};
 
 using CreateItemRequest_Name_t = arena_string<>;
 
@@ -492,32 +412,6 @@ using UpdateItemRequest_Stock_t = int64_t;
 using UpdateItemRequest_Tags_t = arena_vector<arena_string<>>;
 
 using UpdateItemRequest_Item_t = arena_string<>;
-
-/// Data type with 4 fields
-struct ItemList {
-    // Compile-time metadata for validation
-    struct metadata {
-        static constexpr bool ITEMS_REQUIRED = true;
-        static constexpr bool TOTAL_REQUIRED = true;
-        static constexpr bool LIMIT_REQUIRED = false;
-        static constexpr bool OFFSET_REQUIRED = false;
-    };
-
-
-    explicit ItemList(monotonic_arena* arena = nullptr)
-        : arena_(arena),
-          items(arena_allocator<Item>(arena)) {}
-
-    monotonic_arena* arena_;
-    arena_vector<Item> items;
-    int64_t total;
-    /// Optional field
-    int64_t limit = {};
-    /// Optional field
-    int64_t offset = {};
-};
-
-using ItemList_Items_t = arena_vector<Item>;
 
 using ItemList_Total_t = int64_t;
 
@@ -617,4 +511,110 @@ struct health_check_response {
 using health_check_response_Status = arena_string<>;
 
 using health_check_response_Uptime_ms = int64_t;
+
+/// Data type with 8 fields
+struct Item {
+    // Compile-time metadata for validation
+    struct metadata {
+        static constexpr bool ID_REQUIRED = true;
+        static constexpr bool NAME_REQUIRED = true;
+        static constexpr bool DESCRIPTION_REQUIRED = false;
+        static constexpr bool PRICE_REQUIRED = true;
+        static constexpr bool STOCK_REQUIRED = false;
+        static constexpr bool CATEGORY_REQUIRED = true;
+        static constexpr bool TAGS_REQUIRED = false;
+        static constexpr bool METADATA_REQUIRED = false;
+    };
+
+
+    explicit Item(monotonic_arena* arena = nullptr)
+        : arena_(arena),
+          name(arena_allocator<char>(arena)),
+          description(arena_allocator<char>(arena)),
+          tags(arena_allocator<arena_string<>>(arena)) {}
+
+    monotonic_arena* arena_;
+    int64_t id;
+    arena_string<> name;
+    /// Optional field
+    arena_string<> description;
+    double price;
+    /// Optional field
+    int64_t stock = {};
+    ItemCategory_enum category;
+    /// Optional field
+    arena_vector<arena_string<>> tags;
+    /// Optional field
+    ItemMetadata metadata;
+};
+
+/// Data type with 7 fields
+struct CreateItemRequest {
+    // Compile-time metadata for validation
+    struct metadata {
+        static constexpr bool NAME_REQUIRED = true;
+        static constexpr size_t NAME_MIN_LENGTH = 1;
+        static constexpr size_t NAME_MAX_LENGTH = 200;
+        static constexpr bool DESCRIPTION_REQUIRED = false;
+        static constexpr size_t DESCRIPTION_MAX_LENGTH = 2000;
+        static constexpr bool PRICE_REQUIRED = true;
+        static constexpr double PRICE_MINIMUM = 0;
+        static constexpr double PRICE_EXCLUSIVE_MAXIMUM = 1e+06;
+        static constexpr bool STOCK_REQUIRED = false;
+        static constexpr double STOCK_MINIMUM = 0;
+        static constexpr double STOCK_MAXIMUM = 999999;
+        static constexpr bool CATEGORY_REQUIRED = true;
+        static constexpr bool TAGS_REQUIRED = false;
+        static constexpr size_t TAGS_MAX_ITEMS = 20;
+        static constexpr bool METADATA_REQUIRED = false;
+    };
+
+    static_assert(metadata::NAME_MIN_LENGTH <= metadata::NAME_MAX_LENGTH, "name: min_length must be <= max_length");
+    static_assert(metadata::STOCK_MINIMUM <= metadata::STOCK_MAXIMUM, "stock: minimum must be <= maximum");
+
+    explicit CreateItemRequest(monotonic_arena* arena = nullptr)
+        : arena_(arena),
+          name(arena_allocator<char>(arena)),
+          description(arena_allocator<char>(arena)),
+          tags(arena_allocator<arena_string<>>(arena)) {}
+
+    monotonic_arena* arena_;
+    arena_string<> name;
+    /// Optional field
+    arena_string<> description;
+    double price;
+    /// Optional field
+    int64_t stock = {};
+    ItemCategory_enum category;
+    /// Optional field
+    arena_vector<arena_string<>> tags;
+    /// Optional field
+    ItemMetadata metadata;
+};
+
+/// Data type with 4 fields
+struct ItemList {
+    // Compile-time metadata for validation
+    struct metadata {
+        static constexpr bool ITEMS_REQUIRED = true;
+        static constexpr bool TOTAL_REQUIRED = true;
+        static constexpr bool LIMIT_REQUIRED = false;
+        static constexpr bool OFFSET_REQUIRED = false;
+    };
+
+
+    explicit ItemList(monotonic_arena* arena = nullptr)
+        : arena_(arena),
+          items(arena_allocator<Item>(arena)) {}
+
+    monotonic_arena* arena_;
+    arena_vector<Item> items;
+    int64_t total;
+    /// Optional field
+    int64_t limit = {};
+    /// Optional field
+    int64_t offset = {};
+};
+
+using ItemList_Items_t = arena_vector<Item>;
 

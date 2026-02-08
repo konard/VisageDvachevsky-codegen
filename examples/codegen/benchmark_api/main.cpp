@@ -227,7 +227,7 @@ public:
                          const CreateItemRequest& body) override {
         int64_t id = store_.create(body);
         auto item_opt = store_.get(id);
-        if (!item_opt) return response::error(problem_details::internal_error());
+        if (!item_opt) return response::error(problem_details::internal_server_error());
 
         auto& arena = handler_context::arena();
         Item dto = to_dto(*item_opt, arena);
