@@ -19,9 +19,9 @@
 
 #include "katana/core/arena.hpp"
 #include "katana/core/serde.hpp"
+#include <charconv>
 #include <optional>
 #include <string>
-#include <charconv>
 #include <vector>
 
 using katana::monotonic_arena;
@@ -30,167 +30,326 @@ using katana::monotonic_arena;
 // Forward Declarations
 // ============================================================
 
-[[nodiscard]] inline std::optional<SumRequest> parse_SumRequest(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<SumRequest_Values_t> parse_SumRequest_Values_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<SumRequest_Item_t> parse_SumRequest_Item_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<SumResponse> parse_SumResponse(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<SumResponse_Result_t> parse_SumResponse_Result_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<SumResponse_Count_t> parse_SumResponse_Count_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsRequest> parse_StatsRequest(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsRequest_Values_t> parse_StatsRequest_Values_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsRequest_Item_t> parse_StatsRequest_Item_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsRequest_Include_median_t> parse_StatsRequest_Include_median_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsResponse> parse_StatsResponse(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsResponse_Min_t> parse_StatsResponse_Min_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsResponse_Max_t> parse_StatsResponse_Max_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsResponse_Mean_t> parse_StatsResponse_Mean_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsResponse_Sum_t> parse_StatsResponse_Sum_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsResponse_Count_t> parse_StatsResponse_Count_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsResponse_Median_t> parse_StatsResponse_Median_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<RegisterRequest> parse_RegisterRequest(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<RegisterRequest_Username_t> parse_RegisterRequest_Username_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<RegisterRequest_Email_t> parse_RegisterRequest_Email_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<RegisterRequest_Password_t> parse_RegisterRequest_Password_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<RegisterRequest_Age_t> parse_RegisterRequest_Age_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<RegisterRequest_Tags_t> parse_RegisterRequest_Tags_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<RegisterRequest_Item_t> parse_RegisterRequest_Item_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UserRole> parse_UserRole(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UserResponse> parse_UserResponse(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UserResponse_Id_t> parse_UserResponse_Id_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UserResponse_Username_t> parse_UserResponse_Username_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UserResponse_Email_t> parse_UserResponse_Email_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UserResponse_Created_at_t> parse_UserResponse_Created_at_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemCategory> parse_ItemCategory(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<SumRequest> parse_SumRequest(std::string_view json,
+                                                                monotonic_arena* arena);
+[[nodiscard]] inline std::optional<SumRequest_Values_t>
+parse_SumRequest_Values_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<SumRequest_Item_t>
+parse_SumRequest_Item_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<SumResponse> parse_SumResponse(std::string_view json,
+                                                                  monotonic_arena* arena);
+[[nodiscard]] inline std::optional<SumResponse_Result_t>
+parse_SumResponse_Result_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<SumResponse_Count_t>
+parse_SumResponse_Count_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsRequest> parse_StatsRequest(std::string_view json,
+                                                                    monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsRequest_Values_t>
+parse_StatsRequest_Values_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsRequest_Item_t>
+parse_StatsRequest_Item_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsRequest_Include_median_t>
+parse_StatsRequest_Include_median_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsResponse> parse_StatsResponse(std::string_view json,
+                                                                      monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsResponse_Min_t>
+parse_StatsResponse_Min_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsResponse_Max_t>
+parse_StatsResponse_Max_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsResponse_Mean_t>
+parse_StatsResponse_Mean_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsResponse_Sum_t>
+parse_StatsResponse_Sum_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsResponse_Count_t>
+parse_StatsResponse_Count_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsResponse_Median_t>
+parse_StatsResponse_Median_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<RegisterRequest> parse_RegisterRequest(std::string_view json,
+                                                                          monotonic_arena* arena);
+[[nodiscard]] inline std::optional<RegisterRequest_Username_t>
+parse_RegisterRequest_Username_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<RegisterRequest_Email_t>
+parse_RegisterRequest_Email_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<RegisterRequest_Password_t>
+parse_RegisterRequest_Password_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<RegisterRequest_Age_t>
+parse_RegisterRequest_Age_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<RegisterRequest_Tags_t>
+parse_RegisterRequest_Tags_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<RegisterRequest_Item_t>
+parse_RegisterRequest_Item_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UserRole> parse_UserRole(std::string_view json,
+                                                            monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UserResponse> parse_UserResponse(std::string_view json,
+                                                                    monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UserResponse_Id_t>
+parse_UserResponse_Id_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UserResponse_Username_t>
+parse_UserResponse_Username_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UserResponse_Email_t>
+parse_UserResponse_Email_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UserResponse_Created_at_t>
+parse_UserResponse_Created_at_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemCategory> parse_ItemCategory(std::string_view json,
+                                                                    monotonic_arena* arena);
 [[nodiscard]] inline std::optional<Item> parse_Item(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<Item_Id_t> parse_Item_Id_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<Item_Name_t> parse_Item_Name_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<Item_Description_t> parse_Item_Description_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<Item_Price_t> parse_Item_Price_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<Item_Stock_t> parse_Item_Stock_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<Item_Tags_t> parse_Item_Tags_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<Item_Item_t> parse_Item_Item_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemMetadata> parse_ItemMetadata(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemMetadata_Weight_kg_t> parse_ItemMetadata_Weight_kg_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemMetadata_Dimensions_t> parse_ItemMetadata_Dimensions_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemMetadata_Manufacturer_t> parse_ItemMetadata_Manufacturer_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemMetadata_Sku_t> parse_ItemMetadata_Sku_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<CreateItemRequest> parse_CreateItemRequest(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<CreateItemRequest_Name_t> parse_CreateItemRequest_Name_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<CreateItemRequest_Description_t> parse_CreateItemRequest_Description_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<CreateItemRequest_Price_t> parse_CreateItemRequest_Price_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<CreateItemRequest_Stock_t> parse_CreateItemRequest_Stock_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<CreateItemRequest_Tags_t> parse_CreateItemRequest_Tags_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<CreateItemRequest_Item_t> parse_CreateItemRequest_Item_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UpdateItemRequest> parse_UpdateItemRequest(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UpdateItemRequest_Name_t> parse_UpdateItemRequest_Name_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UpdateItemRequest_Description_t> parse_UpdateItemRequest_Description_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UpdateItemRequest_Price_t> parse_UpdateItemRequest_Price_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UpdateItemRequest_Stock_t> parse_UpdateItemRequest_Stock_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UpdateItemRequest_Tags_t> parse_UpdateItemRequest_Tags_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UpdateItemRequest_Item_t> parse_UpdateItemRequest_Item_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemList> parse_ItemList(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemList_Items_t> parse_ItemList_Items_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemList_Total_t> parse_ItemList_Total_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemList_Limit_t> parse_ItemList_Limit_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemList_Offset_t> parse_ItemList_Offset_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<EchoRequest> parse_EchoRequest(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<EchoRequest_Message_t> parse_EchoRequest_Message_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<EchoRequest_Repeat_t> parse_EchoRequest_Repeat_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<EchoRequest_Uppercase_t> parse_EchoRequest_Uppercase_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<EchoResponse> parse_EchoResponse(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<EchoResponse_Message_t> parse_EchoResponse_Message_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<EchoResponse_Length_t> parse_EchoResponse_Length_t(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<list_items_param_limit> parse_list_items_param_limit(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<list_items_param_offset> parse_list_items_param_offset(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<create_item_param_X_Request_Id> parse_create_item_param_X_Request_Id(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<create_item_param_session> parse_create_item_param_session(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<get_item_param_id> parse_get_item_param_id(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<update_item_param_id> parse_update_item_param_id(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<delete_item_param_id> parse_delete_item_param_id(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<health_check_response> parse_health_check_response(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<health_check_response_Status> parse_health_check_response_Status(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<health_check_response_Uptime_ms> parse_health_check_response_Uptime_ms(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<Item_Id_t> parse_Item_Id_t(std::string_view json,
+                                                              monotonic_arena* arena);
+[[nodiscard]] inline std::optional<Item_Name_t> parse_Item_Name_t(std::string_view json,
+                                                                  monotonic_arena* arena);
+[[nodiscard]] inline std::optional<Item_Description_t>
+parse_Item_Description_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<Item_Price_t> parse_Item_Price_t(std::string_view json,
+                                                                    monotonic_arena* arena);
+[[nodiscard]] inline std::optional<Item_Stock_t> parse_Item_Stock_t(std::string_view json,
+                                                                    monotonic_arena* arena);
+[[nodiscard]] inline std::optional<Item_Tags_t> parse_Item_Tags_t(std::string_view json,
+                                                                  monotonic_arena* arena);
+[[nodiscard]] inline std::optional<Item_Item_t> parse_Item_Item_t(std::string_view json,
+                                                                  monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemMetadata> parse_ItemMetadata(std::string_view json,
+                                                                    monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemMetadata_Weight_kg_t>
+parse_ItemMetadata_Weight_kg_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemMetadata_Dimensions_t>
+parse_ItemMetadata_Dimensions_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemMetadata_Manufacturer_t>
+parse_ItemMetadata_Manufacturer_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemMetadata_Sku_t>
+parse_ItemMetadata_Sku_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<CreateItemRequest>
+parse_CreateItemRequest(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<CreateItemRequest_Name_t>
+parse_CreateItemRequest_Name_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<CreateItemRequest_Description_t>
+parse_CreateItemRequest_Description_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<CreateItemRequest_Price_t>
+parse_CreateItemRequest_Price_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<CreateItemRequest_Stock_t>
+parse_CreateItemRequest_Stock_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<CreateItemRequest_Tags_t>
+parse_CreateItemRequest_Tags_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<CreateItemRequest_Item_t>
+parse_CreateItemRequest_Item_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UpdateItemRequest>
+parse_UpdateItemRequest(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UpdateItemRequest_Name_t>
+parse_UpdateItemRequest_Name_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UpdateItemRequest_Description_t>
+parse_UpdateItemRequest_Description_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UpdateItemRequest_Price_t>
+parse_UpdateItemRequest_Price_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UpdateItemRequest_Stock_t>
+parse_UpdateItemRequest_Stock_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UpdateItemRequest_Tags_t>
+parse_UpdateItemRequest_Tags_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UpdateItemRequest_Item_t>
+parse_UpdateItemRequest_Item_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemList> parse_ItemList(std::string_view json,
+                                                            monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemList_Items_t> parse_ItemList_Items_t(std::string_view json,
+                                                                            monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemList_Total_t> parse_ItemList_Total_t(std::string_view json,
+                                                                            monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemList_Limit_t> parse_ItemList_Limit_t(std::string_view json,
+                                                                            monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemList_Offset_t>
+parse_ItemList_Offset_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<EchoRequest> parse_EchoRequest(std::string_view json,
+                                                                  monotonic_arena* arena);
+[[nodiscard]] inline std::optional<EchoRequest_Message_t>
+parse_EchoRequest_Message_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<EchoRequest_Repeat_t>
+parse_EchoRequest_Repeat_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<EchoRequest_Uppercase_t>
+parse_EchoRequest_Uppercase_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<EchoResponse> parse_EchoResponse(std::string_view json,
+                                                                    monotonic_arena* arena);
+[[nodiscard]] inline std::optional<EchoResponse_Message_t>
+parse_EchoResponse_Message_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<EchoResponse_Length_t>
+parse_EchoResponse_Length_t(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<list_items_param_limit>
+parse_list_items_param_limit(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<list_items_param_offset>
+parse_list_items_param_offset(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<create_item_param_X_Request_Id>
+parse_create_item_param_X_Request_Id(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<create_item_param_session>
+parse_create_item_param_session(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<get_item_param_id>
+parse_get_item_param_id(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<update_item_param_id>
+parse_update_item_param_id(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<delete_item_param_id>
+parse_delete_item_param_id(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<health_check_response>
+parse_health_check_response(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<health_check_response_Status>
+parse_health_check_response_Status(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<health_check_response_Uptime_ms>
+parse_health_check_response_Uptime_ms(std::string_view json, monotonic_arena* arena);
 
-[[nodiscard]] inline std::optional<SumRequest> parse_SumRequest(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<SumRequest_Values_t> parse_SumRequest_Values_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<SumRequest_Item_t> parse_SumRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<SumResponse> parse_SumResponse(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<SumResponse_Result_t> parse_SumResponse_Result_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<SumResponse_Count_t> parse_SumResponse_Count_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsRequest> parse_StatsRequest(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsRequest_Values_t> parse_StatsRequest_Values_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsRequest_Item_t> parse_StatsRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsRequest_Include_median_t> parse_StatsRequest_Include_median_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsResponse> parse_StatsResponse(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsResponse_Min_t> parse_StatsResponse_Min_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsResponse_Max_t> parse_StatsResponse_Max_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsResponse_Mean_t> parse_StatsResponse_Mean_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsResponse_Sum_t> parse_StatsResponse_Sum_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsResponse_Count_t> parse_StatsResponse_Count_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<StatsResponse_Median_t> parse_StatsResponse_Median_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<RegisterRequest> parse_RegisterRequest(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<RegisterRequest_Username_t> parse_RegisterRequest_Username_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<RegisterRequest_Email_t> parse_RegisterRequest_Email_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<RegisterRequest_Password_t> parse_RegisterRequest_Password_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<RegisterRequest_Age_t> parse_RegisterRequest_Age_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<RegisterRequest_Tags_t> parse_RegisterRequest_Tags_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<RegisterRequest_Item_t> parse_RegisterRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UserRole> parse_UserRole(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UserResponse> parse_UserResponse(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UserResponse_Id_t> parse_UserResponse_Id_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UserResponse_Username_t> parse_UserResponse_Username_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UserResponse_Email_t> parse_UserResponse_Email_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UserResponse_Created_at_t> parse_UserResponse_Created_at_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemCategory> parse_ItemCategory(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<Item> parse_Item(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<Item_Id_t> parse_Item_Id_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<Item_Name_t> parse_Item_Name_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<Item_Description_t> parse_Item_Description_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<Item_Price_t> parse_Item_Price_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<Item_Stock_t> parse_Item_Stock_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<Item_Tags_t> parse_Item_Tags_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<Item_Item_t> parse_Item_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemMetadata> parse_ItemMetadata(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemMetadata_Weight_kg_t> parse_ItemMetadata_Weight_kg_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemMetadata_Dimensions_t> parse_ItemMetadata_Dimensions_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemMetadata_Manufacturer_t> parse_ItemMetadata_Manufacturer_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemMetadata_Sku_t> parse_ItemMetadata_Sku_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<CreateItemRequest> parse_CreateItemRequest(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<CreateItemRequest_Name_t> parse_CreateItemRequest_Name_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<CreateItemRequest_Description_t> parse_CreateItemRequest_Description_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<CreateItemRequest_Price_t> parse_CreateItemRequest_Price_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<CreateItemRequest_Stock_t> parse_CreateItemRequest_Stock_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<CreateItemRequest_Tags_t> parse_CreateItemRequest_Tags_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<CreateItemRequest_Item_t> parse_CreateItemRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UpdateItemRequest> parse_UpdateItemRequest(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UpdateItemRequest_Name_t> parse_UpdateItemRequest_Name_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UpdateItemRequest_Description_t> parse_UpdateItemRequest_Description_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UpdateItemRequest_Price_t> parse_UpdateItemRequest_Price_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UpdateItemRequest_Stock_t> parse_UpdateItemRequest_Stock_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UpdateItemRequest_Tags_t> parse_UpdateItemRequest_Tags_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<UpdateItemRequest_Item_t> parse_UpdateItemRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemList> parse_ItemList(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemList_Items_t> parse_ItemList_Items_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemList_Total_t> parse_ItemList_Total_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemList_Limit_t> parse_ItemList_Limit_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<ItemList_Offset_t> parse_ItemList_Offset_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<EchoRequest> parse_EchoRequest(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<EchoRequest_Message_t> parse_EchoRequest_Message_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<EchoRequest_Repeat_t> parse_EchoRequest_Repeat_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<EchoRequest_Uppercase_t> parse_EchoRequest_Uppercase_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<EchoResponse> parse_EchoResponse(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<EchoResponse_Message_t> parse_EchoResponse_Message_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<EchoResponse_Length_t> parse_EchoResponse_Length_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<list_items_param_limit> parse_list_items_param_limit(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<list_items_param_offset> parse_list_items_param_offset(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<create_item_param_X_Request_Id> parse_create_item_param_X_Request_Id(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<create_item_param_session> parse_create_item_param_session(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<get_item_param_id> parse_get_item_param_id(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<update_item_param_id> parse_update_item_param_id(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<delete_item_param_id> parse_delete_item_param_id(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<health_check_response> parse_health_check_response(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<health_check_response_Status> parse_health_check_response_Status(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<health_check_response_Uptime_ms> parse_health_check_response_Uptime_ms(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<SumRequest> parse_SumRequest(katana::serde::json_cursor& cur,
+                                                                monotonic_arena* arena);
+[[nodiscard]] inline std::optional<SumRequest_Values_t>
+parse_SumRequest_Values_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<SumRequest_Item_t>
+parse_SumRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<SumResponse> parse_SumResponse(katana::serde::json_cursor& cur,
+                                                                  monotonic_arena* arena);
+[[nodiscard]] inline std::optional<SumResponse_Result_t>
+parse_SumResponse_Result_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<SumResponse_Count_t>
+parse_SumResponse_Count_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsRequest> parse_StatsRequest(katana::serde::json_cursor& cur,
+                                                                    monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsRequest_Values_t>
+parse_StatsRequest_Values_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsRequest_Item_t>
+parse_StatsRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsRequest_Include_median_t>
+parse_StatsRequest_Include_median_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsResponse>
+parse_StatsResponse(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsResponse_Min_t>
+parse_StatsResponse_Min_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsResponse_Max_t>
+parse_StatsResponse_Max_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsResponse_Mean_t>
+parse_StatsResponse_Mean_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsResponse_Sum_t>
+parse_StatsResponse_Sum_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsResponse_Count_t>
+parse_StatsResponse_Count_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<StatsResponse_Median_t>
+parse_StatsResponse_Median_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<RegisterRequest>
+parse_RegisterRequest(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<RegisterRequest_Username_t>
+parse_RegisterRequest_Username_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<RegisterRequest_Email_t>
+parse_RegisterRequest_Email_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<RegisterRequest_Password_t>
+parse_RegisterRequest_Password_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<RegisterRequest_Age_t>
+parse_RegisterRequest_Age_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<RegisterRequest_Tags_t>
+parse_RegisterRequest_Tags_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<RegisterRequest_Item_t>
+parse_RegisterRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UserRole> parse_UserRole(katana::serde::json_cursor& cur,
+                                                            monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UserResponse> parse_UserResponse(katana::serde::json_cursor& cur,
+                                                                    monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UserResponse_Id_t>
+parse_UserResponse_Id_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UserResponse_Username_t>
+parse_UserResponse_Username_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UserResponse_Email_t>
+parse_UserResponse_Email_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UserResponse_Created_at_t>
+parse_UserResponse_Created_at_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemCategory> parse_ItemCategory(katana::serde::json_cursor& cur,
+                                                                    monotonic_arena* arena);
+[[nodiscard]] inline std::optional<Item> parse_Item(katana::serde::json_cursor& cur,
+                                                    monotonic_arena* arena);
+[[nodiscard]] inline std::optional<Item_Id_t> parse_Item_Id_t(katana::serde::json_cursor& cur,
+                                                              monotonic_arena* arena);
+[[nodiscard]] inline std::optional<Item_Name_t> parse_Item_Name_t(katana::serde::json_cursor& cur,
+                                                                  monotonic_arena* arena);
+[[nodiscard]] inline std::optional<Item_Description_t>
+parse_Item_Description_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<Item_Price_t> parse_Item_Price_t(katana::serde::json_cursor& cur,
+                                                                    monotonic_arena* arena);
+[[nodiscard]] inline std::optional<Item_Stock_t> parse_Item_Stock_t(katana::serde::json_cursor& cur,
+                                                                    monotonic_arena* arena);
+[[nodiscard]] inline std::optional<Item_Tags_t> parse_Item_Tags_t(katana::serde::json_cursor& cur,
+                                                                  monotonic_arena* arena);
+[[nodiscard]] inline std::optional<Item_Item_t> parse_Item_Item_t(katana::serde::json_cursor& cur,
+                                                                  monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemMetadata> parse_ItemMetadata(katana::serde::json_cursor& cur,
+                                                                    monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemMetadata_Weight_kg_t>
+parse_ItemMetadata_Weight_kg_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemMetadata_Dimensions_t>
+parse_ItemMetadata_Dimensions_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemMetadata_Manufacturer_t>
+parse_ItemMetadata_Manufacturer_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemMetadata_Sku_t>
+parse_ItemMetadata_Sku_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<CreateItemRequest>
+parse_CreateItemRequest(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<CreateItemRequest_Name_t>
+parse_CreateItemRequest_Name_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<CreateItemRequest_Description_t>
+parse_CreateItemRequest_Description_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<CreateItemRequest_Price_t>
+parse_CreateItemRequest_Price_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<CreateItemRequest_Stock_t>
+parse_CreateItemRequest_Stock_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<CreateItemRequest_Tags_t>
+parse_CreateItemRequest_Tags_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<CreateItemRequest_Item_t>
+parse_CreateItemRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UpdateItemRequest>
+parse_UpdateItemRequest(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UpdateItemRequest_Name_t>
+parse_UpdateItemRequest_Name_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UpdateItemRequest_Description_t>
+parse_UpdateItemRequest_Description_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UpdateItemRequest_Price_t>
+parse_UpdateItemRequest_Price_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UpdateItemRequest_Stock_t>
+parse_UpdateItemRequest_Stock_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UpdateItemRequest_Tags_t>
+parse_UpdateItemRequest_Tags_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<UpdateItemRequest_Item_t>
+parse_UpdateItemRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemList> parse_ItemList(katana::serde::json_cursor& cur,
+                                                            monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemList_Items_t>
+parse_ItemList_Items_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemList_Total_t>
+parse_ItemList_Total_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemList_Limit_t>
+parse_ItemList_Limit_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<ItemList_Offset_t>
+parse_ItemList_Offset_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<EchoRequest> parse_EchoRequest(katana::serde::json_cursor& cur,
+                                                                  monotonic_arena* arena);
+[[nodiscard]] inline std::optional<EchoRequest_Message_t>
+parse_EchoRequest_Message_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<EchoRequest_Repeat_t>
+parse_EchoRequest_Repeat_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<EchoRequest_Uppercase_t>
+parse_EchoRequest_Uppercase_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<EchoResponse> parse_EchoResponse(katana::serde::json_cursor& cur,
+                                                                    monotonic_arena* arena);
+[[nodiscard]] inline std::optional<EchoResponse_Message_t>
+parse_EchoResponse_Message_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<EchoResponse_Length_t>
+parse_EchoResponse_Length_t(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<list_items_param_limit>
+parse_list_items_param_limit(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<list_items_param_offset>
+parse_list_items_param_offset(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<create_item_param_X_Request_Id>
+parse_create_item_param_X_Request_Id(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<create_item_param_session>
+parse_create_item_param_session(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<get_item_param_id>
+parse_get_item_param_id(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<update_item_param_id>
+parse_update_item_param_id(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<delete_item_param_id>
+parse_delete_item_param_id(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<health_check_response>
+parse_health_check_response(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<health_check_response_Status>
+parse_health_check_response_Status(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<health_check_response_Uptime_ms>
+parse_health_check_response_Uptime_ms(katana::serde::json_cursor& cur, monotonic_arena* arena);
 
 inline void serialize_SumRequest_into(const SumRequest& obj, std::string& out);
 inline void serialize_SumRequest_Values_t_into(const SumRequest_Values_t& obj, std::string& out);
@@ -199,29 +358,41 @@ inline void serialize_SumResponse_into(const SumResponse& obj, std::string& out)
 inline void serialize_SumResponse_Result_t_into(const SumResponse_Result_t& obj, std::string& out);
 inline void serialize_SumResponse_Count_t_into(const SumResponse_Count_t& obj, std::string& out);
 inline void serialize_StatsRequest_into(const StatsRequest& obj, std::string& out);
-inline void serialize_StatsRequest_Values_t_into(const StatsRequest_Values_t& obj, std::string& out);
+inline void serialize_StatsRequest_Values_t_into(const StatsRequest_Values_t& obj,
+                                                 std::string& out);
 inline void serialize_StatsRequest_Item_t_into(const StatsRequest_Item_t& obj, std::string& out);
-inline void serialize_StatsRequest_Include_median_t_into(const StatsRequest_Include_median_t& obj, std::string& out);
+inline void serialize_StatsRequest_Include_median_t_into(const StatsRequest_Include_median_t& obj,
+                                                         std::string& out);
 inline void serialize_StatsResponse_into(const StatsResponse& obj, std::string& out);
 inline void serialize_StatsResponse_Min_t_into(const StatsResponse_Min_t& obj, std::string& out);
 inline void serialize_StatsResponse_Max_t_into(const StatsResponse_Max_t& obj, std::string& out);
 inline void serialize_StatsResponse_Mean_t_into(const StatsResponse_Mean_t& obj, std::string& out);
 inline void serialize_StatsResponse_Sum_t_into(const StatsResponse_Sum_t& obj, std::string& out);
-inline void serialize_StatsResponse_Count_t_into(const StatsResponse_Count_t& obj, std::string& out);
-inline void serialize_StatsResponse_Median_t_into(const StatsResponse_Median_t& obj, std::string& out);
+inline void serialize_StatsResponse_Count_t_into(const StatsResponse_Count_t& obj,
+                                                 std::string& out);
+inline void serialize_StatsResponse_Median_t_into(const StatsResponse_Median_t& obj,
+                                                  std::string& out);
 inline void serialize_RegisterRequest_into(const RegisterRequest& obj, std::string& out);
-inline void serialize_RegisterRequest_Username_t_into(const RegisterRequest_Username_t& obj, std::string& out);
-inline void serialize_RegisterRequest_Email_t_into(const RegisterRequest_Email_t& obj, std::string& out);
-inline void serialize_RegisterRequest_Password_t_into(const RegisterRequest_Password_t& obj, std::string& out);
-inline void serialize_RegisterRequest_Age_t_into(const RegisterRequest_Age_t& obj, std::string& out);
-inline void serialize_RegisterRequest_Tags_t_into(const RegisterRequest_Tags_t& obj, std::string& out);
-inline void serialize_RegisterRequest_Item_t_into(const RegisterRequest_Item_t& obj, std::string& out);
+inline void serialize_RegisterRequest_Username_t_into(const RegisterRequest_Username_t& obj,
+                                                      std::string& out);
+inline void serialize_RegisterRequest_Email_t_into(const RegisterRequest_Email_t& obj,
+                                                   std::string& out);
+inline void serialize_RegisterRequest_Password_t_into(const RegisterRequest_Password_t& obj,
+                                                      std::string& out);
+inline void serialize_RegisterRequest_Age_t_into(const RegisterRequest_Age_t& obj,
+                                                 std::string& out);
+inline void serialize_RegisterRequest_Tags_t_into(const RegisterRequest_Tags_t& obj,
+                                                  std::string& out);
+inline void serialize_RegisterRequest_Item_t_into(const RegisterRequest_Item_t& obj,
+                                                  std::string& out);
 inline void serialize_UserRole_into(const UserRole& obj, std::string& out);
 inline void serialize_UserResponse_into(const UserResponse& obj, std::string& out);
 inline void serialize_UserResponse_Id_t_into(const UserResponse_Id_t& obj, std::string& out);
-inline void serialize_UserResponse_Username_t_into(const UserResponse_Username_t& obj, std::string& out);
+inline void serialize_UserResponse_Username_t_into(const UserResponse_Username_t& obj,
+                                                   std::string& out);
 inline void serialize_UserResponse_Email_t_into(const UserResponse_Email_t& obj, std::string& out);
-inline void serialize_UserResponse_Created_at_t_into(const UserResponse_Created_at_t& obj, std::string& out);
+inline void serialize_UserResponse_Created_at_t_into(const UserResponse_Created_at_t& obj,
+                                                     std::string& out);
 inline void serialize_ItemCategory_into(const ItemCategory& obj, std::string& out);
 inline void serialize_Item_into(const Item& obj, std::string& out);
 inline void serialize_Item_Id_t_into(const Item_Id_t& obj, std::string& out);
@@ -232,46 +403,75 @@ inline void serialize_Item_Stock_t_into(const Item_Stock_t& obj, std::string& ou
 inline void serialize_Item_Tags_t_into(const Item_Tags_t& obj, std::string& out);
 inline void serialize_Item_Item_t_into(const Item_Item_t& obj, std::string& out);
 inline void serialize_ItemMetadata_into(const ItemMetadata& obj, std::string& out);
-inline void serialize_ItemMetadata_Weight_kg_t_into(const ItemMetadata_Weight_kg_t& obj, std::string& out);
-inline void serialize_ItemMetadata_Dimensions_t_into(const ItemMetadata_Dimensions_t& obj, std::string& out);
-inline void serialize_ItemMetadata_Manufacturer_t_into(const ItemMetadata_Manufacturer_t& obj, std::string& out);
+inline void serialize_ItemMetadata_Weight_kg_t_into(const ItemMetadata_Weight_kg_t& obj,
+                                                    std::string& out);
+inline void serialize_ItemMetadata_Dimensions_t_into(const ItemMetadata_Dimensions_t& obj,
+                                                     std::string& out);
+inline void serialize_ItemMetadata_Manufacturer_t_into(const ItemMetadata_Manufacturer_t& obj,
+                                                       std::string& out);
 inline void serialize_ItemMetadata_Sku_t_into(const ItemMetadata_Sku_t& obj, std::string& out);
 inline void serialize_CreateItemRequest_into(const CreateItemRequest& obj, std::string& out);
-inline void serialize_CreateItemRequest_Name_t_into(const CreateItemRequest_Name_t& obj, std::string& out);
-inline void serialize_CreateItemRequest_Description_t_into(const CreateItemRequest_Description_t& obj, std::string& out);
-inline void serialize_CreateItemRequest_Price_t_into(const CreateItemRequest_Price_t& obj, std::string& out);
-inline void serialize_CreateItemRequest_Stock_t_into(const CreateItemRequest_Stock_t& obj, std::string& out);
-inline void serialize_CreateItemRequest_Tags_t_into(const CreateItemRequest_Tags_t& obj, std::string& out);
-inline void serialize_CreateItemRequest_Item_t_into(const CreateItemRequest_Item_t& obj, std::string& out);
+inline void serialize_CreateItemRequest_Name_t_into(const CreateItemRequest_Name_t& obj,
+                                                    std::string& out);
+inline void
+serialize_CreateItemRequest_Description_t_into(const CreateItemRequest_Description_t& obj,
+                                               std::string& out);
+inline void serialize_CreateItemRequest_Price_t_into(const CreateItemRequest_Price_t& obj,
+                                                     std::string& out);
+inline void serialize_CreateItemRequest_Stock_t_into(const CreateItemRequest_Stock_t& obj,
+                                                     std::string& out);
+inline void serialize_CreateItemRequest_Tags_t_into(const CreateItemRequest_Tags_t& obj,
+                                                    std::string& out);
+inline void serialize_CreateItemRequest_Item_t_into(const CreateItemRequest_Item_t& obj,
+                                                    std::string& out);
 inline void serialize_UpdateItemRequest_into(const UpdateItemRequest& obj, std::string& out);
-inline void serialize_UpdateItemRequest_Name_t_into(const UpdateItemRequest_Name_t& obj, std::string& out);
-inline void serialize_UpdateItemRequest_Description_t_into(const UpdateItemRequest_Description_t& obj, std::string& out);
-inline void serialize_UpdateItemRequest_Price_t_into(const UpdateItemRequest_Price_t& obj, std::string& out);
-inline void serialize_UpdateItemRequest_Stock_t_into(const UpdateItemRequest_Stock_t& obj, std::string& out);
-inline void serialize_UpdateItemRequest_Tags_t_into(const UpdateItemRequest_Tags_t& obj, std::string& out);
-inline void serialize_UpdateItemRequest_Item_t_into(const UpdateItemRequest_Item_t& obj, std::string& out);
+inline void serialize_UpdateItemRequest_Name_t_into(const UpdateItemRequest_Name_t& obj,
+                                                    std::string& out);
+inline void
+serialize_UpdateItemRequest_Description_t_into(const UpdateItemRequest_Description_t& obj,
+                                               std::string& out);
+inline void serialize_UpdateItemRequest_Price_t_into(const UpdateItemRequest_Price_t& obj,
+                                                     std::string& out);
+inline void serialize_UpdateItemRequest_Stock_t_into(const UpdateItemRequest_Stock_t& obj,
+                                                     std::string& out);
+inline void serialize_UpdateItemRequest_Tags_t_into(const UpdateItemRequest_Tags_t& obj,
+                                                    std::string& out);
+inline void serialize_UpdateItemRequest_Item_t_into(const UpdateItemRequest_Item_t& obj,
+                                                    std::string& out);
 inline void serialize_ItemList_into(const ItemList& obj, std::string& out);
 inline void serialize_ItemList_Items_t_into(const ItemList_Items_t& obj, std::string& out);
 inline void serialize_ItemList_Total_t_into(const ItemList_Total_t& obj, std::string& out);
 inline void serialize_ItemList_Limit_t_into(const ItemList_Limit_t& obj, std::string& out);
 inline void serialize_ItemList_Offset_t_into(const ItemList_Offset_t& obj, std::string& out);
 inline void serialize_EchoRequest_into(const EchoRequest& obj, std::string& out);
-inline void serialize_EchoRequest_Message_t_into(const EchoRequest_Message_t& obj, std::string& out);
+inline void serialize_EchoRequest_Message_t_into(const EchoRequest_Message_t& obj,
+                                                 std::string& out);
 inline void serialize_EchoRequest_Repeat_t_into(const EchoRequest_Repeat_t& obj, std::string& out);
-inline void serialize_EchoRequest_Uppercase_t_into(const EchoRequest_Uppercase_t& obj, std::string& out);
+inline void serialize_EchoRequest_Uppercase_t_into(const EchoRequest_Uppercase_t& obj,
+                                                   std::string& out);
 inline void serialize_EchoResponse_into(const EchoResponse& obj, std::string& out);
-inline void serialize_EchoResponse_Message_t_into(const EchoResponse_Message_t& obj, std::string& out);
-inline void serialize_EchoResponse_Length_t_into(const EchoResponse_Length_t& obj, std::string& out);
-inline void serialize_list_items_param_limit_into(const list_items_param_limit& obj, std::string& out);
-inline void serialize_list_items_param_offset_into(const list_items_param_offset& obj, std::string& out);
-inline void serialize_create_item_param_X_Request_Id_into(const create_item_param_X_Request_Id& obj, std::string& out);
-inline void serialize_create_item_param_session_into(const create_item_param_session& obj, std::string& out);
+inline void serialize_EchoResponse_Message_t_into(const EchoResponse_Message_t& obj,
+                                                  std::string& out);
+inline void serialize_EchoResponse_Length_t_into(const EchoResponse_Length_t& obj,
+                                                 std::string& out);
+inline void serialize_list_items_param_limit_into(const list_items_param_limit& obj,
+                                                  std::string& out);
+inline void serialize_list_items_param_offset_into(const list_items_param_offset& obj,
+                                                   std::string& out);
+inline void serialize_create_item_param_X_Request_Id_into(const create_item_param_X_Request_Id& obj,
+                                                          std::string& out);
+inline void serialize_create_item_param_session_into(const create_item_param_session& obj,
+                                                     std::string& out);
 inline void serialize_get_item_param_id_into(const get_item_param_id& obj, std::string& out);
 inline void serialize_update_item_param_id_into(const update_item_param_id& obj, std::string& out);
 inline void serialize_delete_item_param_id_into(const delete_item_param_id& obj, std::string& out);
-inline void serialize_health_check_response_into(const health_check_response& obj, std::string& out);
-inline void serialize_health_check_response_Status_into(const health_check_response_Status& obj, std::string& out);
-inline void serialize_health_check_response_Uptime_ms_into(const health_check_response_Uptime_ms& obj, std::string& out);
+inline void serialize_health_check_response_into(const health_check_response& obj,
+                                                 std::string& out);
+inline void serialize_health_check_response_Status_into(const health_check_response_Status& obj,
+                                                        std::string& out);
+inline void
+serialize_health_check_response_Uptime_ms_into(const health_check_response_Uptime_ms& obj,
+                                               std::string& out);
 
 inline std::string serialize_SumRequest(const SumRequest& obj);
 inline std::string serialize_SumRequest_Values_t(const SumRequest_Values_t& obj);
@@ -282,7 +482,8 @@ inline std::string serialize_SumResponse_Count_t(const SumResponse_Count_t& obj)
 inline std::string serialize_StatsRequest(const StatsRequest& obj);
 inline std::string serialize_StatsRequest_Values_t(const StatsRequest_Values_t& obj);
 inline std::string serialize_StatsRequest_Item_t(const StatsRequest_Item_t& obj);
-inline std::string serialize_StatsRequest_Include_median_t(const StatsRequest_Include_median_t& obj);
+inline std::string
+serialize_StatsRequest_Include_median_t(const StatsRequest_Include_median_t& obj);
 inline std::string serialize_StatsResponse(const StatsResponse& obj);
 inline std::string serialize_StatsResponse_Min_t(const StatsResponse_Min_t& obj);
 inline std::string serialize_StatsResponse_Max_t(const StatsResponse_Max_t& obj);
@@ -319,14 +520,16 @@ inline std::string serialize_ItemMetadata_Manufacturer_t(const ItemMetadata_Manu
 inline std::string serialize_ItemMetadata_Sku_t(const ItemMetadata_Sku_t& obj);
 inline std::string serialize_CreateItemRequest(const CreateItemRequest& obj);
 inline std::string serialize_CreateItemRequest_Name_t(const CreateItemRequest_Name_t& obj);
-inline std::string serialize_CreateItemRequest_Description_t(const CreateItemRequest_Description_t& obj);
+inline std::string
+serialize_CreateItemRequest_Description_t(const CreateItemRequest_Description_t& obj);
 inline std::string serialize_CreateItemRequest_Price_t(const CreateItemRequest_Price_t& obj);
 inline std::string serialize_CreateItemRequest_Stock_t(const CreateItemRequest_Stock_t& obj);
 inline std::string serialize_CreateItemRequest_Tags_t(const CreateItemRequest_Tags_t& obj);
 inline std::string serialize_CreateItemRequest_Item_t(const CreateItemRequest_Item_t& obj);
 inline std::string serialize_UpdateItemRequest(const UpdateItemRequest& obj);
 inline std::string serialize_UpdateItemRequest_Name_t(const UpdateItemRequest_Name_t& obj);
-inline std::string serialize_UpdateItemRequest_Description_t(const UpdateItemRequest_Description_t& obj);
+inline std::string
+serialize_UpdateItemRequest_Description_t(const UpdateItemRequest_Description_t& obj);
 inline std::string serialize_UpdateItemRequest_Price_t(const UpdateItemRequest_Price_t& obj);
 inline std::string serialize_UpdateItemRequest_Stock_t(const UpdateItemRequest_Stock_t& obj);
 inline std::string serialize_UpdateItemRequest_Tags_t(const UpdateItemRequest_Tags_t& obj);
@@ -345,398 +548,806 @@ inline std::string serialize_EchoResponse_Message_t(const EchoResponse_Message_t
 inline std::string serialize_EchoResponse_Length_t(const EchoResponse_Length_t& obj);
 inline std::string serialize_list_items_param_limit(const list_items_param_limit& obj);
 inline std::string serialize_list_items_param_offset(const list_items_param_offset& obj);
-inline std::string serialize_create_item_param_X_Request_Id(const create_item_param_X_Request_Id& obj);
+inline std::string
+serialize_create_item_param_X_Request_Id(const create_item_param_X_Request_Id& obj);
 inline std::string serialize_create_item_param_session(const create_item_param_session& obj);
 inline std::string serialize_get_item_param_id(const get_item_param_id& obj);
 inline std::string serialize_update_item_param_id(const update_item_param_id& obj);
 inline std::string serialize_delete_item_param_id(const delete_item_param_id& obj);
 inline std::string serialize_health_check_response(const health_check_response& obj);
 inline std::string serialize_health_check_response_Status(const health_check_response_Status& obj);
-inline std::string serialize_health_check_response_Uptime_ms(const health_check_response_Uptime_ms& obj);
+inline std::string
+serialize_health_check_response_Uptime_ms(const health_check_response_Uptime_ms& obj);
 
-[[nodiscard]] inline std::optional<std::vector<SumRequest>> parse_SumRequest_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<SumRequest_Values_t>> parse_SumRequest_Values_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<SumRequest_Item_t>> parse_SumRequest_Item_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<SumResponse>> parse_SumResponse_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<SumResponse_Result_t>> parse_SumResponse_Result_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<SumResponse_Count_t>> parse_SumResponse_Count_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsRequest>> parse_StatsRequest_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsRequest_Values_t>> parse_StatsRequest_Values_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsRequest_Item_t>> parse_StatsRequest_Item_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsRequest_Include_median_t>> parse_StatsRequest_Include_median_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsResponse>> parse_StatsResponse_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Min_t>> parse_StatsResponse_Min_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Max_t>> parse_StatsResponse_Max_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Mean_t>> parse_StatsResponse_Mean_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Sum_t>> parse_StatsResponse_Sum_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Count_t>> parse_StatsResponse_Count_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Median_t>> parse_StatsResponse_Median_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest>> parse_RegisterRequest_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Username_t>> parse_RegisterRequest_Username_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Email_t>> parse_RegisterRequest_Email_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Password_t>> parse_RegisterRequest_Password_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Age_t>> parse_RegisterRequest_Age_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Tags_t>> parse_RegisterRequest_Tags_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Item_t>> parse_RegisterRequest_Item_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UserRole>> parse_UserRole_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UserResponse>> parse_UserResponse_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UserResponse_Id_t>> parse_UserResponse_Id_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UserResponse_Username_t>> parse_UserResponse_Username_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UserResponse_Email_t>> parse_UserResponse_Email_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UserResponse_Created_at_t>> parse_UserResponse_Created_at_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemCategory>> parse_ItemCategory_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<Item>> parse_Item_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<Item_Id_t>> parse_Item_Id_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<Item_Name_t>> parse_Item_Name_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<Item_Description_t>> parse_Item_Description_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<Item_Price_t>> parse_Item_Price_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<Item_Stock_t>> parse_Item_Stock_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<Item_Tags_t>> parse_Item_Tags_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<Item_Item_t>> parse_Item_Item_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata>> parse_ItemMetadata_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Weight_kg_t>> parse_ItemMetadata_Weight_kg_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Dimensions_t>> parse_ItemMetadata_Dimensions_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Manufacturer_t>> parse_ItemMetadata_Manufacturer_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Sku_t>> parse_ItemMetadata_Sku_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest>> parse_CreateItemRequest_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Name_t>> parse_CreateItemRequest_Name_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Description_t>> parse_CreateItemRequest_Description_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Price_t>> parse_CreateItemRequest_Price_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Stock_t>> parse_CreateItemRequest_Stock_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Tags_t>> parse_CreateItemRequest_Tags_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Item_t>> parse_CreateItemRequest_Item_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest>> parse_UpdateItemRequest_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Name_t>> parse_UpdateItemRequest_Name_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Description_t>> parse_UpdateItemRequest_Description_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Price_t>> parse_UpdateItemRequest_Price_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Stock_t>> parse_UpdateItemRequest_Stock_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Tags_t>> parse_UpdateItemRequest_Tags_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Item_t>> parse_UpdateItemRequest_Item_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemList>> parse_ItemList_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemList_Items_t>> parse_ItemList_Items_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemList_Total_t>> parse_ItemList_Total_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemList_Limit_t>> parse_ItemList_Limit_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemList_Offset_t>> parse_ItemList_Offset_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<EchoRequest>> parse_EchoRequest_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<EchoRequest_Message_t>> parse_EchoRequest_Message_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<EchoRequest_Repeat_t>> parse_EchoRequest_Repeat_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<EchoRequest_Uppercase_t>> parse_EchoRequest_Uppercase_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<EchoResponse>> parse_EchoResponse_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<EchoResponse_Message_t>> parse_EchoResponse_Message_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<EchoResponse_Length_t>> parse_EchoResponse_Length_t_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<list_items_param_limit>> parse_list_items_param_limit_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<list_items_param_offset>> parse_list_items_param_offset_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<create_item_param_X_Request_Id>> parse_create_item_param_X_Request_Id_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<create_item_param_session>> parse_create_item_param_session_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<get_item_param_id>> parse_get_item_param_id_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<update_item_param_id>> parse_update_item_param_id_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<delete_item_param_id>> parse_delete_item_param_id_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<health_check_response>> parse_health_check_response_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<health_check_response_Status>> parse_health_check_response_Status_array(std::string_view json, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<health_check_response_Uptime_ms>> parse_health_check_response_Uptime_ms_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<SumRequest>>
+parse_SumRequest_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<SumRequest_Values_t>>
+parse_SumRequest_Values_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<SumRequest_Item_t>>
+parse_SumRequest_Item_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<SumResponse>>
+parse_SumResponse_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<SumResponse_Result_t>>
+parse_SumResponse_Result_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<SumResponse_Count_t>>
+parse_SumResponse_Count_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsRequest>>
+parse_StatsRequest_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsRequest_Values_t>>
+parse_StatsRequest_Values_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsRequest_Item_t>>
+parse_StatsRequest_Item_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsRequest_Include_median_t>>
+parse_StatsRequest_Include_median_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsResponse>>
+parse_StatsResponse_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Min_t>>
+parse_StatsResponse_Min_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Max_t>>
+parse_StatsResponse_Max_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Mean_t>>
+parse_StatsResponse_Mean_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Sum_t>>
+parse_StatsResponse_Sum_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Count_t>>
+parse_StatsResponse_Count_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Median_t>>
+parse_StatsResponse_Median_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest>>
+parse_RegisterRequest_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Username_t>>
+parse_RegisterRequest_Username_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Email_t>>
+parse_RegisterRequest_Email_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Password_t>>
+parse_RegisterRequest_Password_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Age_t>>
+parse_RegisterRequest_Age_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Tags_t>>
+parse_RegisterRequest_Tags_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Item_t>>
+parse_RegisterRequest_Item_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UserRole>>
+parse_UserRole_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UserResponse>>
+parse_UserResponse_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UserResponse_Id_t>>
+parse_UserResponse_Id_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UserResponse_Username_t>>
+parse_UserResponse_Username_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UserResponse_Email_t>>
+parse_UserResponse_Email_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UserResponse_Created_at_t>>
+parse_UserResponse_Created_at_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemCategory>>
+parse_ItemCategory_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<Item>> parse_Item_array(std::string_view json,
+                                                                       monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<Item_Id_t>>
+parse_Item_Id_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<Item_Name_t>>
+parse_Item_Name_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<Item_Description_t>>
+parse_Item_Description_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<Item_Price_t>>
+parse_Item_Price_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<Item_Stock_t>>
+parse_Item_Stock_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<Item_Tags_t>>
+parse_Item_Tags_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<Item_Item_t>>
+parse_Item_Item_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata>>
+parse_ItemMetadata_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Weight_kg_t>>
+parse_ItemMetadata_Weight_kg_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Dimensions_t>>
+parse_ItemMetadata_Dimensions_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Manufacturer_t>>
+parse_ItemMetadata_Manufacturer_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Sku_t>>
+parse_ItemMetadata_Sku_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest>>
+parse_CreateItemRequest_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Name_t>>
+parse_CreateItemRequest_Name_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Description_t>>
+parse_CreateItemRequest_Description_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Price_t>>
+parse_CreateItemRequest_Price_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Stock_t>>
+parse_CreateItemRequest_Stock_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Tags_t>>
+parse_CreateItemRequest_Tags_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Item_t>>
+parse_CreateItemRequest_Item_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest>>
+parse_UpdateItemRequest_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Name_t>>
+parse_UpdateItemRequest_Name_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Description_t>>
+parse_UpdateItemRequest_Description_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Price_t>>
+parse_UpdateItemRequest_Price_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Stock_t>>
+parse_UpdateItemRequest_Stock_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Tags_t>>
+parse_UpdateItemRequest_Tags_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Item_t>>
+parse_UpdateItemRequest_Item_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemList>>
+parse_ItemList_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemList_Items_t>>
+parse_ItemList_Items_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemList_Total_t>>
+parse_ItemList_Total_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemList_Limit_t>>
+parse_ItemList_Limit_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemList_Offset_t>>
+parse_ItemList_Offset_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<EchoRequest>>
+parse_EchoRequest_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<EchoRequest_Message_t>>
+parse_EchoRequest_Message_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<EchoRequest_Repeat_t>>
+parse_EchoRequest_Repeat_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<EchoRequest_Uppercase_t>>
+parse_EchoRequest_Uppercase_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<EchoResponse>>
+parse_EchoResponse_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<EchoResponse_Message_t>>
+parse_EchoResponse_Message_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<EchoResponse_Length_t>>
+parse_EchoResponse_Length_t_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<list_items_param_limit>>
+parse_list_items_param_limit_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<list_items_param_offset>>
+parse_list_items_param_offset_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<create_item_param_X_Request_Id>>
+parse_create_item_param_X_Request_Id_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<create_item_param_session>>
+parse_create_item_param_session_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<get_item_param_id>>
+parse_get_item_param_id_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<update_item_param_id>>
+parse_update_item_param_id_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<delete_item_param_id>>
+parse_delete_item_param_id_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<health_check_response>>
+parse_health_check_response_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<health_check_response_Status>>
+parse_health_check_response_Status_array(std::string_view json, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<health_check_response_Uptime_ms>>
+parse_health_check_response_Uptime_ms_array(std::string_view json, monotonic_arena* arena);
 
-[[nodiscard]] inline std::optional<std::vector<SumRequest>> parse_SumRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<SumRequest_Values_t>> parse_SumRequest_Values_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<SumRequest_Item_t>> parse_SumRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<SumResponse>> parse_SumResponse_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<SumResponse_Result_t>> parse_SumResponse_Result_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<SumResponse_Count_t>> parse_SumResponse_Count_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsRequest>> parse_StatsRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsRequest_Values_t>> parse_StatsRequest_Values_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsRequest_Item_t>> parse_StatsRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsRequest_Include_median_t>> parse_StatsRequest_Include_median_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsResponse>> parse_StatsResponse_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Min_t>> parse_StatsResponse_Min_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Max_t>> parse_StatsResponse_Max_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Mean_t>> parse_StatsResponse_Mean_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Sum_t>> parse_StatsResponse_Sum_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Count_t>> parse_StatsResponse_Count_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Median_t>> parse_StatsResponse_Median_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest>> parse_RegisterRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Username_t>> parse_RegisterRequest_Username_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Email_t>> parse_RegisterRequest_Email_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Password_t>> parse_RegisterRequest_Password_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Age_t>> parse_RegisterRequest_Age_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Tags_t>> parse_RegisterRequest_Tags_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Item_t>> parse_RegisterRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UserRole>> parse_UserRole_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UserResponse>> parse_UserResponse_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UserResponse_Id_t>> parse_UserResponse_Id_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UserResponse_Username_t>> parse_UserResponse_Username_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UserResponse_Email_t>> parse_UserResponse_Email_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UserResponse_Created_at_t>> parse_UserResponse_Created_at_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemCategory>> parse_ItemCategory_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<Item>> parse_Item_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<Item_Id_t>> parse_Item_Id_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<Item_Name_t>> parse_Item_Name_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<Item_Description_t>> parse_Item_Description_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<Item_Price_t>> parse_Item_Price_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<Item_Stock_t>> parse_Item_Stock_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<Item_Tags_t>> parse_Item_Tags_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<Item_Item_t>> parse_Item_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata>> parse_ItemMetadata_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Weight_kg_t>> parse_ItemMetadata_Weight_kg_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Dimensions_t>> parse_ItemMetadata_Dimensions_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Manufacturer_t>> parse_ItemMetadata_Manufacturer_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Sku_t>> parse_ItemMetadata_Sku_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest>> parse_CreateItemRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Name_t>> parse_CreateItemRequest_Name_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Description_t>> parse_CreateItemRequest_Description_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Price_t>> parse_CreateItemRequest_Price_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Stock_t>> parse_CreateItemRequest_Stock_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Tags_t>> parse_CreateItemRequest_Tags_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Item_t>> parse_CreateItemRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest>> parse_UpdateItemRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Name_t>> parse_UpdateItemRequest_Name_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Description_t>> parse_UpdateItemRequest_Description_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Price_t>> parse_UpdateItemRequest_Price_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Stock_t>> parse_UpdateItemRequest_Stock_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Tags_t>> parse_UpdateItemRequest_Tags_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Item_t>> parse_UpdateItemRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemList>> parse_ItemList_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemList_Items_t>> parse_ItemList_Items_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemList_Total_t>> parse_ItemList_Total_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemList_Limit_t>> parse_ItemList_Limit_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<ItemList_Offset_t>> parse_ItemList_Offset_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<EchoRequest>> parse_EchoRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<EchoRequest_Message_t>> parse_EchoRequest_Message_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<EchoRequest_Repeat_t>> parse_EchoRequest_Repeat_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<EchoRequest_Uppercase_t>> parse_EchoRequest_Uppercase_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<EchoResponse>> parse_EchoResponse_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<EchoResponse_Message_t>> parse_EchoResponse_Message_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<EchoResponse_Length_t>> parse_EchoResponse_Length_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<list_items_param_limit>> parse_list_items_param_limit_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<list_items_param_offset>> parse_list_items_param_offset_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<create_item_param_X_Request_Id>> parse_create_item_param_X_Request_Id_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<create_item_param_session>> parse_create_item_param_session_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<get_item_param_id>> parse_get_item_param_id_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<update_item_param_id>> parse_update_item_param_id_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<delete_item_param_id>> parse_delete_item_param_id_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<health_check_response>> parse_health_check_response_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<health_check_response_Status>> parse_health_check_response_Status_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
-[[nodiscard]] inline std::optional<std::vector<health_check_response_Uptime_ms>> parse_health_check_response_Uptime_ms_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<SumRequest>>
+parse_SumRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<SumRequest_Values_t>>
+parse_SumRequest_Values_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<SumRequest_Item_t>>
+parse_SumRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<SumResponse>>
+parse_SumResponse_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<SumResponse_Result_t>>
+parse_SumResponse_Result_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<SumResponse_Count_t>>
+parse_SumResponse_Count_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsRequest>>
+parse_StatsRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsRequest_Values_t>>
+parse_StatsRequest_Values_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsRequest_Item_t>>
+parse_StatsRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsRequest_Include_median_t>>
+parse_StatsRequest_Include_median_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsResponse>>
+parse_StatsResponse_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Min_t>>
+parse_StatsResponse_Min_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Max_t>>
+parse_StatsResponse_Max_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Mean_t>>
+parse_StatsResponse_Mean_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Sum_t>>
+parse_StatsResponse_Sum_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Count_t>>
+parse_StatsResponse_Count_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Median_t>>
+parse_StatsResponse_Median_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest>>
+parse_RegisterRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Username_t>>
+parse_RegisterRequest_Username_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Email_t>>
+parse_RegisterRequest_Email_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Password_t>>
+parse_RegisterRequest_Password_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Age_t>>
+parse_RegisterRequest_Age_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Tags_t>>
+parse_RegisterRequest_Tags_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Item_t>>
+parse_RegisterRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UserRole>>
+parse_UserRole_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UserResponse>>
+parse_UserResponse_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UserResponse_Id_t>>
+parse_UserResponse_Id_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UserResponse_Username_t>>
+parse_UserResponse_Username_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UserResponse_Email_t>>
+parse_UserResponse_Email_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UserResponse_Created_at_t>>
+parse_UserResponse_Created_at_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemCategory>>
+parse_ItemCategory_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<Item>>
+parse_Item_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<Item_Id_t>>
+parse_Item_Id_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<Item_Name_t>>
+parse_Item_Name_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<Item_Description_t>>
+parse_Item_Description_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<Item_Price_t>>
+parse_Item_Price_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<Item_Stock_t>>
+parse_Item_Stock_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<Item_Tags_t>>
+parse_Item_Tags_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<Item_Item_t>>
+parse_Item_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata>>
+parse_ItemMetadata_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Weight_kg_t>>
+parse_ItemMetadata_Weight_kg_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Dimensions_t>>
+parse_ItemMetadata_Dimensions_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Manufacturer_t>>
+parse_ItemMetadata_Manufacturer_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Sku_t>>
+parse_ItemMetadata_Sku_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest>>
+parse_CreateItemRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Name_t>>
+parse_CreateItemRequest_Name_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Description_t>>
+parse_CreateItemRequest_Description_t_array(katana::serde::json_cursor& cur,
+                                            monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Price_t>>
+parse_CreateItemRequest_Price_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Stock_t>>
+parse_CreateItemRequest_Stock_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Tags_t>>
+parse_CreateItemRequest_Tags_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Item_t>>
+parse_CreateItemRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest>>
+parse_UpdateItemRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Name_t>>
+parse_UpdateItemRequest_Name_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Description_t>>
+parse_UpdateItemRequest_Description_t_array(katana::serde::json_cursor& cur,
+                                            monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Price_t>>
+parse_UpdateItemRequest_Price_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Stock_t>>
+parse_UpdateItemRequest_Stock_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Tags_t>>
+parse_UpdateItemRequest_Tags_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Item_t>>
+parse_UpdateItemRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemList>>
+parse_ItemList_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemList_Items_t>>
+parse_ItemList_Items_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemList_Total_t>>
+parse_ItemList_Total_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemList_Limit_t>>
+parse_ItemList_Limit_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<ItemList_Offset_t>>
+parse_ItemList_Offset_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<EchoRequest>>
+parse_EchoRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<EchoRequest_Message_t>>
+parse_EchoRequest_Message_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<EchoRequest_Repeat_t>>
+parse_EchoRequest_Repeat_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<EchoRequest_Uppercase_t>>
+parse_EchoRequest_Uppercase_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<EchoResponse>>
+parse_EchoResponse_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<EchoResponse_Message_t>>
+parse_EchoResponse_Message_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<EchoResponse_Length_t>>
+parse_EchoResponse_Length_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<list_items_param_limit>>
+parse_list_items_param_limit_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<list_items_param_offset>>
+parse_list_items_param_offset_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<create_item_param_X_Request_Id>>
+parse_create_item_param_X_Request_Id_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<create_item_param_session>>
+parse_create_item_param_session_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<get_item_param_id>>
+parse_get_item_param_id_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<update_item_param_id>>
+parse_update_item_param_id_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<delete_item_param_id>>
+parse_delete_item_param_id_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<health_check_response>>
+parse_health_check_response_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<health_check_response_Status>>
+parse_health_check_response_Status_array(katana::serde::json_cursor& cur, monotonic_arena* arena);
+[[nodiscard]] inline std::optional<std::vector<health_check_response_Uptime_ms>>
+parse_health_check_response_Uptime_ms_array(katana::serde::json_cursor& cur,
+                                            monotonic_arena* arena);
 
 inline void serialize_SumRequest_array_into(const std::vector<SumRequest>& arr, std::string& out);
 inline void serialize_SumRequest_array_into(const arena_vector<SumRequest>& arr, std::string& out);
-inline void serialize_SumRequest_Values_t_array_into(const std::vector<SumRequest_Values_t>& arr, std::string& out);
-inline void serialize_SumRequest_Values_t_array_into(const arena_vector<SumRequest_Values_t>& arr, std::string& out);
-inline void serialize_SumRequest_Item_t_array_into(const std::vector<SumRequest_Item_t>& arr, std::string& out);
-inline void serialize_SumRequest_Item_t_array_into(const arena_vector<SumRequest_Item_t>& arr, std::string& out);
+inline void serialize_SumRequest_Values_t_array_into(const std::vector<SumRequest_Values_t>& arr,
+                                                     std::string& out);
+inline void serialize_SumRequest_Values_t_array_into(const arena_vector<SumRequest_Values_t>& arr,
+                                                     std::string& out);
+inline void serialize_SumRequest_Item_t_array_into(const std::vector<SumRequest_Item_t>& arr,
+                                                   std::string& out);
+inline void serialize_SumRequest_Item_t_array_into(const arena_vector<SumRequest_Item_t>& arr,
+                                                   std::string& out);
 inline void serialize_SumResponse_array_into(const std::vector<SumResponse>& arr, std::string& out);
-inline void serialize_SumResponse_array_into(const arena_vector<SumResponse>& arr, std::string& out);
-inline void serialize_SumResponse_Result_t_array_into(const std::vector<SumResponse_Result_t>& arr, std::string& out);
-inline void serialize_SumResponse_Result_t_array_into(const arena_vector<SumResponse_Result_t>& arr, std::string& out);
-inline void serialize_SumResponse_Count_t_array_into(const std::vector<SumResponse_Count_t>& arr, std::string& out);
-inline void serialize_SumResponse_Count_t_array_into(const arena_vector<SumResponse_Count_t>& arr, std::string& out);
-inline void serialize_StatsRequest_array_into(const std::vector<StatsRequest>& arr, std::string& out);
-inline void serialize_StatsRequest_array_into(const arena_vector<StatsRequest>& arr, std::string& out);
-inline void serialize_StatsRequest_Values_t_array_into(const std::vector<StatsRequest_Values_t>& arr, std::string& out);
-inline void serialize_StatsRequest_Values_t_array_into(const arena_vector<StatsRequest_Values_t>& arr, std::string& out);
-inline void serialize_StatsRequest_Item_t_array_into(const std::vector<StatsRequest_Item_t>& arr, std::string& out);
-inline void serialize_StatsRequest_Item_t_array_into(const arena_vector<StatsRequest_Item_t>& arr, std::string& out);
-inline void serialize_StatsRequest_Include_median_t_array_into(const std::vector<StatsRequest_Include_median_t>& arr, std::string& out);
-inline void serialize_StatsRequest_Include_median_t_array_into(const arena_vector<StatsRequest_Include_median_t>& arr, std::string& out);
-inline void serialize_StatsResponse_array_into(const std::vector<StatsResponse>& arr, std::string& out);
-inline void serialize_StatsResponse_array_into(const arena_vector<StatsResponse>& arr, std::string& out);
-inline void serialize_StatsResponse_Min_t_array_into(const std::vector<StatsResponse_Min_t>& arr, std::string& out);
-inline void serialize_StatsResponse_Min_t_array_into(const arena_vector<StatsResponse_Min_t>& arr, std::string& out);
-inline void serialize_StatsResponse_Max_t_array_into(const std::vector<StatsResponse_Max_t>& arr, std::string& out);
-inline void serialize_StatsResponse_Max_t_array_into(const arena_vector<StatsResponse_Max_t>& arr, std::string& out);
-inline void serialize_StatsResponse_Mean_t_array_into(const std::vector<StatsResponse_Mean_t>& arr, std::string& out);
-inline void serialize_StatsResponse_Mean_t_array_into(const arena_vector<StatsResponse_Mean_t>& arr, std::string& out);
-inline void serialize_StatsResponse_Sum_t_array_into(const std::vector<StatsResponse_Sum_t>& arr, std::string& out);
-inline void serialize_StatsResponse_Sum_t_array_into(const arena_vector<StatsResponse_Sum_t>& arr, std::string& out);
-inline void serialize_StatsResponse_Count_t_array_into(const std::vector<StatsResponse_Count_t>& arr, std::string& out);
-inline void serialize_StatsResponse_Count_t_array_into(const arena_vector<StatsResponse_Count_t>& arr, std::string& out);
-inline void serialize_StatsResponse_Median_t_array_into(const std::vector<StatsResponse_Median_t>& arr, std::string& out);
-inline void serialize_StatsResponse_Median_t_array_into(const arena_vector<StatsResponse_Median_t>& arr, std::string& out);
-inline void serialize_RegisterRequest_array_into(const std::vector<RegisterRequest>& arr, std::string& out);
-inline void serialize_RegisterRequest_array_into(const arena_vector<RegisterRequest>& arr, std::string& out);
-inline void serialize_RegisterRequest_Username_t_array_into(const std::vector<RegisterRequest_Username_t>& arr, std::string& out);
-inline void serialize_RegisterRequest_Username_t_array_into(const arena_vector<RegisterRequest_Username_t>& arr, std::string& out);
-inline void serialize_RegisterRequest_Email_t_array_into(const std::vector<RegisterRequest_Email_t>& arr, std::string& out);
-inline void serialize_RegisterRequest_Email_t_array_into(const arena_vector<RegisterRequest_Email_t>& arr, std::string& out);
-inline void serialize_RegisterRequest_Password_t_array_into(const std::vector<RegisterRequest_Password_t>& arr, std::string& out);
-inline void serialize_RegisterRequest_Password_t_array_into(const arena_vector<RegisterRequest_Password_t>& arr, std::string& out);
-inline void serialize_RegisterRequest_Age_t_array_into(const std::vector<RegisterRequest_Age_t>& arr, std::string& out);
-inline void serialize_RegisterRequest_Age_t_array_into(const arena_vector<RegisterRequest_Age_t>& arr, std::string& out);
-inline void serialize_RegisterRequest_Tags_t_array_into(const std::vector<RegisterRequest_Tags_t>& arr, std::string& out);
-inline void serialize_RegisterRequest_Tags_t_array_into(const arena_vector<RegisterRequest_Tags_t>& arr, std::string& out);
-inline void serialize_RegisterRequest_Item_t_array_into(const std::vector<RegisterRequest_Item_t>& arr, std::string& out);
-inline void serialize_RegisterRequest_Item_t_array_into(const arena_vector<RegisterRequest_Item_t>& arr, std::string& out);
+inline void serialize_SumResponse_array_into(const arena_vector<SumResponse>& arr,
+                                             std::string& out);
+inline void serialize_SumResponse_Result_t_array_into(const std::vector<SumResponse_Result_t>& arr,
+                                                      std::string& out);
+inline void serialize_SumResponse_Result_t_array_into(const arena_vector<SumResponse_Result_t>& arr,
+                                                      std::string& out);
+inline void serialize_SumResponse_Count_t_array_into(const std::vector<SumResponse_Count_t>& arr,
+                                                     std::string& out);
+inline void serialize_SumResponse_Count_t_array_into(const arena_vector<SumResponse_Count_t>& arr,
+                                                     std::string& out);
+inline void serialize_StatsRequest_array_into(const std::vector<StatsRequest>& arr,
+                                              std::string& out);
+inline void serialize_StatsRequest_array_into(const arena_vector<StatsRequest>& arr,
+                                              std::string& out);
+inline void
+serialize_StatsRequest_Values_t_array_into(const std::vector<StatsRequest_Values_t>& arr,
+                                           std::string& out);
+inline void
+serialize_StatsRequest_Values_t_array_into(const arena_vector<StatsRequest_Values_t>& arr,
+                                           std::string& out);
+inline void serialize_StatsRequest_Item_t_array_into(const std::vector<StatsRequest_Item_t>& arr,
+                                                     std::string& out);
+inline void serialize_StatsRequest_Item_t_array_into(const arena_vector<StatsRequest_Item_t>& arr,
+                                                     std::string& out);
+inline void serialize_StatsRequest_Include_median_t_array_into(
+    const std::vector<StatsRequest_Include_median_t>& arr, std::string& out);
+inline void serialize_StatsRequest_Include_median_t_array_into(
+    const arena_vector<StatsRequest_Include_median_t>& arr, std::string& out);
+inline void serialize_StatsResponse_array_into(const std::vector<StatsResponse>& arr,
+                                               std::string& out);
+inline void serialize_StatsResponse_array_into(const arena_vector<StatsResponse>& arr,
+                                               std::string& out);
+inline void serialize_StatsResponse_Min_t_array_into(const std::vector<StatsResponse_Min_t>& arr,
+                                                     std::string& out);
+inline void serialize_StatsResponse_Min_t_array_into(const arena_vector<StatsResponse_Min_t>& arr,
+                                                     std::string& out);
+inline void serialize_StatsResponse_Max_t_array_into(const std::vector<StatsResponse_Max_t>& arr,
+                                                     std::string& out);
+inline void serialize_StatsResponse_Max_t_array_into(const arena_vector<StatsResponse_Max_t>& arr,
+                                                     std::string& out);
+inline void serialize_StatsResponse_Mean_t_array_into(const std::vector<StatsResponse_Mean_t>& arr,
+                                                      std::string& out);
+inline void serialize_StatsResponse_Mean_t_array_into(const arena_vector<StatsResponse_Mean_t>& arr,
+                                                      std::string& out);
+inline void serialize_StatsResponse_Sum_t_array_into(const std::vector<StatsResponse_Sum_t>& arr,
+                                                     std::string& out);
+inline void serialize_StatsResponse_Sum_t_array_into(const arena_vector<StatsResponse_Sum_t>& arr,
+                                                     std::string& out);
+inline void
+serialize_StatsResponse_Count_t_array_into(const std::vector<StatsResponse_Count_t>& arr,
+                                           std::string& out);
+inline void
+serialize_StatsResponse_Count_t_array_into(const arena_vector<StatsResponse_Count_t>& arr,
+                                           std::string& out);
+inline void
+serialize_StatsResponse_Median_t_array_into(const std::vector<StatsResponse_Median_t>& arr,
+                                            std::string& out);
+inline void
+serialize_StatsResponse_Median_t_array_into(const arena_vector<StatsResponse_Median_t>& arr,
+                                            std::string& out);
+inline void serialize_RegisterRequest_array_into(const std::vector<RegisterRequest>& arr,
+                                                 std::string& out);
+inline void serialize_RegisterRequest_array_into(const arena_vector<RegisterRequest>& arr,
+                                                 std::string& out);
+inline void
+serialize_RegisterRequest_Username_t_array_into(const std::vector<RegisterRequest_Username_t>& arr,
+                                                std::string& out);
+inline void
+serialize_RegisterRequest_Username_t_array_into(const arena_vector<RegisterRequest_Username_t>& arr,
+                                                std::string& out);
+inline void
+serialize_RegisterRequest_Email_t_array_into(const std::vector<RegisterRequest_Email_t>& arr,
+                                             std::string& out);
+inline void
+serialize_RegisterRequest_Email_t_array_into(const arena_vector<RegisterRequest_Email_t>& arr,
+                                             std::string& out);
+inline void
+serialize_RegisterRequest_Password_t_array_into(const std::vector<RegisterRequest_Password_t>& arr,
+                                                std::string& out);
+inline void
+serialize_RegisterRequest_Password_t_array_into(const arena_vector<RegisterRequest_Password_t>& arr,
+                                                std::string& out);
+inline void
+serialize_RegisterRequest_Age_t_array_into(const std::vector<RegisterRequest_Age_t>& arr,
+                                           std::string& out);
+inline void
+serialize_RegisterRequest_Age_t_array_into(const arena_vector<RegisterRequest_Age_t>& arr,
+                                           std::string& out);
+inline void
+serialize_RegisterRequest_Tags_t_array_into(const std::vector<RegisterRequest_Tags_t>& arr,
+                                            std::string& out);
+inline void
+serialize_RegisterRequest_Tags_t_array_into(const arena_vector<RegisterRequest_Tags_t>& arr,
+                                            std::string& out);
+inline void
+serialize_RegisterRequest_Item_t_array_into(const std::vector<RegisterRequest_Item_t>& arr,
+                                            std::string& out);
+inline void
+serialize_RegisterRequest_Item_t_array_into(const arena_vector<RegisterRequest_Item_t>& arr,
+                                            std::string& out);
 inline void serialize_UserRole_array_into(const std::vector<UserRole>& arr, std::string& out);
 inline void serialize_UserRole_array_into(const arena_vector<UserRole>& arr, std::string& out);
-inline void serialize_UserResponse_array_into(const std::vector<UserResponse>& arr, std::string& out);
-inline void serialize_UserResponse_array_into(const arena_vector<UserResponse>& arr, std::string& out);
-inline void serialize_UserResponse_Id_t_array_into(const std::vector<UserResponse_Id_t>& arr, std::string& out);
-inline void serialize_UserResponse_Id_t_array_into(const arena_vector<UserResponse_Id_t>& arr, std::string& out);
-inline void serialize_UserResponse_Username_t_array_into(const std::vector<UserResponse_Username_t>& arr, std::string& out);
-inline void serialize_UserResponse_Username_t_array_into(const arena_vector<UserResponse_Username_t>& arr, std::string& out);
-inline void serialize_UserResponse_Email_t_array_into(const std::vector<UserResponse_Email_t>& arr, std::string& out);
-inline void serialize_UserResponse_Email_t_array_into(const arena_vector<UserResponse_Email_t>& arr, std::string& out);
-inline void serialize_UserResponse_Created_at_t_array_into(const std::vector<UserResponse_Created_at_t>& arr, std::string& out);
-inline void serialize_UserResponse_Created_at_t_array_into(const arena_vector<UserResponse_Created_at_t>& arr, std::string& out);
-inline void serialize_ItemCategory_array_into(const std::vector<ItemCategory>& arr, std::string& out);
-inline void serialize_ItemCategory_array_into(const arena_vector<ItemCategory>& arr, std::string& out);
+inline void serialize_UserResponse_array_into(const std::vector<UserResponse>& arr,
+                                              std::string& out);
+inline void serialize_UserResponse_array_into(const arena_vector<UserResponse>& arr,
+                                              std::string& out);
+inline void serialize_UserResponse_Id_t_array_into(const std::vector<UserResponse_Id_t>& arr,
+                                                   std::string& out);
+inline void serialize_UserResponse_Id_t_array_into(const arena_vector<UserResponse_Id_t>& arr,
+                                                   std::string& out);
+inline void
+serialize_UserResponse_Username_t_array_into(const std::vector<UserResponse_Username_t>& arr,
+                                             std::string& out);
+inline void
+serialize_UserResponse_Username_t_array_into(const arena_vector<UserResponse_Username_t>& arr,
+                                             std::string& out);
+inline void serialize_UserResponse_Email_t_array_into(const std::vector<UserResponse_Email_t>& arr,
+                                                      std::string& out);
+inline void serialize_UserResponse_Email_t_array_into(const arena_vector<UserResponse_Email_t>& arr,
+                                                      std::string& out);
+inline void
+serialize_UserResponse_Created_at_t_array_into(const std::vector<UserResponse_Created_at_t>& arr,
+                                               std::string& out);
+inline void
+serialize_UserResponse_Created_at_t_array_into(const arena_vector<UserResponse_Created_at_t>& arr,
+                                               std::string& out);
+inline void serialize_ItemCategory_array_into(const std::vector<ItemCategory>& arr,
+                                              std::string& out);
+inline void serialize_ItemCategory_array_into(const arena_vector<ItemCategory>& arr,
+                                              std::string& out);
 inline void serialize_Item_array_into(const std::vector<Item>& arr, std::string& out);
 inline void serialize_Item_array_into(const arena_vector<Item>& arr, std::string& out);
 inline void serialize_Item_Id_t_array_into(const std::vector<Item_Id_t>& arr, std::string& out);
 inline void serialize_Item_Id_t_array_into(const arena_vector<Item_Id_t>& arr, std::string& out);
 inline void serialize_Item_Name_t_array_into(const std::vector<Item_Name_t>& arr, std::string& out);
-inline void serialize_Item_Name_t_array_into(const arena_vector<Item_Name_t>& arr, std::string& out);
-inline void serialize_Item_Description_t_array_into(const std::vector<Item_Description_t>& arr, std::string& out);
-inline void serialize_Item_Description_t_array_into(const arena_vector<Item_Description_t>& arr, std::string& out);
-inline void serialize_Item_Price_t_array_into(const std::vector<Item_Price_t>& arr, std::string& out);
-inline void serialize_Item_Price_t_array_into(const arena_vector<Item_Price_t>& arr, std::string& out);
-inline void serialize_Item_Stock_t_array_into(const std::vector<Item_Stock_t>& arr, std::string& out);
-inline void serialize_Item_Stock_t_array_into(const arena_vector<Item_Stock_t>& arr, std::string& out);
+inline void serialize_Item_Name_t_array_into(const arena_vector<Item_Name_t>& arr,
+                                             std::string& out);
+inline void serialize_Item_Description_t_array_into(const std::vector<Item_Description_t>& arr,
+                                                    std::string& out);
+inline void serialize_Item_Description_t_array_into(const arena_vector<Item_Description_t>& arr,
+                                                    std::string& out);
+inline void serialize_Item_Price_t_array_into(const std::vector<Item_Price_t>& arr,
+                                              std::string& out);
+inline void serialize_Item_Price_t_array_into(const arena_vector<Item_Price_t>& arr,
+                                              std::string& out);
+inline void serialize_Item_Stock_t_array_into(const std::vector<Item_Stock_t>& arr,
+                                              std::string& out);
+inline void serialize_Item_Stock_t_array_into(const arena_vector<Item_Stock_t>& arr,
+                                              std::string& out);
 inline void serialize_Item_Tags_t_array_into(const std::vector<Item_Tags_t>& arr, std::string& out);
-inline void serialize_Item_Tags_t_array_into(const arena_vector<Item_Tags_t>& arr, std::string& out);
+inline void serialize_Item_Tags_t_array_into(const arena_vector<Item_Tags_t>& arr,
+                                             std::string& out);
 inline void serialize_Item_Item_t_array_into(const std::vector<Item_Item_t>& arr, std::string& out);
-inline void serialize_Item_Item_t_array_into(const arena_vector<Item_Item_t>& arr, std::string& out);
-inline void serialize_ItemMetadata_array_into(const std::vector<ItemMetadata>& arr, std::string& out);
-inline void serialize_ItemMetadata_array_into(const arena_vector<ItemMetadata>& arr, std::string& out);
-inline void serialize_ItemMetadata_Weight_kg_t_array_into(const std::vector<ItemMetadata_Weight_kg_t>& arr, std::string& out);
-inline void serialize_ItemMetadata_Weight_kg_t_array_into(const arena_vector<ItemMetadata_Weight_kg_t>& arr, std::string& out);
-inline void serialize_ItemMetadata_Dimensions_t_array_into(const std::vector<ItemMetadata_Dimensions_t>& arr, std::string& out);
-inline void serialize_ItemMetadata_Dimensions_t_array_into(const arena_vector<ItemMetadata_Dimensions_t>& arr, std::string& out);
-inline void serialize_ItemMetadata_Manufacturer_t_array_into(const std::vector<ItemMetadata_Manufacturer_t>& arr, std::string& out);
-inline void serialize_ItemMetadata_Manufacturer_t_array_into(const arena_vector<ItemMetadata_Manufacturer_t>& arr, std::string& out);
-inline void serialize_ItemMetadata_Sku_t_array_into(const std::vector<ItemMetadata_Sku_t>& arr, std::string& out);
-inline void serialize_ItemMetadata_Sku_t_array_into(const arena_vector<ItemMetadata_Sku_t>& arr, std::string& out);
-inline void serialize_CreateItemRequest_array_into(const std::vector<CreateItemRequest>& arr, std::string& out);
-inline void serialize_CreateItemRequest_array_into(const arena_vector<CreateItemRequest>& arr, std::string& out);
-inline void serialize_CreateItemRequest_Name_t_array_into(const std::vector<CreateItemRequest_Name_t>& arr, std::string& out);
-inline void serialize_CreateItemRequest_Name_t_array_into(const arena_vector<CreateItemRequest_Name_t>& arr, std::string& out);
-inline void serialize_CreateItemRequest_Description_t_array_into(const std::vector<CreateItemRequest_Description_t>& arr, std::string& out);
-inline void serialize_CreateItemRequest_Description_t_array_into(const arena_vector<CreateItemRequest_Description_t>& arr, std::string& out);
-inline void serialize_CreateItemRequest_Price_t_array_into(const std::vector<CreateItemRequest_Price_t>& arr, std::string& out);
-inline void serialize_CreateItemRequest_Price_t_array_into(const arena_vector<CreateItemRequest_Price_t>& arr, std::string& out);
-inline void serialize_CreateItemRequest_Stock_t_array_into(const std::vector<CreateItemRequest_Stock_t>& arr, std::string& out);
-inline void serialize_CreateItemRequest_Stock_t_array_into(const arena_vector<CreateItemRequest_Stock_t>& arr, std::string& out);
-inline void serialize_CreateItemRequest_Tags_t_array_into(const std::vector<CreateItemRequest_Tags_t>& arr, std::string& out);
-inline void serialize_CreateItemRequest_Tags_t_array_into(const arena_vector<CreateItemRequest_Tags_t>& arr, std::string& out);
-inline void serialize_CreateItemRequest_Item_t_array_into(const std::vector<CreateItemRequest_Item_t>& arr, std::string& out);
-inline void serialize_CreateItemRequest_Item_t_array_into(const arena_vector<CreateItemRequest_Item_t>& arr, std::string& out);
-inline void serialize_UpdateItemRequest_array_into(const std::vector<UpdateItemRequest>& arr, std::string& out);
-inline void serialize_UpdateItemRequest_array_into(const arena_vector<UpdateItemRequest>& arr, std::string& out);
-inline void serialize_UpdateItemRequest_Name_t_array_into(const std::vector<UpdateItemRequest_Name_t>& arr, std::string& out);
-inline void serialize_UpdateItemRequest_Name_t_array_into(const arena_vector<UpdateItemRequest_Name_t>& arr, std::string& out);
-inline void serialize_UpdateItemRequest_Description_t_array_into(const std::vector<UpdateItemRequest_Description_t>& arr, std::string& out);
-inline void serialize_UpdateItemRequest_Description_t_array_into(const arena_vector<UpdateItemRequest_Description_t>& arr, std::string& out);
-inline void serialize_UpdateItemRequest_Price_t_array_into(const std::vector<UpdateItemRequest_Price_t>& arr, std::string& out);
-inline void serialize_UpdateItemRequest_Price_t_array_into(const arena_vector<UpdateItemRequest_Price_t>& arr, std::string& out);
-inline void serialize_UpdateItemRequest_Stock_t_array_into(const std::vector<UpdateItemRequest_Stock_t>& arr, std::string& out);
-inline void serialize_UpdateItemRequest_Stock_t_array_into(const arena_vector<UpdateItemRequest_Stock_t>& arr, std::string& out);
-inline void serialize_UpdateItemRequest_Tags_t_array_into(const std::vector<UpdateItemRequest_Tags_t>& arr, std::string& out);
-inline void serialize_UpdateItemRequest_Tags_t_array_into(const arena_vector<UpdateItemRequest_Tags_t>& arr, std::string& out);
-inline void serialize_UpdateItemRequest_Item_t_array_into(const std::vector<UpdateItemRequest_Item_t>& arr, std::string& out);
-inline void serialize_UpdateItemRequest_Item_t_array_into(const arena_vector<UpdateItemRequest_Item_t>& arr, std::string& out);
+inline void serialize_Item_Item_t_array_into(const arena_vector<Item_Item_t>& arr,
+                                             std::string& out);
+inline void serialize_ItemMetadata_array_into(const std::vector<ItemMetadata>& arr,
+                                              std::string& out);
+inline void serialize_ItemMetadata_array_into(const arena_vector<ItemMetadata>& arr,
+                                              std::string& out);
+inline void
+serialize_ItemMetadata_Weight_kg_t_array_into(const std::vector<ItemMetadata_Weight_kg_t>& arr,
+                                              std::string& out);
+inline void
+serialize_ItemMetadata_Weight_kg_t_array_into(const arena_vector<ItemMetadata_Weight_kg_t>& arr,
+                                              std::string& out);
+inline void
+serialize_ItemMetadata_Dimensions_t_array_into(const std::vector<ItemMetadata_Dimensions_t>& arr,
+                                               std::string& out);
+inline void
+serialize_ItemMetadata_Dimensions_t_array_into(const arena_vector<ItemMetadata_Dimensions_t>& arr,
+                                               std::string& out);
+inline void serialize_ItemMetadata_Manufacturer_t_array_into(
+    const std::vector<ItemMetadata_Manufacturer_t>& arr, std::string& out);
+inline void serialize_ItemMetadata_Manufacturer_t_array_into(
+    const arena_vector<ItemMetadata_Manufacturer_t>& arr, std::string& out);
+inline void serialize_ItemMetadata_Sku_t_array_into(const std::vector<ItemMetadata_Sku_t>& arr,
+                                                    std::string& out);
+inline void serialize_ItemMetadata_Sku_t_array_into(const arena_vector<ItemMetadata_Sku_t>& arr,
+                                                    std::string& out);
+inline void serialize_CreateItemRequest_array_into(const std::vector<CreateItemRequest>& arr,
+                                                   std::string& out);
+inline void serialize_CreateItemRequest_array_into(const arena_vector<CreateItemRequest>& arr,
+                                                   std::string& out);
+inline void
+serialize_CreateItemRequest_Name_t_array_into(const std::vector<CreateItemRequest_Name_t>& arr,
+                                              std::string& out);
+inline void
+serialize_CreateItemRequest_Name_t_array_into(const arena_vector<CreateItemRequest_Name_t>& arr,
+                                              std::string& out);
+inline void serialize_CreateItemRequest_Description_t_array_into(
+    const std::vector<CreateItemRequest_Description_t>& arr, std::string& out);
+inline void serialize_CreateItemRequest_Description_t_array_into(
+    const arena_vector<CreateItemRequest_Description_t>& arr, std::string& out);
+inline void
+serialize_CreateItemRequest_Price_t_array_into(const std::vector<CreateItemRequest_Price_t>& arr,
+                                               std::string& out);
+inline void
+serialize_CreateItemRequest_Price_t_array_into(const arena_vector<CreateItemRequest_Price_t>& arr,
+                                               std::string& out);
+inline void
+serialize_CreateItemRequest_Stock_t_array_into(const std::vector<CreateItemRequest_Stock_t>& arr,
+                                               std::string& out);
+inline void
+serialize_CreateItemRequest_Stock_t_array_into(const arena_vector<CreateItemRequest_Stock_t>& arr,
+                                               std::string& out);
+inline void
+serialize_CreateItemRequest_Tags_t_array_into(const std::vector<CreateItemRequest_Tags_t>& arr,
+                                              std::string& out);
+inline void
+serialize_CreateItemRequest_Tags_t_array_into(const arena_vector<CreateItemRequest_Tags_t>& arr,
+                                              std::string& out);
+inline void
+serialize_CreateItemRequest_Item_t_array_into(const std::vector<CreateItemRequest_Item_t>& arr,
+                                              std::string& out);
+inline void
+serialize_CreateItemRequest_Item_t_array_into(const arena_vector<CreateItemRequest_Item_t>& arr,
+                                              std::string& out);
+inline void serialize_UpdateItemRequest_array_into(const std::vector<UpdateItemRequest>& arr,
+                                                   std::string& out);
+inline void serialize_UpdateItemRequest_array_into(const arena_vector<UpdateItemRequest>& arr,
+                                                   std::string& out);
+inline void
+serialize_UpdateItemRequest_Name_t_array_into(const std::vector<UpdateItemRequest_Name_t>& arr,
+                                              std::string& out);
+inline void
+serialize_UpdateItemRequest_Name_t_array_into(const arena_vector<UpdateItemRequest_Name_t>& arr,
+                                              std::string& out);
+inline void serialize_UpdateItemRequest_Description_t_array_into(
+    const std::vector<UpdateItemRequest_Description_t>& arr, std::string& out);
+inline void serialize_UpdateItemRequest_Description_t_array_into(
+    const arena_vector<UpdateItemRequest_Description_t>& arr, std::string& out);
+inline void
+serialize_UpdateItemRequest_Price_t_array_into(const std::vector<UpdateItemRequest_Price_t>& arr,
+                                               std::string& out);
+inline void
+serialize_UpdateItemRequest_Price_t_array_into(const arena_vector<UpdateItemRequest_Price_t>& arr,
+                                               std::string& out);
+inline void
+serialize_UpdateItemRequest_Stock_t_array_into(const std::vector<UpdateItemRequest_Stock_t>& arr,
+                                               std::string& out);
+inline void
+serialize_UpdateItemRequest_Stock_t_array_into(const arena_vector<UpdateItemRequest_Stock_t>& arr,
+                                               std::string& out);
+inline void
+serialize_UpdateItemRequest_Tags_t_array_into(const std::vector<UpdateItemRequest_Tags_t>& arr,
+                                              std::string& out);
+inline void
+serialize_UpdateItemRequest_Tags_t_array_into(const arena_vector<UpdateItemRequest_Tags_t>& arr,
+                                              std::string& out);
+inline void
+serialize_UpdateItemRequest_Item_t_array_into(const std::vector<UpdateItemRequest_Item_t>& arr,
+                                              std::string& out);
+inline void
+serialize_UpdateItemRequest_Item_t_array_into(const arena_vector<UpdateItemRequest_Item_t>& arr,
+                                              std::string& out);
 inline void serialize_ItemList_array_into(const std::vector<ItemList>& arr, std::string& out);
 inline void serialize_ItemList_array_into(const arena_vector<ItemList>& arr, std::string& out);
-inline void serialize_ItemList_Items_t_array_into(const std::vector<ItemList_Items_t>& arr, std::string& out);
-inline void serialize_ItemList_Items_t_array_into(const arena_vector<ItemList_Items_t>& arr, std::string& out);
-inline void serialize_ItemList_Total_t_array_into(const std::vector<ItemList_Total_t>& arr, std::string& out);
-inline void serialize_ItemList_Total_t_array_into(const arena_vector<ItemList_Total_t>& arr, std::string& out);
-inline void serialize_ItemList_Limit_t_array_into(const std::vector<ItemList_Limit_t>& arr, std::string& out);
-inline void serialize_ItemList_Limit_t_array_into(const arena_vector<ItemList_Limit_t>& arr, std::string& out);
-inline void serialize_ItemList_Offset_t_array_into(const std::vector<ItemList_Offset_t>& arr, std::string& out);
-inline void serialize_ItemList_Offset_t_array_into(const arena_vector<ItemList_Offset_t>& arr, std::string& out);
+inline void serialize_ItemList_Items_t_array_into(const std::vector<ItemList_Items_t>& arr,
+                                                  std::string& out);
+inline void serialize_ItemList_Items_t_array_into(const arena_vector<ItemList_Items_t>& arr,
+                                                  std::string& out);
+inline void serialize_ItemList_Total_t_array_into(const std::vector<ItemList_Total_t>& arr,
+                                                  std::string& out);
+inline void serialize_ItemList_Total_t_array_into(const arena_vector<ItemList_Total_t>& arr,
+                                                  std::string& out);
+inline void serialize_ItemList_Limit_t_array_into(const std::vector<ItemList_Limit_t>& arr,
+                                                  std::string& out);
+inline void serialize_ItemList_Limit_t_array_into(const arena_vector<ItemList_Limit_t>& arr,
+                                                  std::string& out);
+inline void serialize_ItemList_Offset_t_array_into(const std::vector<ItemList_Offset_t>& arr,
+                                                   std::string& out);
+inline void serialize_ItemList_Offset_t_array_into(const arena_vector<ItemList_Offset_t>& arr,
+                                                   std::string& out);
 inline void serialize_EchoRequest_array_into(const std::vector<EchoRequest>& arr, std::string& out);
-inline void serialize_EchoRequest_array_into(const arena_vector<EchoRequest>& arr, std::string& out);
-inline void serialize_EchoRequest_Message_t_array_into(const std::vector<EchoRequest_Message_t>& arr, std::string& out);
-inline void serialize_EchoRequest_Message_t_array_into(const arena_vector<EchoRequest_Message_t>& arr, std::string& out);
-inline void serialize_EchoRequest_Repeat_t_array_into(const std::vector<EchoRequest_Repeat_t>& arr, std::string& out);
-inline void serialize_EchoRequest_Repeat_t_array_into(const arena_vector<EchoRequest_Repeat_t>& arr, std::string& out);
-inline void serialize_EchoRequest_Uppercase_t_array_into(const std::vector<EchoRequest_Uppercase_t>& arr, std::string& out);
-inline void serialize_EchoRequest_Uppercase_t_array_into(const arena_vector<EchoRequest_Uppercase_t>& arr, std::string& out);
-inline void serialize_EchoResponse_array_into(const std::vector<EchoResponse>& arr, std::string& out);
-inline void serialize_EchoResponse_array_into(const arena_vector<EchoResponse>& arr, std::string& out);
-inline void serialize_EchoResponse_Message_t_array_into(const std::vector<EchoResponse_Message_t>& arr, std::string& out);
-inline void serialize_EchoResponse_Message_t_array_into(const arena_vector<EchoResponse_Message_t>& arr, std::string& out);
-inline void serialize_EchoResponse_Length_t_array_into(const std::vector<EchoResponse_Length_t>& arr, std::string& out);
-inline void serialize_EchoResponse_Length_t_array_into(const arena_vector<EchoResponse_Length_t>& arr, std::string& out);
-inline void serialize_list_items_param_limit_array_into(const std::vector<list_items_param_limit>& arr, std::string& out);
-inline void serialize_list_items_param_limit_array_into(const arena_vector<list_items_param_limit>& arr, std::string& out);
-inline void serialize_list_items_param_offset_array_into(const std::vector<list_items_param_offset>& arr, std::string& out);
-inline void serialize_list_items_param_offset_array_into(const arena_vector<list_items_param_offset>& arr, std::string& out);
-inline void serialize_create_item_param_X_Request_Id_array_into(const std::vector<create_item_param_X_Request_Id>& arr, std::string& out);
-inline void serialize_create_item_param_X_Request_Id_array_into(const arena_vector<create_item_param_X_Request_Id>& arr, std::string& out);
-inline void serialize_create_item_param_session_array_into(const std::vector<create_item_param_session>& arr, std::string& out);
-inline void serialize_create_item_param_session_array_into(const arena_vector<create_item_param_session>& arr, std::string& out);
-inline void serialize_get_item_param_id_array_into(const std::vector<get_item_param_id>& arr, std::string& out);
-inline void serialize_get_item_param_id_array_into(const arena_vector<get_item_param_id>& arr, std::string& out);
-inline void serialize_update_item_param_id_array_into(const std::vector<update_item_param_id>& arr, std::string& out);
-inline void serialize_update_item_param_id_array_into(const arena_vector<update_item_param_id>& arr, std::string& out);
-inline void serialize_delete_item_param_id_array_into(const std::vector<delete_item_param_id>& arr, std::string& out);
-inline void serialize_delete_item_param_id_array_into(const arena_vector<delete_item_param_id>& arr, std::string& out);
-inline void serialize_health_check_response_array_into(const std::vector<health_check_response>& arr, std::string& out);
-inline void serialize_health_check_response_array_into(const arena_vector<health_check_response>& arr, std::string& out);
-inline void serialize_health_check_response_Status_array_into(const std::vector<health_check_response_Status>& arr, std::string& out);
-inline void serialize_health_check_response_Status_array_into(const arena_vector<health_check_response_Status>& arr, std::string& out);
-inline void serialize_health_check_response_Uptime_ms_array_into(const std::vector<health_check_response_Uptime_ms>& arr, std::string& out);
-inline void serialize_health_check_response_Uptime_ms_array_into(const arena_vector<health_check_response_Uptime_ms>& arr, std::string& out);
+inline void serialize_EchoRequest_array_into(const arena_vector<EchoRequest>& arr,
+                                             std::string& out);
+inline void
+serialize_EchoRequest_Message_t_array_into(const std::vector<EchoRequest_Message_t>& arr,
+                                           std::string& out);
+inline void
+serialize_EchoRequest_Message_t_array_into(const arena_vector<EchoRequest_Message_t>& arr,
+                                           std::string& out);
+inline void serialize_EchoRequest_Repeat_t_array_into(const std::vector<EchoRequest_Repeat_t>& arr,
+                                                      std::string& out);
+inline void serialize_EchoRequest_Repeat_t_array_into(const arena_vector<EchoRequest_Repeat_t>& arr,
+                                                      std::string& out);
+inline void
+serialize_EchoRequest_Uppercase_t_array_into(const std::vector<EchoRequest_Uppercase_t>& arr,
+                                             std::string& out);
+inline void
+serialize_EchoRequest_Uppercase_t_array_into(const arena_vector<EchoRequest_Uppercase_t>& arr,
+                                             std::string& out);
+inline void serialize_EchoResponse_array_into(const std::vector<EchoResponse>& arr,
+                                              std::string& out);
+inline void serialize_EchoResponse_array_into(const arena_vector<EchoResponse>& arr,
+                                              std::string& out);
+inline void
+serialize_EchoResponse_Message_t_array_into(const std::vector<EchoResponse_Message_t>& arr,
+                                            std::string& out);
+inline void
+serialize_EchoResponse_Message_t_array_into(const arena_vector<EchoResponse_Message_t>& arr,
+                                            std::string& out);
+inline void
+serialize_EchoResponse_Length_t_array_into(const std::vector<EchoResponse_Length_t>& arr,
+                                           std::string& out);
+inline void
+serialize_EchoResponse_Length_t_array_into(const arena_vector<EchoResponse_Length_t>& arr,
+                                           std::string& out);
+inline void
+serialize_list_items_param_limit_array_into(const std::vector<list_items_param_limit>& arr,
+                                            std::string& out);
+inline void
+serialize_list_items_param_limit_array_into(const arena_vector<list_items_param_limit>& arr,
+                                            std::string& out);
+inline void
+serialize_list_items_param_offset_array_into(const std::vector<list_items_param_offset>& arr,
+                                             std::string& out);
+inline void
+serialize_list_items_param_offset_array_into(const arena_vector<list_items_param_offset>& arr,
+                                             std::string& out);
+inline void serialize_create_item_param_X_Request_Id_array_into(
+    const std::vector<create_item_param_X_Request_Id>& arr, std::string& out);
+inline void serialize_create_item_param_X_Request_Id_array_into(
+    const arena_vector<create_item_param_X_Request_Id>& arr, std::string& out);
+inline void
+serialize_create_item_param_session_array_into(const std::vector<create_item_param_session>& arr,
+                                               std::string& out);
+inline void
+serialize_create_item_param_session_array_into(const arena_vector<create_item_param_session>& arr,
+                                               std::string& out);
+inline void serialize_get_item_param_id_array_into(const std::vector<get_item_param_id>& arr,
+                                                   std::string& out);
+inline void serialize_get_item_param_id_array_into(const arena_vector<get_item_param_id>& arr,
+                                                   std::string& out);
+inline void serialize_update_item_param_id_array_into(const std::vector<update_item_param_id>& arr,
+                                                      std::string& out);
+inline void serialize_update_item_param_id_array_into(const arena_vector<update_item_param_id>& arr,
+                                                      std::string& out);
+inline void serialize_delete_item_param_id_array_into(const std::vector<delete_item_param_id>& arr,
+                                                      std::string& out);
+inline void serialize_delete_item_param_id_array_into(const arena_vector<delete_item_param_id>& arr,
+                                                      std::string& out);
+inline void
+serialize_health_check_response_array_into(const std::vector<health_check_response>& arr,
+                                           std::string& out);
+inline void
+serialize_health_check_response_array_into(const arena_vector<health_check_response>& arr,
+                                           std::string& out);
+inline void serialize_health_check_response_Status_array_into(
+    const std::vector<health_check_response_Status>& arr, std::string& out);
+inline void serialize_health_check_response_Status_array_into(
+    const arena_vector<health_check_response_Status>& arr, std::string& out);
+inline void serialize_health_check_response_Uptime_ms_array_into(
+    const std::vector<health_check_response_Uptime_ms>& arr, std::string& out);
+inline void serialize_health_check_response_Uptime_ms_array_into(
+    const arena_vector<health_check_response_Uptime_ms>& arr, std::string& out);
 
 inline std::string serialize_SumRequest_array(const std::vector<SumRequest>& arr);
 inline std::string serialize_SumRequest_array(const arena_vector<SumRequest>& arr);
 inline std::string serialize_SumRequest_Values_t_array(const std::vector<SumRequest_Values_t>& arr);
-inline std::string serialize_SumRequest_Values_t_array(const arena_vector<SumRequest_Values_t>& arr);
+inline std::string
+serialize_SumRequest_Values_t_array(const arena_vector<SumRequest_Values_t>& arr);
 inline std::string serialize_SumRequest_Item_t_array(const std::vector<SumRequest_Item_t>& arr);
 inline std::string serialize_SumRequest_Item_t_array(const arena_vector<SumRequest_Item_t>& arr);
 inline std::string serialize_SumResponse_array(const std::vector<SumResponse>& arr);
 inline std::string serialize_SumResponse_array(const arena_vector<SumResponse>& arr);
-inline std::string serialize_SumResponse_Result_t_array(const std::vector<SumResponse_Result_t>& arr);
-inline std::string serialize_SumResponse_Result_t_array(const arena_vector<SumResponse_Result_t>& arr);
+inline std::string
+serialize_SumResponse_Result_t_array(const std::vector<SumResponse_Result_t>& arr);
+inline std::string
+serialize_SumResponse_Result_t_array(const arena_vector<SumResponse_Result_t>& arr);
 inline std::string serialize_SumResponse_Count_t_array(const std::vector<SumResponse_Count_t>& arr);
-inline std::string serialize_SumResponse_Count_t_array(const arena_vector<SumResponse_Count_t>& arr);
+inline std::string
+serialize_SumResponse_Count_t_array(const arena_vector<SumResponse_Count_t>& arr);
 inline std::string serialize_StatsRequest_array(const std::vector<StatsRequest>& arr);
 inline std::string serialize_StatsRequest_array(const arena_vector<StatsRequest>& arr);
-inline std::string serialize_StatsRequest_Values_t_array(const std::vector<StatsRequest_Values_t>& arr);
-inline std::string serialize_StatsRequest_Values_t_array(const arena_vector<StatsRequest_Values_t>& arr);
+inline std::string
+serialize_StatsRequest_Values_t_array(const std::vector<StatsRequest_Values_t>& arr);
+inline std::string
+serialize_StatsRequest_Values_t_array(const arena_vector<StatsRequest_Values_t>& arr);
 inline std::string serialize_StatsRequest_Item_t_array(const std::vector<StatsRequest_Item_t>& arr);
-inline std::string serialize_StatsRequest_Item_t_array(const arena_vector<StatsRequest_Item_t>& arr);
-inline std::string serialize_StatsRequest_Include_median_t_array(const std::vector<StatsRequest_Include_median_t>& arr);
-inline std::string serialize_StatsRequest_Include_median_t_array(const arena_vector<StatsRequest_Include_median_t>& arr);
+inline std::string
+serialize_StatsRequest_Item_t_array(const arena_vector<StatsRequest_Item_t>& arr);
+inline std::string serialize_StatsRequest_Include_median_t_array(
+    const std::vector<StatsRequest_Include_median_t>& arr);
+inline std::string serialize_StatsRequest_Include_median_t_array(
+    const arena_vector<StatsRequest_Include_median_t>& arr);
 inline std::string serialize_StatsResponse_array(const std::vector<StatsResponse>& arr);
 inline std::string serialize_StatsResponse_array(const arena_vector<StatsResponse>& arr);
 inline std::string serialize_StatsResponse_Min_t_array(const std::vector<StatsResponse_Min_t>& arr);
-inline std::string serialize_StatsResponse_Min_t_array(const arena_vector<StatsResponse_Min_t>& arr);
+inline std::string
+serialize_StatsResponse_Min_t_array(const arena_vector<StatsResponse_Min_t>& arr);
 inline std::string serialize_StatsResponse_Max_t_array(const std::vector<StatsResponse_Max_t>& arr);
-inline std::string serialize_StatsResponse_Max_t_array(const arena_vector<StatsResponse_Max_t>& arr);
-inline std::string serialize_StatsResponse_Mean_t_array(const std::vector<StatsResponse_Mean_t>& arr);
-inline std::string serialize_StatsResponse_Mean_t_array(const arena_vector<StatsResponse_Mean_t>& arr);
+inline std::string
+serialize_StatsResponse_Max_t_array(const arena_vector<StatsResponse_Max_t>& arr);
+inline std::string
+serialize_StatsResponse_Mean_t_array(const std::vector<StatsResponse_Mean_t>& arr);
+inline std::string
+serialize_StatsResponse_Mean_t_array(const arena_vector<StatsResponse_Mean_t>& arr);
 inline std::string serialize_StatsResponse_Sum_t_array(const std::vector<StatsResponse_Sum_t>& arr);
-inline std::string serialize_StatsResponse_Sum_t_array(const arena_vector<StatsResponse_Sum_t>& arr);
-inline std::string serialize_StatsResponse_Count_t_array(const std::vector<StatsResponse_Count_t>& arr);
-inline std::string serialize_StatsResponse_Count_t_array(const arena_vector<StatsResponse_Count_t>& arr);
-inline std::string serialize_StatsResponse_Median_t_array(const std::vector<StatsResponse_Median_t>& arr);
-inline std::string serialize_StatsResponse_Median_t_array(const arena_vector<StatsResponse_Median_t>& arr);
+inline std::string
+serialize_StatsResponse_Sum_t_array(const arena_vector<StatsResponse_Sum_t>& arr);
+inline std::string
+serialize_StatsResponse_Count_t_array(const std::vector<StatsResponse_Count_t>& arr);
+inline std::string
+serialize_StatsResponse_Count_t_array(const arena_vector<StatsResponse_Count_t>& arr);
+inline std::string
+serialize_StatsResponse_Median_t_array(const std::vector<StatsResponse_Median_t>& arr);
+inline std::string
+serialize_StatsResponse_Median_t_array(const arena_vector<StatsResponse_Median_t>& arr);
 inline std::string serialize_RegisterRequest_array(const std::vector<RegisterRequest>& arr);
 inline std::string serialize_RegisterRequest_array(const arena_vector<RegisterRequest>& arr);
-inline std::string serialize_RegisterRequest_Username_t_array(const std::vector<RegisterRequest_Username_t>& arr);
-inline std::string serialize_RegisterRequest_Username_t_array(const arena_vector<RegisterRequest_Username_t>& arr);
-inline std::string serialize_RegisterRequest_Email_t_array(const std::vector<RegisterRequest_Email_t>& arr);
-inline std::string serialize_RegisterRequest_Email_t_array(const arena_vector<RegisterRequest_Email_t>& arr);
-inline std::string serialize_RegisterRequest_Password_t_array(const std::vector<RegisterRequest_Password_t>& arr);
-inline std::string serialize_RegisterRequest_Password_t_array(const arena_vector<RegisterRequest_Password_t>& arr);
-inline std::string serialize_RegisterRequest_Age_t_array(const std::vector<RegisterRequest_Age_t>& arr);
-inline std::string serialize_RegisterRequest_Age_t_array(const arena_vector<RegisterRequest_Age_t>& arr);
-inline std::string serialize_RegisterRequest_Tags_t_array(const std::vector<RegisterRequest_Tags_t>& arr);
-inline std::string serialize_RegisterRequest_Tags_t_array(const arena_vector<RegisterRequest_Tags_t>& arr);
-inline std::string serialize_RegisterRequest_Item_t_array(const std::vector<RegisterRequest_Item_t>& arr);
-inline std::string serialize_RegisterRequest_Item_t_array(const arena_vector<RegisterRequest_Item_t>& arr);
+inline std::string
+serialize_RegisterRequest_Username_t_array(const std::vector<RegisterRequest_Username_t>& arr);
+inline std::string
+serialize_RegisterRequest_Username_t_array(const arena_vector<RegisterRequest_Username_t>& arr);
+inline std::string
+serialize_RegisterRequest_Email_t_array(const std::vector<RegisterRequest_Email_t>& arr);
+inline std::string
+serialize_RegisterRequest_Email_t_array(const arena_vector<RegisterRequest_Email_t>& arr);
+inline std::string
+serialize_RegisterRequest_Password_t_array(const std::vector<RegisterRequest_Password_t>& arr);
+inline std::string
+serialize_RegisterRequest_Password_t_array(const arena_vector<RegisterRequest_Password_t>& arr);
+inline std::string
+serialize_RegisterRequest_Age_t_array(const std::vector<RegisterRequest_Age_t>& arr);
+inline std::string
+serialize_RegisterRequest_Age_t_array(const arena_vector<RegisterRequest_Age_t>& arr);
+inline std::string
+serialize_RegisterRequest_Tags_t_array(const std::vector<RegisterRequest_Tags_t>& arr);
+inline std::string
+serialize_RegisterRequest_Tags_t_array(const arena_vector<RegisterRequest_Tags_t>& arr);
+inline std::string
+serialize_RegisterRequest_Item_t_array(const std::vector<RegisterRequest_Item_t>& arr);
+inline std::string
+serialize_RegisterRequest_Item_t_array(const arena_vector<RegisterRequest_Item_t>& arr);
 inline std::string serialize_UserRole_array(const std::vector<UserRole>& arr);
 inline std::string serialize_UserRole_array(const arena_vector<UserRole>& arr);
 inline std::string serialize_UserResponse_array(const std::vector<UserResponse>& arr);
 inline std::string serialize_UserResponse_array(const arena_vector<UserResponse>& arr);
 inline std::string serialize_UserResponse_Id_t_array(const std::vector<UserResponse_Id_t>& arr);
 inline std::string serialize_UserResponse_Id_t_array(const arena_vector<UserResponse_Id_t>& arr);
-inline std::string serialize_UserResponse_Username_t_array(const std::vector<UserResponse_Username_t>& arr);
-inline std::string serialize_UserResponse_Username_t_array(const arena_vector<UserResponse_Username_t>& arr);
-inline std::string serialize_UserResponse_Email_t_array(const std::vector<UserResponse_Email_t>& arr);
-inline std::string serialize_UserResponse_Email_t_array(const arena_vector<UserResponse_Email_t>& arr);
-inline std::string serialize_UserResponse_Created_at_t_array(const std::vector<UserResponse_Created_at_t>& arr);
-inline std::string serialize_UserResponse_Created_at_t_array(const arena_vector<UserResponse_Created_at_t>& arr);
+inline std::string
+serialize_UserResponse_Username_t_array(const std::vector<UserResponse_Username_t>& arr);
+inline std::string
+serialize_UserResponse_Username_t_array(const arena_vector<UserResponse_Username_t>& arr);
+inline std::string
+serialize_UserResponse_Email_t_array(const std::vector<UserResponse_Email_t>& arr);
+inline std::string
+serialize_UserResponse_Email_t_array(const arena_vector<UserResponse_Email_t>& arr);
+inline std::string
+serialize_UserResponse_Created_at_t_array(const std::vector<UserResponse_Created_at_t>& arr);
+inline std::string
+serialize_UserResponse_Created_at_t_array(const arena_vector<UserResponse_Created_at_t>& arr);
 inline std::string serialize_ItemCategory_array(const std::vector<ItemCategory>& arr);
 inline std::string serialize_ItemCategory_array(const arena_vector<ItemCategory>& arr);
 inline std::string serialize_Item_array(const std::vector<Item>& arr);
@@ -757,42 +1368,72 @@ inline std::string serialize_Item_Item_t_array(const std::vector<Item_Item_t>& a
 inline std::string serialize_Item_Item_t_array(const arena_vector<Item_Item_t>& arr);
 inline std::string serialize_ItemMetadata_array(const std::vector<ItemMetadata>& arr);
 inline std::string serialize_ItemMetadata_array(const arena_vector<ItemMetadata>& arr);
-inline std::string serialize_ItemMetadata_Weight_kg_t_array(const std::vector<ItemMetadata_Weight_kg_t>& arr);
-inline std::string serialize_ItemMetadata_Weight_kg_t_array(const arena_vector<ItemMetadata_Weight_kg_t>& arr);
-inline std::string serialize_ItemMetadata_Dimensions_t_array(const std::vector<ItemMetadata_Dimensions_t>& arr);
-inline std::string serialize_ItemMetadata_Dimensions_t_array(const arena_vector<ItemMetadata_Dimensions_t>& arr);
-inline std::string serialize_ItemMetadata_Manufacturer_t_array(const std::vector<ItemMetadata_Manufacturer_t>& arr);
-inline std::string serialize_ItemMetadata_Manufacturer_t_array(const arena_vector<ItemMetadata_Manufacturer_t>& arr);
+inline std::string
+serialize_ItemMetadata_Weight_kg_t_array(const std::vector<ItemMetadata_Weight_kg_t>& arr);
+inline std::string
+serialize_ItemMetadata_Weight_kg_t_array(const arena_vector<ItemMetadata_Weight_kg_t>& arr);
+inline std::string
+serialize_ItemMetadata_Dimensions_t_array(const std::vector<ItemMetadata_Dimensions_t>& arr);
+inline std::string
+serialize_ItemMetadata_Dimensions_t_array(const arena_vector<ItemMetadata_Dimensions_t>& arr);
+inline std::string
+serialize_ItemMetadata_Manufacturer_t_array(const std::vector<ItemMetadata_Manufacturer_t>& arr);
+inline std::string
+serialize_ItemMetadata_Manufacturer_t_array(const arena_vector<ItemMetadata_Manufacturer_t>& arr);
 inline std::string serialize_ItemMetadata_Sku_t_array(const std::vector<ItemMetadata_Sku_t>& arr);
 inline std::string serialize_ItemMetadata_Sku_t_array(const arena_vector<ItemMetadata_Sku_t>& arr);
 inline std::string serialize_CreateItemRequest_array(const std::vector<CreateItemRequest>& arr);
 inline std::string serialize_CreateItemRequest_array(const arena_vector<CreateItemRequest>& arr);
-inline std::string serialize_CreateItemRequest_Name_t_array(const std::vector<CreateItemRequest_Name_t>& arr);
-inline std::string serialize_CreateItemRequest_Name_t_array(const arena_vector<CreateItemRequest_Name_t>& arr);
-inline std::string serialize_CreateItemRequest_Description_t_array(const std::vector<CreateItemRequest_Description_t>& arr);
-inline std::string serialize_CreateItemRequest_Description_t_array(const arena_vector<CreateItemRequest_Description_t>& arr);
-inline std::string serialize_CreateItemRequest_Price_t_array(const std::vector<CreateItemRequest_Price_t>& arr);
-inline std::string serialize_CreateItemRequest_Price_t_array(const arena_vector<CreateItemRequest_Price_t>& arr);
-inline std::string serialize_CreateItemRequest_Stock_t_array(const std::vector<CreateItemRequest_Stock_t>& arr);
-inline std::string serialize_CreateItemRequest_Stock_t_array(const arena_vector<CreateItemRequest_Stock_t>& arr);
-inline std::string serialize_CreateItemRequest_Tags_t_array(const std::vector<CreateItemRequest_Tags_t>& arr);
-inline std::string serialize_CreateItemRequest_Tags_t_array(const arena_vector<CreateItemRequest_Tags_t>& arr);
-inline std::string serialize_CreateItemRequest_Item_t_array(const std::vector<CreateItemRequest_Item_t>& arr);
-inline std::string serialize_CreateItemRequest_Item_t_array(const arena_vector<CreateItemRequest_Item_t>& arr);
+inline std::string
+serialize_CreateItemRequest_Name_t_array(const std::vector<CreateItemRequest_Name_t>& arr);
+inline std::string
+serialize_CreateItemRequest_Name_t_array(const arena_vector<CreateItemRequest_Name_t>& arr);
+inline std::string serialize_CreateItemRequest_Description_t_array(
+    const std::vector<CreateItemRequest_Description_t>& arr);
+inline std::string serialize_CreateItemRequest_Description_t_array(
+    const arena_vector<CreateItemRequest_Description_t>& arr);
+inline std::string
+serialize_CreateItemRequest_Price_t_array(const std::vector<CreateItemRequest_Price_t>& arr);
+inline std::string
+serialize_CreateItemRequest_Price_t_array(const arena_vector<CreateItemRequest_Price_t>& arr);
+inline std::string
+serialize_CreateItemRequest_Stock_t_array(const std::vector<CreateItemRequest_Stock_t>& arr);
+inline std::string
+serialize_CreateItemRequest_Stock_t_array(const arena_vector<CreateItemRequest_Stock_t>& arr);
+inline std::string
+serialize_CreateItemRequest_Tags_t_array(const std::vector<CreateItemRequest_Tags_t>& arr);
+inline std::string
+serialize_CreateItemRequest_Tags_t_array(const arena_vector<CreateItemRequest_Tags_t>& arr);
+inline std::string
+serialize_CreateItemRequest_Item_t_array(const std::vector<CreateItemRequest_Item_t>& arr);
+inline std::string
+serialize_CreateItemRequest_Item_t_array(const arena_vector<CreateItemRequest_Item_t>& arr);
 inline std::string serialize_UpdateItemRequest_array(const std::vector<UpdateItemRequest>& arr);
 inline std::string serialize_UpdateItemRequest_array(const arena_vector<UpdateItemRequest>& arr);
-inline std::string serialize_UpdateItemRequest_Name_t_array(const std::vector<UpdateItemRequest_Name_t>& arr);
-inline std::string serialize_UpdateItemRequest_Name_t_array(const arena_vector<UpdateItemRequest_Name_t>& arr);
-inline std::string serialize_UpdateItemRequest_Description_t_array(const std::vector<UpdateItemRequest_Description_t>& arr);
-inline std::string serialize_UpdateItemRequest_Description_t_array(const arena_vector<UpdateItemRequest_Description_t>& arr);
-inline std::string serialize_UpdateItemRequest_Price_t_array(const std::vector<UpdateItemRequest_Price_t>& arr);
-inline std::string serialize_UpdateItemRequest_Price_t_array(const arena_vector<UpdateItemRequest_Price_t>& arr);
-inline std::string serialize_UpdateItemRequest_Stock_t_array(const std::vector<UpdateItemRequest_Stock_t>& arr);
-inline std::string serialize_UpdateItemRequest_Stock_t_array(const arena_vector<UpdateItemRequest_Stock_t>& arr);
-inline std::string serialize_UpdateItemRequest_Tags_t_array(const std::vector<UpdateItemRequest_Tags_t>& arr);
-inline std::string serialize_UpdateItemRequest_Tags_t_array(const arena_vector<UpdateItemRequest_Tags_t>& arr);
-inline std::string serialize_UpdateItemRequest_Item_t_array(const std::vector<UpdateItemRequest_Item_t>& arr);
-inline std::string serialize_UpdateItemRequest_Item_t_array(const arena_vector<UpdateItemRequest_Item_t>& arr);
+inline std::string
+serialize_UpdateItemRequest_Name_t_array(const std::vector<UpdateItemRequest_Name_t>& arr);
+inline std::string
+serialize_UpdateItemRequest_Name_t_array(const arena_vector<UpdateItemRequest_Name_t>& arr);
+inline std::string serialize_UpdateItemRequest_Description_t_array(
+    const std::vector<UpdateItemRequest_Description_t>& arr);
+inline std::string serialize_UpdateItemRequest_Description_t_array(
+    const arena_vector<UpdateItemRequest_Description_t>& arr);
+inline std::string
+serialize_UpdateItemRequest_Price_t_array(const std::vector<UpdateItemRequest_Price_t>& arr);
+inline std::string
+serialize_UpdateItemRequest_Price_t_array(const arena_vector<UpdateItemRequest_Price_t>& arr);
+inline std::string
+serialize_UpdateItemRequest_Stock_t_array(const std::vector<UpdateItemRequest_Stock_t>& arr);
+inline std::string
+serialize_UpdateItemRequest_Stock_t_array(const arena_vector<UpdateItemRequest_Stock_t>& arr);
+inline std::string
+serialize_UpdateItemRequest_Tags_t_array(const std::vector<UpdateItemRequest_Tags_t>& arr);
+inline std::string
+serialize_UpdateItemRequest_Tags_t_array(const arena_vector<UpdateItemRequest_Tags_t>& arr);
+inline std::string
+serialize_UpdateItemRequest_Item_t_array(const std::vector<UpdateItemRequest_Item_t>& arr);
+inline std::string
+serialize_UpdateItemRequest_Item_t_array(const arena_vector<UpdateItemRequest_Item_t>& arr);
 inline std::string serialize_ItemList_array(const std::vector<ItemList>& arr);
 inline std::string serialize_ItemList_array(const arena_vector<ItemList>& arr);
 inline std::string serialize_ItemList_Items_t_array(const std::vector<ItemList_Items_t>& arr);
@@ -805,113 +1446,163 @@ inline std::string serialize_ItemList_Offset_t_array(const std::vector<ItemList_
 inline std::string serialize_ItemList_Offset_t_array(const arena_vector<ItemList_Offset_t>& arr);
 inline std::string serialize_EchoRequest_array(const std::vector<EchoRequest>& arr);
 inline std::string serialize_EchoRequest_array(const arena_vector<EchoRequest>& arr);
-inline std::string serialize_EchoRequest_Message_t_array(const std::vector<EchoRequest_Message_t>& arr);
-inline std::string serialize_EchoRequest_Message_t_array(const arena_vector<EchoRequest_Message_t>& arr);
-inline std::string serialize_EchoRequest_Repeat_t_array(const std::vector<EchoRequest_Repeat_t>& arr);
-inline std::string serialize_EchoRequest_Repeat_t_array(const arena_vector<EchoRequest_Repeat_t>& arr);
-inline std::string serialize_EchoRequest_Uppercase_t_array(const std::vector<EchoRequest_Uppercase_t>& arr);
-inline std::string serialize_EchoRequest_Uppercase_t_array(const arena_vector<EchoRequest_Uppercase_t>& arr);
+inline std::string
+serialize_EchoRequest_Message_t_array(const std::vector<EchoRequest_Message_t>& arr);
+inline std::string
+serialize_EchoRequest_Message_t_array(const arena_vector<EchoRequest_Message_t>& arr);
+inline std::string
+serialize_EchoRequest_Repeat_t_array(const std::vector<EchoRequest_Repeat_t>& arr);
+inline std::string
+serialize_EchoRequest_Repeat_t_array(const arena_vector<EchoRequest_Repeat_t>& arr);
+inline std::string
+serialize_EchoRequest_Uppercase_t_array(const std::vector<EchoRequest_Uppercase_t>& arr);
+inline std::string
+serialize_EchoRequest_Uppercase_t_array(const arena_vector<EchoRequest_Uppercase_t>& arr);
 inline std::string serialize_EchoResponse_array(const std::vector<EchoResponse>& arr);
 inline std::string serialize_EchoResponse_array(const arena_vector<EchoResponse>& arr);
-inline std::string serialize_EchoResponse_Message_t_array(const std::vector<EchoResponse_Message_t>& arr);
-inline std::string serialize_EchoResponse_Message_t_array(const arena_vector<EchoResponse_Message_t>& arr);
-inline std::string serialize_EchoResponse_Length_t_array(const std::vector<EchoResponse_Length_t>& arr);
-inline std::string serialize_EchoResponse_Length_t_array(const arena_vector<EchoResponse_Length_t>& arr);
-inline std::string serialize_list_items_param_limit_array(const std::vector<list_items_param_limit>& arr);
-inline std::string serialize_list_items_param_limit_array(const arena_vector<list_items_param_limit>& arr);
-inline std::string serialize_list_items_param_offset_array(const std::vector<list_items_param_offset>& arr);
-inline std::string serialize_list_items_param_offset_array(const arena_vector<list_items_param_offset>& arr);
-inline std::string serialize_create_item_param_X_Request_Id_array(const std::vector<create_item_param_X_Request_Id>& arr);
-inline std::string serialize_create_item_param_X_Request_Id_array(const arena_vector<create_item_param_X_Request_Id>& arr);
-inline std::string serialize_create_item_param_session_array(const std::vector<create_item_param_session>& arr);
-inline std::string serialize_create_item_param_session_array(const arena_vector<create_item_param_session>& arr);
+inline std::string
+serialize_EchoResponse_Message_t_array(const std::vector<EchoResponse_Message_t>& arr);
+inline std::string
+serialize_EchoResponse_Message_t_array(const arena_vector<EchoResponse_Message_t>& arr);
+inline std::string
+serialize_EchoResponse_Length_t_array(const std::vector<EchoResponse_Length_t>& arr);
+inline std::string
+serialize_EchoResponse_Length_t_array(const arena_vector<EchoResponse_Length_t>& arr);
+inline std::string
+serialize_list_items_param_limit_array(const std::vector<list_items_param_limit>& arr);
+inline std::string
+serialize_list_items_param_limit_array(const arena_vector<list_items_param_limit>& arr);
+inline std::string
+serialize_list_items_param_offset_array(const std::vector<list_items_param_offset>& arr);
+inline std::string
+serialize_list_items_param_offset_array(const arena_vector<list_items_param_offset>& arr);
+inline std::string serialize_create_item_param_X_Request_Id_array(
+    const std::vector<create_item_param_X_Request_Id>& arr);
+inline std::string serialize_create_item_param_X_Request_Id_array(
+    const arena_vector<create_item_param_X_Request_Id>& arr);
+inline std::string
+serialize_create_item_param_session_array(const std::vector<create_item_param_session>& arr);
+inline std::string
+serialize_create_item_param_session_array(const arena_vector<create_item_param_session>& arr);
 inline std::string serialize_get_item_param_id_array(const std::vector<get_item_param_id>& arr);
 inline std::string serialize_get_item_param_id_array(const arena_vector<get_item_param_id>& arr);
-inline std::string serialize_update_item_param_id_array(const std::vector<update_item_param_id>& arr);
-inline std::string serialize_update_item_param_id_array(const arena_vector<update_item_param_id>& arr);
-inline std::string serialize_delete_item_param_id_array(const std::vector<delete_item_param_id>& arr);
-inline std::string serialize_delete_item_param_id_array(const arena_vector<delete_item_param_id>& arr);
-inline std::string serialize_health_check_response_array(const std::vector<health_check_response>& arr);
-inline std::string serialize_health_check_response_array(const arena_vector<health_check_response>& arr);
-inline std::string serialize_health_check_response_Status_array(const std::vector<health_check_response_Status>& arr);
-inline std::string serialize_health_check_response_Status_array(const arena_vector<health_check_response_Status>& arr);
-inline std::string serialize_health_check_response_Uptime_ms_array(const std::vector<health_check_response_Uptime_ms>& arr);
-inline std::string serialize_health_check_response_Uptime_ms_array(const arena_vector<health_check_response_Uptime_ms>& arr);
+inline std::string
+serialize_update_item_param_id_array(const std::vector<update_item_param_id>& arr);
+inline std::string
+serialize_update_item_param_id_array(const arena_vector<update_item_param_id>& arr);
+inline std::string
+serialize_delete_item_param_id_array(const std::vector<delete_item_param_id>& arr);
+inline std::string
+serialize_delete_item_param_id_array(const arena_vector<delete_item_param_id>& arr);
+inline std::string
+serialize_health_check_response_array(const std::vector<health_check_response>& arr);
+inline std::string
+serialize_health_check_response_array(const arena_vector<health_check_response>& arr);
+inline std::string
+serialize_health_check_response_Status_array(const std::vector<health_check_response_Status>& arr);
+inline std::string
+serialize_health_check_response_Status_array(const arena_vector<health_check_response_Status>& arr);
+inline std::string serialize_health_check_response_Uptime_ms_array(
+    const std::vector<health_check_response_Uptime_ms>& arr);
+inline std::string serialize_health_check_response_Uptime_ms_array(
+    const arena_vector<health_check_response_Uptime_ms>& arr);
 
 // ============================================================
 // JSON Parse Functions
 // ============================================================
 
-[[nodiscard]] inline std::optional<SumRequest> parse_SumRequest(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_object_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<SumRequest> parse_SumRequest(katana::serde::json_cursor& cur,
+                                                                monotonic_arena* arena) {
+    if (!cur.try_object_start())
+        return std::nullopt;
 
     SumRequest obj(arena);
     bool has_values = false;
 
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_object_end()) break;
+        if (cur.try_object_end())
+            break;
         auto key = cur.string();
-        if (!key || !cur.consume(':')) break;
+        if (!key || !cur.consume(':'))
+            break;
 
         if (*key == "values") {
             has_values = true;
             if (cur.try_array_start()) {
                 while (!cur.eof()) {
                     cur.skip_ws();
-                    if (cur.try_array_end()) break;
+                    if (cur.try_array_end())
+                        break;
                     if (auto v = katana::serde::parse_double(cur)) {
                         obj.values.push_back(*v);
-                    } else { cur.skip_value(); }
+                    } else {
+                        cur.skip_value();
+                    }
                     cur.try_comma();
                 }
-            } else { cur.skip_value(); }
+            } else {
+                cur.skip_value();
+            }
         } else {
             cur.skip_value();
         }
         cur.try_comma();
     }
-    if (!has_values) return std::nullopt;
+    if (!has_values)
+        return std::nullopt;
     return obj;
 }
 
-[[nodiscard]] inline std::optional<SumRequest> parse_SumRequest(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<SumRequest> parse_SumRequest(std::string_view json,
+                                                                monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_SumRequest(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<SumRequest_Values_t> parse_SumRequest_Values_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<SumRequest_Values_t>
+parse_SumRequest_Values_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
     SumRequest_Values_t result{arena_allocator<SumRequest_Item_t>(arena)};
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
+        if (cur.try_array_end())
+            break;
         if (auto v = katana::serde::parse_double(cur)) {
             result.push_back(*v);
-        } else { cur.skip_value(); }
+        } else {
+            cur.skip_value();
+        }
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<SumRequest_Values_t> parse_SumRequest_Values_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<SumRequest_Values_t>
+parse_SumRequest_Values_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_SumRequest_Values_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<SumRequest_Item_t> parse_SumRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<SumRequest_Item_t>
+parse_SumRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_double(cur)) return SumRequest_Item_t{*v};
+    if (auto v = katana::serde::parse_double(cur))
+        return SumRequest_Item_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<SumRequest_Item_t> parse_SumRequest_Item_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<SumRequest_Item_t>
+parse_SumRequest_Item_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_SumRequest_Item_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<SumResponse> parse_SumResponse(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_object_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<SumResponse> parse_SumResponse(katana::serde::json_cursor& cur,
+                                                                  monotonic_arena* arena) {
+    if (!cur.try_object_start())
+        return std::nullopt;
 
     SumResponse obj(arena);
     bool has_result = false;
@@ -919,187 +1610,251 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
 
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_object_end()) break;
+        if (cur.try_object_end())
+            break;
         auto key = cur.string();
-        if (!key || !cur.consume(':')) break;
+        if (!key || !cur.consume(':'))
+            break;
 
         if (*key == "result") {
             has_result = true;
             if (auto v = katana::serde::parse_double(cur)) {
                 obj.result = *v;
-            } else { cur.skip_value(); }
-        } else         if (*key == "count") {
+            } else {
+                cur.skip_value();
+            }
+        } else if (*key == "count") {
             has_count = true;
             if (auto v = katana::serde::parse_int64(cur)) {
                 obj.count = *v;
-            } else { cur.skip_value(); }
+            } else {
+                cur.skip_value();
+            }
         } else {
             cur.skip_value();
         }
         cur.try_comma();
     }
-    if (!has_result) return std::nullopt;
-    if (!has_count) return std::nullopt;
+    if (!has_result)
+        return std::nullopt;
+    if (!has_count)
+        return std::nullopt;
     return obj;
 }
 
-[[nodiscard]] inline std::optional<SumResponse> parse_SumResponse(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<SumResponse> parse_SumResponse(std::string_view json,
+                                                                  monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_SumResponse(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<SumResponse_Result_t> parse_SumResponse_Result_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<SumResponse_Result_t>
+parse_SumResponse_Result_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_double(cur)) return SumResponse_Result_t{*v};
+    if (auto v = katana::serde::parse_double(cur))
+        return SumResponse_Result_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<SumResponse_Result_t> parse_SumResponse_Result_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<SumResponse_Result_t>
+parse_SumResponse_Result_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_SumResponse_Result_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<SumResponse_Count_t> parse_SumResponse_Count_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<SumResponse_Count_t>
+parse_SumResponse_Count_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return SumResponse_Count_t{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return SumResponse_Count_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<SumResponse_Count_t> parse_SumResponse_Count_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<SumResponse_Count_t>
+parse_SumResponse_Count_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_SumResponse_Count_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<StatsRequest> parse_StatsRequest(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_object_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<StatsRequest> parse_StatsRequest(katana::serde::json_cursor& cur,
+                                                                    monotonic_arena* arena) {
+    if (!cur.try_object_start())
+        return std::nullopt;
 
     StatsRequest obj(arena);
     bool has_values = false;
 
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_object_end()) break;
+        if (cur.try_object_end())
+            break;
         auto key = cur.string();
-        if (!key || !cur.consume(':')) break;
+        if (!key || !cur.consume(':'))
+            break;
 
         if (*key == "values") {
             has_values = true;
             if (cur.try_array_start()) {
                 while (!cur.eof()) {
                     cur.skip_ws();
-                    if (cur.try_array_end()) break;
+                    if (cur.try_array_end())
+                        break;
                     if (auto v = katana::serde::parse_double(cur)) {
                         obj.values.push_back(*v);
-                    } else { cur.skip_value(); }
+                    } else {
+                        cur.skip_value();
+                    }
                     cur.try_comma();
                 }
-            } else { cur.skip_value(); }
-        } else         if (*key == "include_median") {
+            } else {
+                cur.skip_value();
+            }
+        } else if (*key == "include_median") {
             if (auto v = katana::serde::parse_bool(cur)) {
                 obj.include_median = *v;
-            } else { cur.skip_value(); }
+            } else {
+                cur.skip_value();
+            }
         } else {
             cur.skip_value();
         }
         cur.try_comma();
     }
-    if (!has_values) return std::nullopt;
+    if (!has_values)
+        return std::nullopt;
     return obj;
 }
 
-[[nodiscard]] inline std::optional<StatsRequest> parse_StatsRequest(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsRequest> parse_StatsRequest(std::string_view json,
+                                                                    monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsRequest(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<StatsRequest_Values_t> parse_StatsRequest_Values_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<StatsRequest_Values_t>
+parse_StatsRequest_Values_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
     StatsRequest_Values_t result{arena_allocator<StatsRequest_Item_t>(arena)};
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
+        if (cur.try_array_end())
+            break;
         if (auto v = katana::serde::parse_double(cur)) {
             result.push_back(*v);
-        } else { cur.skip_value(); }
+        } else {
+            cur.skip_value();
+        }
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<StatsRequest_Values_t> parse_StatsRequest_Values_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsRequest_Values_t>
+parse_StatsRequest_Values_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsRequest_Values_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<StatsRequest_Item_t> parse_StatsRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsRequest_Item_t>
+parse_StatsRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_double(cur)) return StatsRequest_Item_t{*v};
+    if (auto v = katana::serde::parse_double(cur))
+        return StatsRequest_Item_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<StatsRequest_Item_t> parse_StatsRequest_Item_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsRequest_Item_t>
+parse_StatsRequest_Item_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsRequest_Item_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<StatsRequest_Include_median_t> parse_StatsRequest_Include_median_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsRequest_Include_median_t>
+parse_StatsRequest_Include_median_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_bool(cur)) return StatsRequest_Include_median_t{*v};
+    if (auto v = katana::serde::parse_bool(cur))
+        return StatsRequest_Include_median_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<StatsRequest_Include_median_t> parse_StatsRequest_Include_median_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsRequest_Include_median_t>
+parse_StatsRequest_Include_median_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsRequest_Include_median_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<StatsResponse> parse_StatsResponse(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_object_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<StatsResponse>
+parse_StatsResponse(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_object_start())
+        return std::nullopt;
 
     StatsResponse obj(arena);
 
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_object_end()) break;
+        if (cur.try_object_end())
+            break;
         auto key = cur.string();
-        if (!key || !cur.consume(':')) break;
+        if (!key || !cur.consume(':'))
+            break;
 
         switch (key->size()) {
         case 3:
             if (*key == "min") {
                 if (auto v = katana::serde::parse_double(cur)) {
                     obj.min = *v;
-                } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
             } else if (*key == "max") {
                 if (auto v = katana::serde::parse_double(cur)) {
                     obj.max = *v;
-                } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
             } else if (*key == "sum") {
                 if (auto v = katana::serde::parse_double(cur)) {
                     obj.sum = *v;
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 4:
             if (*key == "mean") {
                 if (auto v = katana::serde::parse_double(cur)) {
                     obj.mean = *v;
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 5:
             if (*key == "count") {
                 if (auto v = katana::serde::parse_int64(cur)) {
                     obj.count = *v;
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 6:
             if (*key == "median") {
                 if (auto v = katana::serde::parse_double(cur)) {
                     obj.median = *v;
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         default:
             cur.skip_value();
@@ -1110,79 +1865,100 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
     return obj;
 }
 
-[[nodiscard]] inline std::optional<StatsResponse> parse_StatsResponse(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsResponse> parse_StatsResponse(std::string_view json,
+                                                                      monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsResponse(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<StatsResponse_Min_t> parse_StatsResponse_Min_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsResponse_Min_t>
+parse_StatsResponse_Min_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_double(cur)) return StatsResponse_Min_t{*v};
+    if (auto v = katana::serde::parse_double(cur))
+        return StatsResponse_Min_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<StatsResponse_Min_t> parse_StatsResponse_Min_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsResponse_Min_t>
+parse_StatsResponse_Min_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsResponse_Min_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<StatsResponse_Max_t> parse_StatsResponse_Max_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsResponse_Max_t>
+parse_StatsResponse_Max_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_double(cur)) return StatsResponse_Max_t{*v};
+    if (auto v = katana::serde::parse_double(cur))
+        return StatsResponse_Max_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<StatsResponse_Max_t> parse_StatsResponse_Max_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsResponse_Max_t>
+parse_StatsResponse_Max_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsResponse_Max_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<StatsResponse_Mean_t> parse_StatsResponse_Mean_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsResponse_Mean_t>
+parse_StatsResponse_Mean_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_double(cur)) return StatsResponse_Mean_t{*v};
+    if (auto v = katana::serde::parse_double(cur))
+        return StatsResponse_Mean_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<StatsResponse_Mean_t> parse_StatsResponse_Mean_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsResponse_Mean_t>
+parse_StatsResponse_Mean_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsResponse_Mean_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<StatsResponse_Sum_t> parse_StatsResponse_Sum_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsResponse_Sum_t>
+parse_StatsResponse_Sum_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_double(cur)) return StatsResponse_Sum_t{*v};
+    if (auto v = katana::serde::parse_double(cur))
+        return StatsResponse_Sum_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<StatsResponse_Sum_t> parse_StatsResponse_Sum_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsResponse_Sum_t>
+parse_StatsResponse_Sum_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsResponse_Sum_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<StatsResponse_Count_t> parse_StatsResponse_Count_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsResponse_Count_t>
+parse_StatsResponse_Count_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return StatsResponse_Count_t{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return StatsResponse_Count_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<StatsResponse_Count_t> parse_StatsResponse_Count_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsResponse_Count_t>
+parse_StatsResponse_Count_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsResponse_Count_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<StatsResponse_Median_t> parse_StatsResponse_Median_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsResponse_Median_t>
+parse_StatsResponse_Median_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_double(cur)) return StatsResponse_Median_t{*v};
+    if (auto v = katana::serde::parse_double(cur))
+        return StatsResponse_Median_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<StatsResponse_Median_t> parse_StatsResponse_Median_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<StatsResponse_Median_t>
+parse_StatsResponse_Median_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsResponse_Median_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<RegisterRequest> parse_RegisterRequest(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_object_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<RegisterRequest>
+parse_RegisterRequest(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_object_start())
+        return std::nullopt;
 
     RegisterRequest obj(arena);
     bool has_username = false;
@@ -1191,57 +1967,87 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
 
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_object_end()) break;
+        if (cur.try_object_end())
+            break;
         auto key = cur.string();
-        if (!key || !cur.consume(':')) break;
+        if (!key || !cur.consume(':'))
+            break;
 
         switch (key->size()) {
         case 3:
             if (*key == "age") {
                 if (auto v = katana::serde::parse_int64(cur)) {
                     obj.age = *v;
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 4:
             if (*key == "role") {
                 if (auto v = cur.string()) {
-                    auto enum_val = UserRole_enum_from_string(std::string_view(v->begin(), v->end()));
-                    if (enum_val) obj.role = *enum_val;
-                } else { cur.skip_value(); }
+                    auto enum_val =
+                        UserRole_enum_from_string(std::string_view(v->begin(), v->end()));
+                    if (enum_val)
+                        obj.role = *enum_val;
+                } else {
+                    cur.skip_value();
+                }
             } else if (*key == "tags") {
                 if (cur.try_array_start()) {
                     while (!cur.eof()) {
                         cur.skip_ws();
-                        if (cur.try_array_end()) break;
+                        if (cur.try_array_end())
+                            break;
                         if (auto v = cur.string()) {
-                            obj.tags.emplace_back(v->begin(), v->end(), arena_allocator<char>(arena));
-                        } else { cur.skip_value(); }
+                            obj.tags.emplace_back(
+                                v->begin(), v->end(), arena_allocator<char>(arena));
+                        } else {
+                            cur.skip_value();
+                        }
                         cur.try_comma();
                     }
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 5:
             if (*key == "email") {
                 has_email = true;
                 if (auto v = cur.string()) {
                     obj.email = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 8:
             if (*key == "username") {
                 has_username = true;
                 if (auto v = cur.string()) {
-                    obj.username = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-                } else { cur.skip_value(); }
+                    obj.username =
+                        arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
+                } else {
+                    cur.skip_value();
+                }
             } else if (*key == "password") {
                 has_password = true;
                 if (auto v = cur.string()) {
-                    obj.password = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                    obj.password =
+                        arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         default:
             cur.skip_value();
@@ -1249,96 +2055,122 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
         }
         cur.try_comma();
     }
-    if (!has_username) return std::nullopt;
-    if (!has_email) return std::nullopt;
-    if (!has_password) return std::nullopt;
+    if (!has_username)
+        return std::nullopt;
+    if (!has_email)
+        return std::nullopt;
+    if (!has_password)
+        return std::nullopt;
     return obj;
 }
 
-[[nodiscard]] inline std::optional<RegisterRequest> parse_RegisterRequest(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<RegisterRequest> parse_RegisterRequest(std::string_view json,
+                                                                          monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_RegisterRequest(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<RegisterRequest_Username_t> parse_RegisterRequest_Username_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<RegisterRequest_Username_t>
+parse_RegisterRequest_Username_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return RegisterRequest_Username_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return RegisterRequest_Username_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<RegisterRequest_Username_t> parse_RegisterRequest_Username_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<RegisterRequest_Username_t>
+parse_RegisterRequest_Username_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_RegisterRequest_Username_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<RegisterRequest_Email_t> parse_RegisterRequest_Email_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<RegisterRequest_Email_t>
+parse_RegisterRequest_Email_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return RegisterRequest_Email_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return RegisterRequest_Email_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<RegisterRequest_Email_t> parse_RegisterRequest_Email_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<RegisterRequest_Email_t>
+parse_RegisterRequest_Email_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_RegisterRequest_Email_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<RegisterRequest_Password_t> parse_RegisterRequest_Password_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<RegisterRequest_Password_t>
+parse_RegisterRequest_Password_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return RegisterRequest_Password_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return RegisterRequest_Password_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<RegisterRequest_Password_t> parse_RegisterRequest_Password_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<RegisterRequest_Password_t>
+parse_RegisterRequest_Password_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_RegisterRequest_Password_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<RegisterRequest_Age_t> parse_RegisterRequest_Age_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<RegisterRequest_Age_t>
+parse_RegisterRequest_Age_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return RegisterRequest_Age_t{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return RegisterRequest_Age_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<RegisterRequest_Age_t> parse_RegisterRequest_Age_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<RegisterRequest_Age_t>
+parse_RegisterRequest_Age_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_RegisterRequest_Age_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<RegisterRequest_Tags_t> parse_RegisterRequest_Tags_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<RegisterRequest_Tags_t>
+parse_RegisterRequest_Tags_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
     RegisterRequest_Tags_t result{arena_allocator<RegisterRequest_Item_t>(arena)};
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
+        if (cur.try_array_end())
+            break;
         if (auto v = cur.string()) {
             result.emplace_back(v->begin(), v->end(), arena_allocator<char>(arena));
-        } else { cur.skip_value(); }
+        } else {
+            cur.skip_value();
+        }
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<RegisterRequest_Tags_t> parse_RegisterRequest_Tags_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<RegisterRequest_Tags_t>
+parse_RegisterRequest_Tags_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_RegisterRequest_Tags_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<RegisterRequest_Item_t> parse_RegisterRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<RegisterRequest_Item_t>
+parse_RegisterRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return RegisterRequest_Item_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return RegisterRequest_Item_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<RegisterRequest_Item_t> parse_RegisterRequest_Item_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<RegisterRequest_Item_t>
+parse_RegisterRequest_Item_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_RegisterRequest_Item_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<UserRole> parse_UserRole(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UserRole> parse_UserRole(katana::serde::json_cursor& cur,
+                                                            monotonic_arena* arena) {
     (void)arena;
     if (auto v = cur.string()) {
         return UserRole_enum_from_string(std::string_view(v->begin(), v->end()));
@@ -1346,13 +2178,16 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<UserRole> parse_UserRole(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UserRole> parse_UserRole(std::string_view json,
+                                                            monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UserRole(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<UserResponse> parse_UserResponse(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_object_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<UserResponse> parse_UserResponse(katana::serde::json_cursor& cur,
+                                                                    monotonic_arena* arena) {
+    if (!cur.try_object_start())
+        return std::nullopt;
 
     UserResponse obj(arena);
     bool has_id = false;
@@ -1363,9 +2198,11 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
 
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_object_end()) break;
+        if (cur.try_object_end())
+            break;
         auto key = cur.string();
-        if (!key || !cur.consume(':')) break;
+        if (!key || !cur.consume(':'))
+            break;
 
         switch (key->size()) {
         case 2:
@@ -1373,41 +2210,65 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
                 has_id = true;
                 if (auto v = cur.string()) {
                     obj.id = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 4:
             if (*key == "role") {
                 has_role = true;
                 if (auto v = cur.string()) {
-                    auto enum_val = UserRole_enum_from_string(std::string_view(v->begin(), v->end()));
-                    if (enum_val) obj.role = *enum_val;
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                    auto enum_val =
+                        UserRole_enum_from_string(std::string_view(v->begin(), v->end()));
+                    if (enum_val)
+                        obj.role = *enum_val;
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 5:
             if (*key == "email") {
                 has_email = true;
                 if (auto v = cur.string()) {
                     obj.email = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 8:
             if (*key == "username") {
                 has_username = true;
                 if (auto v = cur.string()) {
-                    obj.username = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                    obj.username =
+                        arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 10:
             if (*key == "created_at") {
                 has_created_at = true;
                 if (auto v = cur.string()) {
-                    obj.created_at = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                    obj.created_at =
+                        arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         default:
             cur.skip_value();
@@ -1415,68 +2276,87 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
         }
         cur.try_comma();
     }
-    if (!has_id) return std::nullopt;
-    if (!has_username) return std::nullopt;
-    if (!has_email) return std::nullopt;
-    if (!has_role) return std::nullopt;
-    if (!has_created_at) return std::nullopt;
+    if (!has_id)
+        return std::nullopt;
+    if (!has_username)
+        return std::nullopt;
+    if (!has_email)
+        return std::nullopt;
+    if (!has_role)
+        return std::nullopt;
+    if (!has_created_at)
+        return std::nullopt;
     return obj;
 }
 
-[[nodiscard]] inline std::optional<UserResponse> parse_UserResponse(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UserResponse> parse_UserResponse(std::string_view json,
+                                                                    monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UserResponse(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<UserResponse_Id_t> parse_UserResponse_Id_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UserResponse_Id_t>
+parse_UserResponse_Id_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return UserResponse_Id_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return UserResponse_Id_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<UserResponse_Id_t> parse_UserResponse_Id_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UserResponse_Id_t>
+parse_UserResponse_Id_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UserResponse_Id_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<UserResponse_Username_t> parse_UserResponse_Username_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UserResponse_Username_t>
+parse_UserResponse_Username_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return UserResponse_Username_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return UserResponse_Username_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<UserResponse_Username_t> parse_UserResponse_Username_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UserResponse_Username_t>
+parse_UserResponse_Username_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UserResponse_Username_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<UserResponse_Email_t> parse_UserResponse_Email_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UserResponse_Email_t>
+parse_UserResponse_Email_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return UserResponse_Email_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return UserResponse_Email_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<UserResponse_Email_t> parse_UserResponse_Email_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UserResponse_Email_t>
+parse_UserResponse_Email_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UserResponse_Email_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<UserResponse_Created_at_t> parse_UserResponse_Created_at_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UserResponse_Created_at_t>
+parse_UserResponse_Created_at_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return UserResponse_Created_at_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return UserResponse_Created_at_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<UserResponse_Created_at_t> parse_UserResponse_Created_at_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UserResponse_Created_at_t>
+parse_UserResponse_Created_at_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UserResponse_Created_at_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<ItemCategory> parse_ItemCategory(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemCategory> parse_ItemCategory(katana::serde::json_cursor& cur,
+                                                                    monotonic_arena* arena) {
     (void)arena;
     if (auto v = cur.string()) {
         return ItemCategory_enum_from_string(std::string_view(v->begin(), v->end()));
@@ -1484,13 +2364,16 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<ItemCategory> parse_ItemCategory(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemCategory> parse_ItemCategory(std::string_view json,
+                                                                    monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemCategory(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<Item> parse_Item(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_object_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<Item> parse_Item(katana::serde::json_cursor& cur,
+                                                    monotonic_arena* arena) {
+    if (!cur.try_object_start())
+        return std::nullopt;
 
     Item obj(arena);
     bool has_id = false;
@@ -1500,9 +2383,11 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
 
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_object_end()) break;
+        if (cur.try_object_end())
+            break;
         auto key = cur.string();
-        if (!key || !cur.consume(':')) break;
+        if (!key || !cur.consume(':'))
+            break;
 
         switch (key->size()) {
         case 2:
@@ -1510,59 +2395,92 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
                 has_id = true;
                 if (auto v = katana::serde::parse_int64(cur)) {
                     obj.id = *v;
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 4:
             if (*key == "name") {
                 has_name = true;
                 if (auto v = cur.string()) {
                     obj.name = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-                } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
             } else if (*key == "tags") {
                 if (cur.try_array_start()) {
                     while (!cur.eof()) {
                         cur.skip_ws();
-                        if (cur.try_array_end()) break;
+                        if (cur.try_array_end())
+                            break;
                         if (auto v = cur.string()) {
-                            obj.tags.emplace_back(v->begin(), v->end(), arena_allocator<char>(arena));
-                        } else { cur.skip_value(); }
+                            obj.tags.emplace_back(
+                                v->begin(), v->end(), arena_allocator<char>(arena));
+                        } else {
+                            cur.skip_value();
+                        }
                         cur.try_comma();
                     }
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 5:
             if (*key == "price") {
                 has_price = true;
                 if (auto v = katana::serde::parse_double(cur)) {
                     obj.price = *v;
-                } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
             } else if (*key == "stock") {
                 if (auto v = katana::serde::parse_int64(cur)) {
                     obj.stock = *v;
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 8:
             if (*key == "category") {
                 has_category = true;
                 if (auto v = cur.string()) {
-                    auto enum_val = ItemCategory_enum_from_string(std::string_view(v->begin(), v->end()));
-                    if (enum_val) obj.category = *enum_val;
-                } else { cur.skip_value(); }
+                    auto enum_val =
+                        ItemCategory_enum_from_string(std::string_view(v->begin(), v->end()));
+                    if (enum_val)
+                        obj.category = *enum_val;
+                } else {
+                    cur.skip_value();
+                }
             } else if (*key == "metadata") {
                 if (auto nested = parse_ItemMetadata(cur, arena)) {
                     obj.metadata = *nested;
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 11:
             if (*key == "description") {
                 if (auto v = cur.string()) {
-                    obj.description = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                    obj.description =
+                        arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         default:
             cur.skip_value();
@@ -1570,10 +2488,14 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
         }
         cur.try_comma();
     }
-    if (!has_id) return std::nullopt;
-    if (!has_name) return std::nullopt;
-    if (!has_price) return std::nullopt;
-    if (!has_category) return std::nullopt;
+    if (!has_id)
+        return std::nullopt;
+    if (!has_name)
+        return std::nullopt;
+    if (!has_price)
+        return std::nullopt;
+    if (!has_category)
+        return std::nullopt;
     return obj;
 }
 
@@ -1582,133 +2504,177 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
     return parse_Item(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<Item_Id_t> parse_Item_Id_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<Item_Id_t> parse_Item_Id_t(katana::serde::json_cursor& cur,
+                                                              monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return Item_Id_t{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return Item_Id_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<Item_Id_t> parse_Item_Id_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<Item_Id_t> parse_Item_Id_t(std::string_view json,
+                                                              monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_Item_Id_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<Item_Name_t> parse_Item_Name_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<Item_Name_t> parse_Item_Name_t(katana::serde::json_cursor& cur,
+                                                                  monotonic_arena* arena) {
     if (auto v = cur.string()) {
         return Item_Name_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<Item_Name_t> parse_Item_Name_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<Item_Name_t> parse_Item_Name_t(std::string_view json,
+                                                                  monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_Item_Name_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<Item_Description_t> parse_Item_Description_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<Item_Description_t>
+parse_Item_Description_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return Item_Description_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return Item_Description_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<Item_Description_t> parse_Item_Description_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<Item_Description_t>
+parse_Item_Description_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_Item_Description_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<Item_Price_t> parse_Item_Price_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<Item_Price_t> parse_Item_Price_t(katana::serde::json_cursor& cur,
+                                                                    monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_double(cur)) return Item_Price_t{*v};
+    if (auto v = katana::serde::parse_double(cur))
+        return Item_Price_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<Item_Price_t> parse_Item_Price_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<Item_Price_t> parse_Item_Price_t(std::string_view json,
+                                                                    monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_Item_Price_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<Item_Stock_t> parse_Item_Stock_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<Item_Stock_t> parse_Item_Stock_t(katana::serde::json_cursor& cur,
+                                                                    monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return Item_Stock_t{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return Item_Stock_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<Item_Stock_t> parse_Item_Stock_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<Item_Stock_t> parse_Item_Stock_t(std::string_view json,
+                                                                    monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_Item_Stock_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<Item_Tags_t> parse_Item_Tags_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<Item_Tags_t> parse_Item_Tags_t(katana::serde::json_cursor& cur,
+                                                                  monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
     Item_Tags_t result{arena_allocator<Item_Item_t>(arena)};
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
+        if (cur.try_array_end())
+            break;
         if (auto v = cur.string()) {
             result.emplace_back(v->begin(), v->end(), arena_allocator<char>(arena));
-        } else { cur.skip_value(); }
+        } else {
+            cur.skip_value();
+        }
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<Item_Tags_t> parse_Item_Tags_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<Item_Tags_t> parse_Item_Tags_t(std::string_view json,
+                                                                  monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_Item_Tags_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<Item_Item_t> parse_Item_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<Item_Item_t> parse_Item_Item_t(katana::serde::json_cursor& cur,
+                                                                  monotonic_arena* arena) {
     if (auto v = cur.string()) {
         return Item_Item_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<Item_Item_t> parse_Item_Item_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<Item_Item_t> parse_Item_Item_t(std::string_view json,
+                                                                  monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_Item_Item_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<ItemMetadata> parse_ItemMetadata(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_object_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<ItemMetadata> parse_ItemMetadata(katana::serde::json_cursor& cur,
+                                                                    monotonic_arena* arena) {
+    if (!cur.try_object_start())
+        return std::nullopt;
 
     ItemMetadata obj(arena);
 
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_object_end()) break;
+        if (cur.try_object_end())
+            break;
         auto key = cur.string();
-        if (!key || !cur.consume(':')) break;
+        if (!key || !cur.consume(':'))
+            break;
 
         switch (key->size()) {
         case 3:
             if (*key == "sku") {
                 if (auto v = cur.string()) {
                     obj.sku = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 9:
             if (*key == "weight_kg") {
                 if (auto v = katana::serde::parse_double(cur)) {
                     obj.weight_kg = *v;
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 10:
             if (*key == "dimensions") {
                 if (auto v = cur.string()) {
-                    obj.dimensions = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                    obj.dimensions =
+                        arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 12:
             if (*key == "manufacturer") {
                 if (auto v = cur.string()) {
-                    obj.manufacturer = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                    obj.manufacturer =
+                        arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         default:
             cur.skip_value();
@@ -1719,60 +2685,75 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
     return obj;
 }
 
-[[nodiscard]] inline std::optional<ItemMetadata> parse_ItemMetadata(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemMetadata> parse_ItemMetadata(std::string_view json,
+                                                                    monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemMetadata(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<ItemMetadata_Weight_kg_t> parse_ItemMetadata_Weight_kg_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemMetadata_Weight_kg_t>
+parse_ItemMetadata_Weight_kg_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_double(cur)) return ItemMetadata_Weight_kg_t{*v};
+    if (auto v = katana::serde::parse_double(cur))
+        return ItemMetadata_Weight_kg_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<ItemMetadata_Weight_kg_t> parse_ItemMetadata_Weight_kg_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemMetadata_Weight_kg_t>
+parse_ItemMetadata_Weight_kg_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemMetadata_Weight_kg_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<ItemMetadata_Dimensions_t> parse_ItemMetadata_Dimensions_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemMetadata_Dimensions_t>
+parse_ItemMetadata_Dimensions_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return ItemMetadata_Dimensions_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return ItemMetadata_Dimensions_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<ItemMetadata_Dimensions_t> parse_ItemMetadata_Dimensions_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemMetadata_Dimensions_t>
+parse_ItemMetadata_Dimensions_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemMetadata_Dimensions_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<ItemMetadata_Manufacturer_t> parse_ItemMetadata_Manufacturer_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemMetadata_Manufacturer_t>
+parse_ItemMetadata_Manufacturer_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return ItemMetadata_Manufacturer_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return ItemMetadata_Manufacturer_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<ItemMetadata_Manufacturer_t> parse_ItemMetadata_Manufacturer_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemMetadata_Manufacturer_t>
+parse_ItemMetadata_Manufacturer_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemMetadata_Manufacturer_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<ItemMetadata_Sku_t> parse_ItemMetadata_Sku_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemMetadata_Sku_t>
+parse_ItemMetadata_Sku_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return ItemMetadata_Sku_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return ItemMetadata_Sku_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<ItemMetadata_Sku_t> parse_ItemMetadata_Sku_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemMetadata_Sku_t>
+parse_ItemMetadata_Sku_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemMetadata_Sku_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<CreateItemRequest> parse_CreateItemRequest(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_object_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<CreateItemRequest>
+parse_CreateItemRequest(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_object_start())
+        return std::nullopt;
 
     CreateItemRequest obj(arena);
     bool has_name = false;
@@ -1781,9 +2762,11 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
 
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_object_end()) break;
+        if (cur.try_object_end())
+            break;
         auto key = cur.string();
-        if (!key || !cur.consume(':')) break;
+        if (!key || !cur.consume(':'))
+            break;
 
         switch (key->size()) {
         case 4:
@@ -1791,51 +2774,80 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
                 has_name = true;
                 if (auto v = cur.string()) {
                     obj.name = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-                } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
             } else if (*key == "tags") {
                 if (cur.try_array_start()) {
                     while (!cur.eof()) {
                         cur.skip_ws();
-                        if (cur.try_array_end()) break;
+                        if (cur.try_array_end())
+                            break;
                         if (auto v = cur.string()) {
-                            obj.tags.emplace_back(v->begin(), v->end(), arena_allocator<char>(arena));
-                        } else { cur.skip_value(); }
+                            obj.tags.emplace_back(
+                                v->begin(), v->end(), arena_allocator<char>(arena));
+                        } else {
+                            cur.skip_value();
+                        }
                         cur.try_comma();
                     }
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 5:
             if (*key == "price") {
                 has_price = true;
                 if (auto v = katana::serde::parse_double(cur)) {
                     obj.price = *v;
-                } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
             } else if (*key == "stock") {
                 if (auto v = katana::serde::parse_int64(cur)) {
                     obj.stock = *v;
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 8:
             if (*key == "category") {
                 has_category = true;
                 if (auto v = cur.string()) {
-                    auto enum_val = ItemCategory_enum_from_string(std::string_view(v->begin(), v->end()));
-                    if (enum_val) obj.category = *enum_val;
-                } else { cur.skip_value(); }
+                    auto enum_val =
+                        ItemCategory_enum_from_string(std::string_view(v->begin(), v->end()));
+                    if (enum_val)
+                        obj.category = *enum_val;
+                } else {
+                    cur.skip_value();
+                }
             } else if (*key == "metadata") {
                 if (auto nested = parse_ItemMetadata(cur, arena)) {
                     obj.metadata = *nested;
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 11:
             if (*key == "description") {
                 if (auto v = cur.string()) {
-                    obj.description = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                    obj.description =
+                        arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         default:
             cur.skip_value();
@@ -1843,149 +2855,205 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
         }
         cur.try_comma();
     }
-    if (!has_name) return std::nullopt;
-    if (!has_price) return std::nullopt;
-    if (!has_category) return std::nullopt;
+    if (!has_name)
+        return std::nullopt;
+    if (!has_price)
+        return std::nullopt;
+    if (!has_category)
+        return std::nullopt;
     return obj;
 }
 
-[[nodiscard]] inline std::optional<CreateItemRequest> parse_CreateItemRequest(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<CreateItemRequest>
+parse_CreateItemRequest(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_CreateItemRequest(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<CreateItemRequest_Name_t> parse_CreateItemRequest_Name_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<CreateItemRequest_Name_t>
+parse_CreateItemRequest_Name_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return CreateItemRequest_Name_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return CreateItemRequest_Name_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<CreateItemRequest_Name_t> parse_CreateItemRequest_Name_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<CreateItemRequest_Name_t>
+parse_CreateItemRequest_Name_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_CreateItemRequest_Name_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<CreateItemRequest_Description_t> parse_CreateItemRequest_Description_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<CreateItemRequest_Description_t>
+parse_CreateItemRequest_Description_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return CreateItemRequest_Description_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return CreateItemRequest_Description_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<CreateItemRequest_Description_t> parse_CreateItemRequest_Description_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<CreateItemRequest_Description_t>
+parse_CreateItemRequest_Description_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_CreateItemRequest_Description_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<CreateItemRequest_Price_t> parse_CreateItemRequest_Price_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<CreateItemRequest_Price_t>
+parse_CreateItemRequest_Price_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_double(cur)) return CreateItemRequest_Price_t{*v};
+    if (auto v = katana::serde::parse_double(cur))
+        return CreateItemRequest_Price_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<CreateItemRequest_Price_t> parse_CreateItemRequest_Price_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<CreateItemRequest_Price_t>
+parse_CreateItemRequest_Price_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_CreateItemRequest_Price_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<CreateItemRequest_Stock_t> parse_CreateItemRequest_Stock_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<CreateItemRequest_Stock_t>
+parse_CreateItemRequest_Stock_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return CreateItemRequest_Stock_t{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return CreateItemRequest_Stock_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<CreateItemRequest_Stock_t> parse_CreateItemRequest_Stock_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<CreateItemRequest_Stock_t>
+parse_CreateItemRequest_Stock_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_CreateItemRequest_Stock_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<CreateItemRequest_Tags_t> parse_CreateItemRequest_Tags_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<CreateItemRequest_Tags_t>
+parse_CreateItemRequest_Tags_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
     CreateItemRequest_Tags_t result{arena_allocator<CreateItemRequest_Item_t>(arena)};
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
+        if (cur.try_array_end())
+            break;
         if (auto v = cur.string()) {
             result.emplace_back(v->begin(), v->end(), arena_allocator<char>(arena));
-        } else { cur.skip_value(); }
+        } else {
+            cur.skip_value();
+        }
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<CreateItemRequest_Tags_t> parse_CreateItemRequest_Tags_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<CreateItemRequest_Tags_t>
+parse_CreateItemRequest_Tags_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_CreateItemRequest_Tags_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<CreateItemRequest_Item_t> parse_CreateItemRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<CreateItemRequest_Item_t>
+parse_CreateItemRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return CreateItemRequest_Item_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return CreateItemRequest_Item_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<CreateItemRequest_Item_t> parse_CreateItemRequest_Item_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<CreateItemRequest_Item_t>
+parse_CreateItemRequest_Item_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_CreateItemRequest_Item_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<UpdateItemRequest> parse_UpdateItemRequest(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_object_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<UpdateItemRequest>
+parse_UpdateItemRequest(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_object_start())
+        return std::nullopt;
 
     UpdateItemRequest obj(arena);
 
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_object_end()) break;
+        if (cur.try_object_end())
+            break;
         auto key = cur.string();
-        if (!key || !cur.consume(':')) break;
+        if (!key || !cur.consume(':'))
+            break;
 
         switch (key->size()) {
         case 4:
             if (*key == "name") {
                 if (auto v = cur.string()) {
                     obj.name = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-                } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
             } else if (*key == "tags") {
                 if (cur.try_array_start()) {
                     while (!cur.eof()) {
                         cur.skip_ws();
-                        if (cur.try_array_end()) break;
+                        if (cur.try_array_end())
+                            break;
                         if (auto v = cur.string()) {
-                            obj.tags.emplace_back(v->begin(), v->end(), arena_allocator<char>(arena));
-                        } else { cur.skip_value(); }
+                            obj.tags.emplace_back(
+                                v->begin(), v->end(), arena_allocator<char>(arena));
+                        } else {
+                            cur.skip_value();
+                        }
                         cur.try_comma();
                     }
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 5:
             if (*key == "price") {
                 if (auto v = katana::serde::parse_double(cur)) {
                     obj.price = *v;
-                } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
             } else if (*key == "stock") {
                 if (auto v = katana::serde::parse_int64(cur)) {
                     obj.stock = *v;
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 8:
             if (*key == "category") {
                 if (auto v = cur.string()) {
-                    auto enum_val = ItemCategory_enum_from_string(std::string_view(v->begin(), v->end()));
-                    if (enum_val) obj.category = *enum_val;
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                    auto enum_val =
+                        ItemCategory_enum_from_string(std::string_view(v->begin(), v->end()));
+                    if (enum_val)
+                        obj.category = *enum_val;
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 11:
             if (*key == "description") {
                 if (auto v = cur.string()) {
-                    obj.description = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                    obj.description =
+                        arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         default:
             cur.skip_value();
@@ -1996,90 +3064,114 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
     return obj;
 }
 
-[[nodiscard]] inline std::optional<UpdateItemRequest> parse_UpdateItemRequest(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UpdateItemRequest>
+parse_UpdateItemRequest(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UpdateItemRequest(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<UpdateItemRequest_Name_t> parse_UpdateItemRequest_Name_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UpdateItemRequest_Name_t>
+parse_UpdateItemRequest_Name_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return UpdateItemRequest_Name_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return UpdateItemRequest_Name_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<UpdateItemRequest_Name_t> parse_UpdateItemRequest_Name_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UpdateItemRequest_Name_t>
+parse_UpdateItemRequest_Name_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UpdateItemRequest_Name_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<UpdateItemRequest_Description_t> parse_UpdateItemRequest_Description_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UpdateItemRequest_Description_t>
+parse_UpdateItemRequest_Description_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return UpdateItemRequest_Description_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return UpdateItemRequest_Description_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<UpdateItemRequest_Description_t> parse_UpdateItemRequest_Description_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UpdateItemRequest_Description_t>
+parse_UpdateItemRequest_Description_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UpdateItemRequest_Description_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<UpdateItemRequest_Price_t> parse_UpdateItemRequest_Price_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UpdateItemRequest_Price_t>
+parse_UpdateItemRequest_Price_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_double(cur)) return UpdateItemRequest_Price_t{*v};
+    if (auto v = katana::serde::parse_double(cur))
+        return UpdateItemRequest_Price_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<UpdateItemRequest_Price_t> parse_UpdateItemRequest_Price_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UpdateItemRequest_Price_t>
+parse_UpdateItemRequest_Price_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UpdateItemRequest_Price_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<UpdateItemRequest_Stock_t> parse_UpdateItemRequest_Stock_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UpdateItemRequest_Stock_t>
+parse_UpdateItemRequest_Stock_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return UpdateItemRequest_Stock_t{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return UpdateItemRequest_Stock_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<UpdateItemRequest_Stock_t> parse_UpdateItemRequest_Stock_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UpdateItemRequest_Stock_t>
+parse_UpdateItemRequest_Stock_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UpdateItemRequest_Stock_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<UpdateItemRequest_Tags_t> parse_UpdateItemRequest_Tags_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<UpdateItemRequest_Tags_t>
+parse_UpdateItemRequest_Tags_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
     UpdateItemRequest_Tags_t result{arena_allocator<UpdateItemRequest_Item_t>(arena)};
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
+        if (cur.try_array_end())
+            break;
         if (auto v = cur.string()) {
             result.emplace_back(v->begin(), v->end(), arena_allocator<char>(arena));
-        } else { cur.skip_value(); }
+        } else {
+            cur.skip_value();
+        }
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<UpdateItemRequest_Tags_t> parse_UpdateItemRequest_Tags_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UpdateItemRequest_Tags_t>
+parse_UpdateItemRequest_Tags_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UpdateItemRequest_Tags_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<UpdateItemRequest_Item_t> parse_UpdateItemRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UpdateItemRequest_Item_t>
+parse_UpdateItemRequest_Item_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return UpdateItemRequest_Item_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return UpdateItemRequest_Item_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<UpdateItemRequest_Item_t> parse_UpdateItemRequest_Item_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<UpdateItemRequest_Item_t>
+parse_UpdateItemRequest_Item_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UpdateItemRequest_Item_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<ItemList> parse_ItemList(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_object_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<ItemList> parse_ItemList(katana::serde::json_cursor& cur,
+                                                            monotonic_arena* arena) {
+    if (!cur.try_object_start())
+        return std::nullopt;
 
     ItemList obj(arena);
     bool has_items = false;
@@ -2087,9 +3179,11 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
 
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_object_end()) break;
+        if (cur.try_object_end())
+            break;
         auto key = cur.string();
-        if (!key || !cur.consume(':')) break;
+        if (!key || !cur.consume(':'))
+            break;
 
         switch (key->size()) {
         case 5:
@@ -2098,29 +3192,45 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
                 if (cur.try_array_start()) {
                     while (!cur.eof()) {
                         cur.skip_ws();
-                        if (cur.try_array_end()) break;
-                        if (auto nested = parse_Item(cur, arena)) { obj.items.push_back(*nested); }
-                        else { cur.skip_value(); }
+                        if (cur.try_array_end())
+                            break;
+                        if (auto nested = parse_Item(cur, arena)) {
+                            obj.items.push_back(*nested);
+                        } else {
+                            cur.skip_value();
+                        }
                         cur.try_comma();
                     }
-                } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
             } else if (*key == "total") {
                 has_total = true;
                 if (auto v = katana::serde::parse_int64(cur)) {
                     obj.total = *v;
-                } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
             } else if (*key == "limit") {
                 if (auto v = katana::serde::parse_int64(cur)) {
                     obj.limit = *v;
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         case 6:
             if (*key == "offset") {
                 if (auto v = katana::serde::parse_int64(cur)) {
                     obj.offset = *v;
-                } else { cur.skip_value(); }
-            } else { cur.skip_value(); }
+                } else {
+                    cur.skip_value();
+                }
+            } else {
+                cur.skip_value();
+            }
             break;
         default:
             cur.skip_value();
@@ -2128,296 +3238,380 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
         }
         cur.try_comma();
     }
-    if (!has_items) return std::nullopt;
-    if (!has_total) return std::nullopt;
+    if (!has_items)
+        return std::nullopt;
+    if (!has_total)
+        return std::nullopt;
     return obj;
 }
 
-[[nodiscard]] inline std::optional<ItemList> parse_ItemList(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemList> parse_ItemList(std::string_view json,
+                                                            monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemList(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<ItemList_Items_t> parse_ItemList_Items_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<ItemList_Items_t>
+parse_ItemList_Items_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
     ItemList_Items_t result{arena_allocator<Item>(arena)};
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        if (auto parsed = parse_Item(cur, arena)) result.push_back(*parsed);
-        else cur.skip_value();
+        if (cur.try_array_end())
+            break;
+        if (auto parsed = parse_Item(cur, arena))
+            result.push_back(*parsed);
+        else
+            cur.skip_value();
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<ItemList_Items_t> parse_ItemList_Items_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemList_Items_t>
+parse_ItemList_Items_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemList_Items_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<ItemList_Total_t> parse_ItemList_Total_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemList_Total_t>
+parse_ItemList_Total_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return ItemList_Total_t{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return ItemList_Total_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<ItemList_Total_t> parse_ItemList_Total_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemList_Total_t>
+parse_ItemList_Total_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemList_Total_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<ItemList_Limit_t> parse_ItemList_Limit_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemList_Limit_t>
+parse_ItemList_Limit_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return ItemList_Limit_t{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return ItemList_Limit_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<ItemList_Limit_t> parse_ItemList_Limit_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemList_Limit_t>
+parse_ItemList_Limit_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemList_Limit_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<ItemList_Offset_t> parse_ItemList_Offset_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemList_Offset_t>
+parse_ItemList_Offset_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return ItemList_Offset_t{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return ItemList_Offset_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<ItemList_Offset_t> parse_ItemList_Offset_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<ItemList_Offset_t>
+parse_ItemList_Offset_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemList_Offset_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<EchoRequest> parse_EchoRequest(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_object_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<EchoRequest> parse_EchoRequest(katana::serde::json_cursor& cur,
+                                                                  monotonic_arena* arena) {
+    if (!cur.try_object_start())
+        return std::nullopt;
 
     EchoRequest obj(arena);
     bool has_message = false;
 
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_object_end()) break;
+        if (cur.try_object_end())
+            break;
         auto key = cur.string();
-        if (!key || !cur.consume(':')) break;
+        if (!key || !cur.consume(':'))
+            break;
 
         if (*key == "message") {
             has_message = true;
             if (auto v = cur.string()) {
                 obj.message = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-            } else { cur.skip_value(); }
-        } else         if (*key == "repeat") {
+            } else {
+                cur.skip_value();
+            }
+        } else if (*key == "repeat") {
             if (auto v = katana::serde::parse_int64(cur)) {
                 obj.repeat = *v;
-            } else { cur.skip_value(); }
-        } else         if (*key == "uppercase") {
+            } else {
+                cur.skip_value();
+            }
+        } else if (*key == "uppercase") {
             if (auto v = katana::serde::parse_bool(cur)) {
                 obj.uppercase = *v;
-            } else { cur.skip_value(); }
+            } else {
+                cur.skip_value();
+            }
         } else {
             cur.skip_value();
         }
         cur.try_comma();
     }
-    if (!has_message) return std::nullopt;
+    if (!has_message)
+        return std::nullopt;
     return obj;
 }
 
-[[nodiscard]] inline std::optional<EchoRequest> parse_EchoRequest(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<EchoRequest> parse_EchoRequest(std::string_view json,
+                                                                  monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_EchoRequest(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<EchoRequest_Message_t> parse_EchoRequest_Message_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<EchoRequest_Message_t>
+parse_EchoRequest_Message_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return EchoRequest_Message_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return EchoRequest_Message_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<EchoRequest_Message_t> parse_EchoRequest_Message_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<EchoRequest_Message_t>
+parse_EchoRequest_Message_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_EchoRequest_Message_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<EchoRequest_Repeat_t> parse_EchoRequest_Repeat_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<EchoRequest_Repeat_t>
+parse_EchoRequest_Repeat_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return EchoRequest_Repeat_t{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return EchoRequest_Repeat_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<EchoRequest_Repeat_t> parse_EchoRequest_Repeat_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<EchoRequest_Repeat_t>
+parse_EchoRequest_Repeat_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_EchoRequest_Repeat_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<EchoRequest_Uppercase_t> parse_EchoRequest_Uppercase_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<EchoRequest_Uppercase_t>
+parse_EchoRequest_Uppercase_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_bool(cur)) return EchoRequest_Uppercase_t{*v};
+    if (auto v = katana::serde::parse_bool(cur))
+        return EchoRequest_Uppercase_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<EchoRequest_Uppercase_t> parse_EchoRequest_Uppercase_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<EchoRequest_Uppercase_t>
+parse_EchoRequest_Uppercase_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_EchoRequest_Uppercase_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<EchoResponse> parse_EchoResponse(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_object_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<EchoResponse> parse_EchoResponse(katana::serde::json_cursor& cur,
+                                                                    monotonic_arena* arena) {
+    if (!cur.try_object_start())
+        return std::nullopt;
 
     EchoResponse obj(arena);
     bool has_message = false;
 
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_object_end()) break;
+        if (cur.try_object_end())
+            break;
         auto key = cur.string();
-        if (!key || !cur.consume(':')) break;
+        if (!key || !cur.consume(':'))
+            break;
 
         if (*key == "message") {
             has_message = true;
             if (auto v = cur.string()) {
                 obj.message = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-            } else { cur.skip_value(); }
-        } else         if (*key == "length") {
+            } else {
+                cur.skip_value();
+            }
+        } else if (*key == "length") {
             if (auto v = katana::serde::parse_int64(cur)) {
                 obj.length = *v;
-            } else { cur.skip_value(); }
+            } else {
+                cur.skip_value();
+            }
         } else {
             cur.skip_value();
         }
         cur.try_comma();
     }
-    if (!has_message) return std::nullopt;
+    if (!has_message)
+        return std::nullopt;
     return obj;
 }
 
-[[nodiscard]] inline std::optional<EchoResponse> parse_EchoResponse(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<EchoResponse> parse_EchoResponse(std::string_view json,
+                                                                    monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_EchoResponse(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<EchoResponse_Message_t> parse_EchoResponse_Message_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<EchoResponse_Message_t>
+parse_EchoResponse_Message_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return EchoResponse_Message_t{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return EchoResponse_Message_t{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<EchoResponse_Message_t> parse_EchoResponse_Message_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<EchoResponse_Message_t>
+parse_EchoResponse_Message_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_EchoResponse_Message_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<EchoResponse_Length_t> parse_EchoResponse_Length_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<EchoResponse_Length_t>
+parse_EchoResponse_Length_t(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return EchoResponse_Length_t{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return EchoResponse_Length_t{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<EchoResponse_Length_t> parse_EchoResponse_Length_t(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<EchoResponse_Length_t>
+parse_EchoResponse_Length_t(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_EchoResponse_Length_t(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<list_items_param_limit> parse_list_items_param_limit(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<list_items_param_limit>
+parse_list_items_param_limit(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return list_items_param_limit{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return list_items_param_limit{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<list_items_param_limit> parse_list_items_param_limit(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<list_items_param_limit>
+parse_list_items_param_limit(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_list_items_param_limit(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<list_items_param_offset> parse_list_items_param_offset(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<list_items_param_offset>
+parse_list_items_param_offset(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return list_items_param_offset{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return list_items_param_offset{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<list_items_param_offset> parse_list_items_param_offset(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<list_items_param_offset>
+parse_list_items_param_offset(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_list_items_param_offset(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<create_item_param_X_Request_Id> parse_create_item_param_X_Request_Id(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<create_item_param_X_Request_Id>
+parse_create_item_param_X_Request_Id(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return create_item_param_X_Request_Id{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return create_item_param_X_Request_Id{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<create_item_param_X_Request_Id> parse_create_item_param_X_Request_Id(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<create_item_param_X_Request_Id>
+parse_create_item_param_X_Request_Id(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_create_item_param_X_Request_Id(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<create_item_param_session> parse_create_item_param_session(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<create_item_param_session>
+parse_create_item_param_session(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return create_item_param_session{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return create_item_param_session{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<create_item_param_session> parse_create_item_param_session(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<create_item_param_session>
+parse_create_item_param_session(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_create_item_param_session(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<get_item_param_id> parse_get_item_param_id(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<get_item_param_id>
+parse_get_item_param_id(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return get_item_param_id{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return get_item_param_id{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<get_item_param_id> parse_get_item_param_id(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<get_item_param_id>
+parse_get_item_param_id(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_get_item_param_id(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<update_item_param_id> parse_update_item_param_id(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<update_item_param_id>
+parse_update_item_param_id(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return update_item_param_id{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return update_item_param_id{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<update_item_param_id> parse_update_item_param_id(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<update_item_param_id>
+parse_update_item_param_id(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_update_item_param_id(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<delete_item_param_id> parse_delete_item_param_id(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<delete_item_param_id>
+parse_delete_item_param_id(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return delete_item_param_id{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return delete_item_param_id{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<delete_item_param_id> parse_delete_item_param_id(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<delete_item_param_id>
+parse_delete_item_param_id(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_delete_item_param_id(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<health_check_response> parse_health_check_response(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_object_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<health_check_response>
+parse_health_check_response(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_object_start())
+        return std::nullopt;
 
     health_check_response obj(arena);
 
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_object_end()) break;
+        if (cur.try_object_end())
+            break;
         auto key = cur.string();
-        if (!key || !cur.consume(':')) break;
+        if (!key || !cur.consume(':'))
+            break;
 
         if (*key == "status") {
             if (auto v = cur.string()) {
                 obj.status = arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena));
-            } else { cur.skip_value(); }
-        } else         if (*key == "uptime_ms") {
+            } else {
+                cur.skip_value();
+            }
+        } else if (*key == "uptime_ms") {
             if (auto v = katana::serde::parse_int64(cur)) {
                 obj.uptime_ms = *v;
-            } else { cur.skip_value(); }
+            } else {
+                cur.skip_value();
+            }
         } else {
             cur.skip_value();
         }
@@ -2426,30 +3620,37 @@ inline std::string serialize_health_check_response_Uptime_ms_array(const arena_v
     return obj;
 }
 
-[[nodiscard]] inline std::optional<health_check_response> parse_health_check_response(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<health_check_response>
+parse_health_check_response(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_health_check_response(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<health_check_response_Status> parse_health_check_response_Status(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<health_check_response_Status>
+parse_health_check_response_Status(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     if (auto v = cur.string()) {
-        return health_check_response_Status{arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
+        return health_check_response_Status{
+            arena_string<>(v->begin(), v->end(), arena_allocator<char>(arena))};
     }
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<health_check_response_Status> parse_health_check_response_Status(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<health_check_response_Status>
+parse_health_check_response_Status(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_health_check_response_Status(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<health_check_response_Uptime_ms> parse_health_check_response_Uptime_ms(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<health_check_response_Uptime_ms>
+parse_health_check_response_Uptime_ms(katana::serde::json_cursor& cur, monotonic_arena* arena) {
     (void)arena;
-    if (auto v = katana::serde::parse_int64(cur)) return health_check_response_Uptime_ms{*v};
+    if (auto v = katana::serde::parse_int64(cur))
+        return health_check_response_Uptime_ms{*v};
     return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<health_check_response_Uptime_ms> parse_health_check_response_Uptime_ms(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<health_check_response_Uptime_ms>
+parse_health_check_response_Uptime_ms(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_health_check_response_Uptime_ms(cur, arena);
 }
@@ -2463,11 +3664,13 @@ inline void serialize_SumRequest_into(const SumRequest& obj, std::string& json) 
     json.append("\"values\":");
     json.push_back('[');
     for (size_t i = 0; i < obj.values.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         {
             char buf[64];
             auto res = std::to_chars(buf, buf + sizeof(buf), obj.values[i]);
-            if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+            if (res.ec == std::errc())
+                json.append(buf, static_cast<size_t>(res.ptr - buf));
         }
     }
     json.push_back(']');
@@ -2485,7 +3688,8 @@ inline void serialize_SumRequest_Values_t_into(const SumRequest_Values_t& obj, s
     const auto& arr = obj;
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_SumRequest_Item_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -2501,7 +3705,8 @@ inline std::string serialize_SumRequest_Values_t(const SumRequest_Values_t& obj)
 inline void serialize_SumRequest_Item_t_into(const SumRequest_Item_t& obj, std::string& json) {
     char buf[64];
     auto res = std::to_chars(buf, buf + sizeof(buf), obj);
-    if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+    if (res.ec == std::errc())
+        json.append(buf, static_cast<size_t>(res.ptr - buf));
 }
 
 inline std::string serialize_SumRequest_Item_t(const SumRequest_Item_t& obj) {
@@ -2516,7 +3721,8 @@ inline void serialize_SumResponse_into(const SumResponse& obj, std::string& json
     {
         char buf[64];
         auto res = std::to_chars(buf, buf + sizeof(buf), obj.result);
-        if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+        if (res.ec == std::errc())
+            json.append(buf, static_cast<size_t>(res.ptr - buf));
     }
     json.append(",\"count\":");
     {
@@ -2534,10 +3740,12 @@ inline std::string serialize_SumResponse(const SumResponse& obj) {
     return json;
 }
 
-inline void serialize_SumResponse_Result_t_into(const SumResponse_Result_t& obj, std::string& json) {
+inline void serialize_SumResponse_Result_t_into(const SumResponse_Result_t& obj,
+                                                std::string& json) {
     char buf[64];
     auto res = std::to_chars(buf, buf + sizeof(buf), obj);
-    if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+    if (res.ec == std::errc())
+        json.append(buf, static_cast<size_t>(res.ptr - buf));
 }
 
 inline std::string serialize_SumResponse_Result_t(const SumResponse_Result_t& obj) {
@@ -2563,11 +3771,13 @@ inline void serialize_StatsRequest_into(const StatsRequest& obj, std::string& js
     json.append("\"values\":");
     json.push_back('[');
     for (size_t i = 0; i < obj.values.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         {
             char buf[64];
             auto res = std::to_chars(buf, buf + sizeof(buf), obj.values[i]);
-            if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+            if (res.ec == std::errc())
+                json.append(buf, static_cast<size_t>(res.ptr - buf));
         }
     }
     json.push_back(']');
@@ -2583,11 +3793,13 @@ inline std::string serialize_StatsRequest(const StatsRequest& obj) {
     return json;
 }
 
-inline void serialize_StatsRequest_Values_t_into(const StatsRequest_Values_t& obj, std::string& json) {
+inline void serialize_StatsRequest_Values_t_into(const StatsRequest_Values_t& obj,
+                                                 std::string& json) {
     const auto& arr = obj;
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsRequest_Item_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -2603,7 +3815,8 @@ inline std::string serialize_StatsRequest_Values_t(const StatsRequest_Values_t& 
 inline void serialize_StatsRequest_Item_t_into(const StatsRequest_Item_t& obj, std::string& json) {
     char buf[64];
     auto res = std::to_chars(buf, buf + sizeof(buf), obj);
-    if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+    if (res.ec == std::errc())
+        json.append(buf, static_cast<size_t>(res.ptr - buf));
 }
 
 inline std::string serialize_StatsRequest_Item_t(const StatsRequest_Item_t& obj) {
@@ -2612,11 +3825,13 @@ inline std::string serialize_StatsRequest_Item_t(const StatsRequest_Item_t& obj)
     return json;
 }
 
-inline void serialize_StatsRequest_Include_median_t_into(const StatsRequest_Include_median_t& obj, std::string& json) {
+inline void serialize_StatsRequest_Include_median_t_into(const StatsRequest_Include_median_t& obj,
+                                                         std::string& json) {
     json.append(obj ? "true" : "false");
 }
 
-inline std::string serialize_StatsRequest_Include_median_t(const StatsRequest_Include_median_t& obj) {
+inline std::string
+serialize_StatsRequest_Include_median_t(const StatsRequest_Include_median_t& obj) {
     return obj ? "true" : "false";
 }
 
@@ -2626,25 +3841,29 @@ inline void serialize_StatsResponse_into(const StatsResponse& obj, std::string& 
     {
         char buf[64];
         auto res = std::to_chars(buf, buf + sizeof(buf), obj.min);
-        if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+        if (res.ec == std::errc())
+            json.append(buf, static_cast<size_t>(res.ptr - buf));
     }
     json.append(",\"max\":");
     {
         char buf[64];
         auto res = std::to_chars(buf, buf + sizeof(buf), obj.max);
-        if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+        if (res.ec == std::errc())
+            json.append(buf, static_cast<size_t>(res.ptr - buf));
     }
     json.append(",\"mean\":");
     {
         char buf[64];
         auto res = std::to_chars(buf, buf + sizeof(buf), obj.mean);
-        if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+        if (res.ec == std::errc())
+            json.append(buf, static_cast<size_t>(res.ptr - buf));
     }
     json.append(",\"sum\":");
     {
         char buf[64];
         auto res = std::to_chars(buf, buf + sizeof(buf), obj.sum);
-        if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+        if (res.ec == std::errc())
+            json.append(buf, static_cast<size_t>(res.ptr - buf));
     }
     json.append(",\"count\":");
     {
@@ -2656,7 +3875,8 @@ inline void serialize_StatsResponse_into(const StatsResponse& obj, std::string& 
     {
         char buf[64];
         auto res = std::to_chars(buf, buf + sizeof(buf), obj.median);
-        if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+        if (res.ec == std::errc())
+            json.append(buf, static_cast<size_t>(res.ptr - buf));
     }
     json.push_back('}');
 }
@@ -2671,7 +3891,8 @@ inline std::string serialize_StatsResponse(const StatsResponse& obj) {
 inline void serialize_StatsResponse_Min_t_into(const StatsResponse_Min_t& obj, std::string& json) {
     char buf[64];
     auto res = std::to_chars(buf, buf + sizeof(buf), obj);
-    if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+    if (res.ec == std::errc())
+        json.append(buf, static_cast<size_t>(res.ptr - buf));
 }
 
 inline std::string serialize_StatsResponse_Min_t(const StatsResponse_Min_t& obj) {
@@ -2683,7 +3904,8 @@ inline std::string serialize_StatsResponse_Min_t(const StatsResponse_Min_t& obj)
 inline void serialize_StatsResponse_Max_t_into(const StatsResponse_Max_t& obj, std::string& json) {
     char buf[64];
     auto res = std::to_chars(buf, buf + sizeof(buf), obj);
-    if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+    if (res.ec == std::errc())
+        json.append(buf, static_cast<size_t>(res.ptr - buf));
 }
 
 inline std::string serialize_StatsResponse_Max_t(const StatsResponse_Max_t& obj) {
@@ -2692,10 +3914,12 @@ inline std::string serialize_StatsResponse_Max_t(const StatsResponse_Max_t& obj)
     return json;
 }
 
-inline void serialize_StatsResponse_Mean_t_into(const StatsResponse_Mean_t& obj, std::string& json) {
+inline void serialize_StatsResponse_Mean_t_into(const StatsResponse_Mean_t& obj,
+                                                std::string& json) {
     char buf[64];
     auto res = std::to_chars(buf, buf + sizeof(buf), obj);
-    if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+    if (res.ec == std::errc())
+        json.append(buf, static_cast<size_t>(res.ptr - buf));
 }
 
 inline std::string serialize_StatsResponse_Mean_t(const StatsResponse_Mean_t& obj) {
@@ -2707,7 +3931,8 @@ inline std::string serialize_StatsResponse_Mean_t(const StatsResponse_Mean_t& ob
 inline void serialize_StatsResponse_Sum_t_into(const StatsResponse_Sum_t& obj, std::string& json) {
     char buf[64];
     auto res = std::to_chars(buf, buf + sizeof(buf), obj);
-    if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+    if (res.ec == std::errc())
+        json.append(buf, static_cast<size_t>(res.ptr - buf));
 }
 
 inline std::string serialize_StatsResponse_Sum_t(const StatsResponse_Sum_t& obj) {
@@ -2716,7 +3941,8 @@ inline std::string serialize_StatsResponse_Sum_t(const StatsResponse_Sum_t& obj)
     return json;
 }
 
-inline void serialize_StatsResponse_Count_t_into(const StatsResponse_Count_t& obj, std::string& json) {
+inline void serialize_StatsResponse_Count_t_into(const StatsResponse_Count_t& obj,
+                                                 std::string& json) {
     char buf[32];
     auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), obj);
     json.append(buf, static_cast<size_t>(ptr - buf));
@@ -2728,10 +3954,12 @@ inline std::string serialize_StatsResponse_Count_t(const StatsResponse_Count_t& 
     return json;
 }
 
-inline void serialize_StatsResponse_Median_t_into(const StatsResponse_Median_t& obj, std::string& json) {
+inline void serialize_StatsResponse_Median_t_into(const StatsResponse_Median_t& obj,
+                                                  std::string& json) {
     char buf[64];
     auto res = std::to_chars(buf, buf + sizeof(buf), obj);
-    if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+    if (res.ec == std::errc())
+        json.append(buf, static_cast<size_t>(res.ptr - buf));
 }
 
 inline std::string serialize_StatsResponse_Median_t(const StatsResponse_Median_t& obj) {
@@ -2767,7 +3995,8 @@ inline void serialize_RegisterRequest_into(const RegisterRequest& obj, std::stri
     json.append(",\"tags\":");
     json.push_back('[');
     for (size_t i = 0; i < obj.tags.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         json.push_back('"');
         katana::serde::escape_json_string_into(obj.tags[i], json);
         json.push_back('"');
@@ -2783,7 +4012,8 @@ inline std::string serialize_RegisterRequest(const RegisterRequest& obj) {
     return json;
 }
 
-inline void serialize_RegisterRequest_Username_t_into(const RegisterRequest_Username_t& obj, std::string& json) {
+inline void serialize_RegisterRequest_Username_t_into(const RegisterRequest_Username_t& obj,
+                                                      std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -2796,7 +4026,8 @@ inline std::string serialize_RegisterRequest_Username_t(const RegisterRequest_Us
     return json;
 }
 
-inline void serialize_RegisterRequest_Email_t_into(const RegisterRequest_Email_t& obj, std::string& json) {
+inline void serialize_RegisterRequest_Email_t_into(const RegisterRequest_Email_t& obj,
+                                                   std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -2809,7 +4040,8 @@ inline std::string serialize_RegisterRequest_Email_t(const RegisterRequest_Email
     return json;
 }
 
-inline void serialize_RegisterRequest_Password_t_into(const RegisterRequest_Password_t& obj, std::string& json) {
+inline void serialize_RegisterRequest_Password_t_into(const RegisterRequest_Password_t& obj,
+                                                      std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -2822,7 +4054,8 @@ inline std::string serialize_RegisterRequest_Password_t(const RegisterRequest_Pa
     return json;
 }
 
-inline void serialize_RegisterRequest_Age_t_into(const RegisterRequest_Age_t& obj, std::string& json) {
+inline void serialize_RegisterRequest_Age_t_into(const RegisterRequest_Age_t& obj,
+                                                 std::string& json) {
     char buf[32];
     auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), obj);
     json.append(buf, static_cast<size_t>(ptr - buf));
@@ -2834,11 +4067,13 @@ inline std::string serialize_RegisterRequest_Age_t(const RegisterRequest_Age_t& 
     return json;
 }
 
-inline void serialize_RegisterRequest_Tags_t_into(const RegisterRequest_Tags_t& obj, std::string& json) {
+inline void serialize_RegisterRequest_Tags_t_into(const RegisterRequest_Tags_t& obj,
+                                                  std::string& json) {
     const auto& arr = obj;
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_RegisterRequest_Item_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -2851,7 +4086,8 @@ inline std::string serialize_RegisterRequest_Tags_t(const RegisterRequest_Tags_t
     return json;
 }
 
-inline void serialize_RegisterRequest_Item_t_into(const RegisterRequest_Item_t& obj, std::string& json) {
+inline void serialize_RegisterRequest_Item_t_into(const RegisterRequest_Item_t& obj,
+                                                  std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -2924,7 +4160,8 @@ inline std::string serialize_UserResponse_Id_t(const UserResponse_Id_t& obj) {
     return json;
 }
 
-inline void serialize_UserResponse_Username_t_into(const UserResponse_Username_t& obj, std::string& json) {
+inline void serialize_UserResponse_Username_t_into(const UserResponse_Username_t& obj,
+                                                   std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -2937,7 +4174,8 @@ inline std::string serialize_UserResponse_Username_t(const UserResponse_Username
     return json;
 }
 
-inline void serialize_UserResponse_Email_t_into(const UserResponse_Email_t& obj, std::string& json) {
+inline void serialize_UserResponse_Email_t_into(const UserResponse_Email_t& obj,
+                                                std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -2950,7 +4188,8 @@ inline std::string serialize_UserResponse_Email_t(const UserResponse_Email_t& ob
     return json;
 }
 
-inline void serialize_UserResponse_Created_at_t_into(const UserResponse_Created_at_t& obj, std::string& json) {
+inline void serialize_UserResponse_Created_at_t_into(const UserResponse_Created_at_t& obj,
+                                                     std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -2998,7 +4237,8 @@ inline void serialize_Item_into(const Item& obj, std::string& json) {
     {
         char buf[64];
         auto res = std::to_chars(buf, buf + sizeof(buf), obj.price);
-        if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+        if (res.ec == std::errc())
+            json.append(buf, static_cast<size_t>(res.ptr - buf));
     }
     json.append(",\"stock\":");
     {
@@ -3013,7 +4253,8 @@ inline void serialize_Item_into(const Item& obj, std::string& json) {
     json.append(",\"tags\":");
     json.push_back('[');
     for (size_t i = 0; i < obj.tags.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         json.push_back('"');
         katana::serde::escape_json_string_into(obj.tags[i], json);
         json.push_back('"');
@@ -3072,7 +4313,8 @@ inline std::string serialize_Item_Description_t(const Item_Description_t& obj) {
 inline void serialize_Item_Price_t_into(const Item_Price_t& obj, std::string& json) {
     char buf[64];
     auto res = std::to_chars(buf, buf + sizeof(buf), obj);
-    if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+    if (res.ec == std::errc())
+        json.append(buf, static_cast<size_t>(res.ptr - buf));
 }
 
 inline std::string serialize_Item_Price_t(const Item_Price_t& obj) {
@@ -3097,7 +4339,8 @@ inline void serialize_Item_Tags_t_into(const Item_Tags_t& obj, std::string& json
     const auto& arr = obj;
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_Item_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -3129,7 +4372,8 @@ inline void serialize_ItemMetadata_into(const ItemMetadata& obj, std::string& js
     {
         char buf[64];
         auto res = std::to_chars(buf, buf + sizeof(buf), obj.weight_kg);
-        if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+        if (res.ec == std::errc())
+            json.append(buf, static_cast<size_t>(res.ptr - buf));
     }
     json.append(",\"dimensions\":");
     json.push_back('"');
@@ -3153,10 +4397,12 @@ inline std::string serialize_ItemMetadata(const ItemMetadata& obj) {
     return json;
 }
 
-inline void serialize_ItemMetadata_Weight_kg_t_into(const ItemMetadata_Weight_kg_t& obj, std::string& json) {
+inline void serialize_ItemMetadata_Weight_kg_t_into(const ItemMetadata_Weight_kg_t& obj,
+                                                    std::string& json) {
     char buf[64];
     auto res = std::to_chars(buf, buf + sizeof(buf), obj);
-    if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+    if (res.ec == std::errc())
+        json.append(buf, static_cast<size_t>(res.ptr - buf));
 }
 
 inline std::string serialize_ItemMetadata_Weight_kg_t(const ItemMetadata_Weight_kg_t& obj) {
@@ -3165,7 +4411,8 @@ inline std::string serialize_ItemMetadata_Weight_kg_t(const ItemMetadata_Weight_
     return json;
 }
 
-inline void serialize_ItemMetadata_Dimensions_t_into(const ItemMetadata_Dimensions_t& obj, std::string& json) {
+inline void serialize_ItemMetadata_Dimensions_t_into(const ItemMetadata_Dimensions_t& obj,
+                                                     std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -3178,7 +4425,8 @@ inline std::string serialize_ItemMetadata_Dimensions_t(const ItemMetadata_Dimens
     return json;
 }
 
-inline void serialize_ItemMetadata_Manufacturer_t_into(const ItemMetadata_Manufacturer_t& obj, std::string& json) {
+inline void serialize_ItemMetadata_Manufacturer_t_into(const ItemMetadata_Manufacturer_t& obj,
+                                                       std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -3218,7 +4466,8 @@ inline void serialize_CreateItemRequest_into(const CreateItemRequest& obj, std::
     {
         char buf[64];
         auto res = std::to_chars(buf, buf + sizeof(buf), obj.price);
-        if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+        if (res.ec == std::errc())
+            json.append(buf, static_cast<size_t>(res.ptr - buf));
     }
     json.append(",\"stock\":");
     {
@@ -3233,7 +4482,8 @@ inline void serialize_CreateItemRequest_into(const CreateItemRequest& obj, std::
     json.append(",\"tags\":");
     json.push_back('[');
     for (size_t i = 0; i < obj.tags.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         json.push_back('"');
         katana::serde::escape_json_string_into(obj.tags[i], json);
         json.push_back('"');
@@ -3251,7 +4501,8 @@ inline std::string serialize_CreateItemRequest(const CreateItemRequest& obj) {
     return json;
 }
 
-inline void serialize_CreateItemRequest_Name_t_into(const CreateItemRequest_Name_t& obj, std::string& json) {
+inline void serialize_CreateItemRequest_Name_t_into(const CreateItemRequest_Name_t& obj,
+                                                    std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -3264,23 +4515,28 @@ inline std::string serialize_CreateItemRequest_Name_t(const CreateItemRequest_Na
     return json;
 }
 
-inline void serialize_CreateItemRequest_Description_t_into(const CreateItemRequest_Description_t& obj, std::string& json) {
+inline void
+serialize_CreateItemRequest_Description_t_into(const CreateItemRequest_Description_t& obj,
+                                               std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
 }
 
-inline std::string serialize_CreateItemRequest_Description_t(const CreateItemRequest_Description_t& obj) {
+inline std::string
+serialize_CreateItemRequest_Description_t(const CreateItemRequest_Description_t& obj) {
     std::string json;
     json.reserve(obj.size() + 16);
     serialize_CreateItemRequest_Description_t_into(obj, json);
     return json;
 }
 
-inline void serialize_CreateItemRequest_Price_t_into(const CreateItemRequest_Price_t& obj, std::string& json) {
+inline void serialize_CreateItemRequest_Price_t_into(const CreateItemRequest_Price_t& obj,
+                                                     std::string& json) {
     char buf[64];
     auto res = std::to_chars(buf, buf + sizeof(buf), obj);
-    if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+    if (res.ec == std::errc())
+        json.append(buf, static_cast<size_t>(res.ptr - buf));
 }
 
 inline std::string serialize_CreateItemRequest_Price_t(const CreateItemRequest_Price_t& obj) {
@@ -3289,7 +4545,8 @@ inline std::string serialize_CreateItemRequest_Price_t(const CreateItemRequest_P
     return json;
 }
 
-inline void serialize_CreateItemRequest_Stock_t_into(const CreateItemRequest_Stock_t& obj, std::string& json) {
+inline void serialize_CreateItemRequest_Stock_t_into(const CreateItemRequest_Stock_t& obj,
+                                                     std::string& json) {
     char buf[32];
     auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), obj);
     json.append(buf, static_cast<size_t>(ptr - buf));
@@ -3301,11 +4558,13 @@ inline std::string serialize_CreateItemRequest_Stock_t(const CreateItemRequest_S
     return json;
 }
 
-inline void serialize_CreateItemRequest_Tags_t_into(const CreateItemRequest_Tags_t& obj, std::string& json) {
+inline void serialize_CreateItemRequest_Tags_t_into(const CreateItemRequest_Tags_t& obj,
+                                                    std::string& json) {
     const auto& arr = obj;
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_CreateItemRequest_Item_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -3318,7 +4577,8 @@ inline std::string serialize_CreateItemRequest_Tags_t(const CreateItemRequest_Ta
     return json;
 }
 
-inline void serialize_CreateItemRequest_Item_t_into(const CreateItemRequest_Item_t& obj, std::string& json) {
+inline void serialize_CreateItemRequest_Item_t_into(const CreateItemRequest_Item_t& obj,
+                                                    std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -3345,7 +4605,8 @@ inline void serialize_UpdateItemRequest_into(const UpdateItemRequest& obj, std::
     {
         char buf[64];
         auto res = std::to_chars(buf, buf + sizeof(buf), obj.price);
-        if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+        if (res.ec == std::errc())
+            json.append(buf, static_cast<size_t>(res.ptr - buf));
     }
     json.append(",\"stock\":");
     {
@@ -3360,7 +4621,8 @@ inline void serialize_UpdateItemRequest_into(const UpdateItemRequest& obj, std::
     json.append(",\"tags\":");
     json.push_back('[');
     for (size_t i = 0; i < obj.tags.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         json.push_back('"');
         katana::serde::escape_json_string_into(obj.tags[i], json);
         json.push_back('"');
@@ -3376,7 +4638,8 @@ inline std::string serialize_UpdateItemRequest(const UpdateItemRequest& obj) {
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Name_t_into(const UpdateItemRequest_Name_t& obj, std::string& json) {
+inline void serialize_UpdateItemRequest_Name_t_into(const UpdateItemRequest_Name_t& obj,
+                                                    std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -3389,23 +4652,28 @@ inline std::string serialize_UpdateItemRequest_Name_t(const UpdateItemRequest_Na
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Description_t_into(const UpdateItemRequest_Description_t& obj, std::string& json) {
+inline void
+serialize_UpdateItemRequest_Description_t_into(const UpdateItemRequest_Description_t& obj,
+                                               std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
 }
 
-inline std::string serialize_UpdateItemRequest_Description_t(const UpdateItemRequest_Description_t& obj) {
+inline std::string
+serialize_UpdateItemRequest_Description_t(const UpdateItemRequest_Description_t& obj) {
     std::string json;
     json.reserve(obj.size() + 16);
     serialize_UpdateItemRequest_Description_t_into(obj, json);
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Price_t_into(const UpdateItemRequest_Price_t& obj, std::string& json) {
+inline void serialize_UpdateItemRequest_Price_t_into(const UpdateItemRequest_Price_t& obj,
+                                                     std::string& json) {
     char buf[64];
     auto res = std::to_chars(buf, buf + sizeof(buf), obj);
-    if (res.ec == std::errc()) json.append(buf, static_cast<size_t>(res.ptr - buf));
+    if (res.ec == std::errc())
+        json.append(buf, static_cast<size_t>(res.ptr - buf));
 }
 
 inline std::string serialize_UpdateItemRequest_Price_t(const UpdateItemRequest_Price_t& obj) {
@@ -3414,7 +4682,8 @@ inline std::string serialize_UpdateItemRequest_Price_t(const UpdateItemRequest_P
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Stock_t_into(const UpdateItemRequest_Stock_t& obj, std::string& json) {
+inline void serialize_UpdateItemRequest_Stock_t_into(const UpdateItemRequest_Stock_t& obj,
+                                                     std::string& json) {
     char buf[32];
     auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), obj);
     json.append(buf, static_cast<size_t>(ptr - buf));
@@ -3426,11 +4695,13 @@ inline std::string serialize_UpdateItemRequest_Stock_t(const UpdateItemRequest_S
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Tags_t_into(const UpdateItemRequest_Tags_t& obj, std::string& json) {
+inline void serialize_UpdateItemRequest_Tags_t_into(const UpdateItemRequest_Tags_t& obj,
+                                                    std::string& json) {
     const auto& arr = obj;
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UpdateItemRequest_Item_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -3443,7 +4714,8 @@ inline std::string serialize_UpdateItemRequest_Tags_t(const UpdateItemRequest_Ta
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Item_t_into(const UpdateItemRequest_Item_t& obj, std::string& json) {
+inline void serialize_UpdateItemRequest_Item_t_into(const UpdateItemRequest_Item_t& obj,
+                                                    std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -3461,7 +4733,8 @@ inline void serialize_ItemList_into(const ItemList& obj, std::string& json) {
     json.append("\"items\":");
     json.push_back('[');
     for (size_t i = 0; i < obj.items.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_into(obj.items[i], json);
     }
     json.push_back(']');
@@ -3497,7 +4770,8 @@ inline void serialize_ItemList_Items_t_into(const ItemList_Items_t& obj, std::st
     const auto& arr = obj;
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_into(arr[i], json);
     }
     json.push_back(']');
@@ -3570,7 +4844,8 @@ inline std::string serialize_EchoRequest(const EchoRequest& obj) {
     return json;
 }
 
-inline void serialize_EchoRequest_Message_t_into(const EchoRequest_Message_t& obj, std::string& json) {
+inline void serialize_EchoRequest_Message_t_into(const EchoRequest_Message_t& obj,
+                                                 std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -3583,7 +4858,8 @@ inline std::string serialize_EchoRequest_Message_t(const EchoRequest_Message_t& 
     return json;
 }
 
-inline void serialize_EchoRequest_Repeat_t_into(const EchoRequest_Repeat_t& obj, std::string& json) {
+inline void serialize_EchoRequest_Repeat_t_into(const EchoRequest_Repeat_t& obj,
+                                                std::string& json) {
     char buf[32];
     auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), obj);
     json.append(buf, static_cast<size_t>(ptr - buf));
@@ -3595,7 +4871,8 @@ inline std::string serialize_EchoRequest_Repeat_t(const EchoRequest_Repeat_t& ob
     return json;
 }
 
-inline void serialize_EchoRequest_Uppercase_t_into(const EchoRequest_Uppercase_t& obj, std::string& json) {
+inline void serialize_EchoRequest_Uppercase_t_into(const EchoRequest_Uppercase_t& obj,
+                                                   std::string& json) {
     json.append(obj ? "true" : "false");
 }
 
@@ -3625,7 +4902,8 @@ inline std::string serialize_EchoResponse(const EchoResponse& obj) {
     return json;
 }
 
-inline void serialize_EchoResponse_Message_t_into(const EchoResponse_Message_t& obj, std::string& json) {
+inline void serialize_EchoResponse_Message_t_into(const EchoResponse_Message_t& obj,
+                                                  std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -3638,7 +4916,8 @@ inline std::string serialize_EchoResponse_Message_t(const EchoResponse_Message_t
     return json;
 }
 
-inline void serialize_EchoResponse_Length_t_into(const EchoResponse_Length_t& obj, std::string& json) {
+inline void serialize_EchoResponse_Length_t_into(const EchoResponse_Length_t& obj,
+                                                 std::string& json) {
     char buf[32];
     auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), obj);
     json.append(buf, static_cast<size_t>(ptr - buf));
@@ -3650,7 +4929,8 @@ inline std::string serialize_EchoResponse_Length_t(const EchoResponse_Length_t& 
     return json;
 }
 
-inline void serialize_list_items_param_limit_into(const list_items_param_limit& obj, std::string& json) {
+inline void serialize_list_items_param_limit_into(const list_items_param_limit& obj,
+                                                  std::string& json) {
     char buf[32];
     auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), obj);
     json.append(buf, static_cast<size_t>(ptr - buf));
@@ -3662,7 +4942,8 @@ inline std::string serialize_list_items_param_limit(const list_items_param_limit
     return json;
 }
 
-inline void serialize_list_items_param_offset_into(const list_items_param_offset& obj, std::string& json) {
+inline void serialize_list_items_param_offset_into(const list_items_param_offset& obj,
+                                                   std::string& json) {
     char buf[32];
     auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), obj);
     json.append(buf, static_cast<size_t>(ptr - buf));
@@ -3674,20 +4955,23 @@ inline std::string serialize_list_items_param_offset(const list_items_param_offs
     return json;
 }
 
-inline void serialize_create_item_param_X_Request_Id_into(const create_item_param_X_Request_Id& obj, std::string& json) {
+inline void serialize_create_item_param_X_Request_Id_into(const create_item_param_X_Request_Id& obj,
+                                                          std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
 }
 
-inline std::string serialize_create_item_param_X_Request_Id(const create_item_param_X_Request_Id& obj) {
+inline std::string
+serialize_create_item_param_X_Request_Id(const create_item_param_X_Request_Id& obj) {
     std::string json;
     json.reserve(obj.size() + 16);
     serialize_create_item_param_X_Request_Id_into(obj, json);
     return json;
 }
 
-inline void serialize_create_item_param_session_into(const create_item_param_session& obj, std::string& json) {
+inline void serialize_create_item_param_session_into(const create_item_param_session& obj,
+                                                     std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -3712,7 +4996,8 @@ inline std::string serialize_get_item_param_id(const get_item_param_id& obj) {
     return json;
 }
 
-inline void serialize_update_item_param_id_into(const update_item_param_id& obj, std::string& json) {
+inline void serialize_update_item_param_id_into(const update_item_param_id& obj,
+                                                std::string& json) {
     char buf[32];
     auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), obj);
     json.append(buf, static_cast<size_t>(ptr - buf));
@@ -3724,7 +5009,8 @@ inline std::string serialize_update_item_param_id(const update_item_param_id& ob
     return json;
 }
 
-inline void serialize_delete_item_param_id_into(const delete_item_param_id& obj, std::string& json) {
+inline void serialize_delete_item_param_id_into(const delete_item_param_id& obj,
+                                                std::string& json) {
     char buf[32];
     auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), obj);
     json.append(buf, static_cast<size_t>(ptr - buf));
@@ -3736,7 +5022,8 @@ inline std::string serialize_delete_item_param_id(const delete_item_param_id& ob
     return json;
 }
 
-inline void serialize_health_check_response_into(const health_check_response& obj, std::string& json) {
+inline void serialize_health_check_response_into(const health_check_response& obj,
+                                                 std::string& json) {
     json.push_back('{');
     json.append("\"status\":");
     json.push_back('"');
@@ -3758,7 +5045,8 @@ inline std::string serialize_health_check_response(const health_check_response& 
     return json;
 }
 
-inline void serialize_health_check_response_Status_into(const health_check_response_Status& obj, std::string& json) {
+inline void serialize_health_check_response_Status_into(const health_check_response_Status& obj,
+                                                        std::string& json) {
     json.push_back('"');
     katana::serde::escape_json_string_into(obj, json);
     json.push_back('"');
@@ -3771,13 +5059,16 @@ inline std::string serialize_health_check_response_Status(const health_check_res
     return json;
 }
 
-inline void serialize_health_check_response_Uptime_ms_into(const health_check_response_Uptime_ms& obj, std::string& json) {
+inline void
+serialize_health_check_response_Uptime_ms_into(const health_check_response_Uptime_ms& obj,
+                                               std::string& json) {
     char buf[32];
     auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), obj);
     json.append(buf, static_cast<size_t>(ptr - buf));
 }
 
-inline std::string serialize_health_check_response_Uptime_ms(const health_check_response_Uptime_ms& obj) {
+inline std::string
+serialize_health_check_response_Uptime_ms(const health_check_response_Uptime_ms& obj) {
     std::string json;
     serialize_health_check_response_Uptime_ms_into(obj, json);
     return json;
@@ -3787,1842 +5078,2246 @@ inline std::string serialize_health_check_response_Uptime_ms(const health_check_
 // Array Parse Functions
 // ============================================================
 
-[[nodiscard]] inline std::optional<std::vector<SumRequest>> parse_SumRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<SumRequest>>
+parse_SumRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<SumRequest> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_SumRequest(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<SumRequest>> parse_SumRequest_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<SumRequest>>
+parse_SumRequest_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_SumRequest_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<SumRequest_Values_t>> parse_SumRequest_Values_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<SumRequest_Values_t>>
+parse_SumRequest_Values_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<SumRequest_Values_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_SumRequest_Values_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<SumRequest_Values_t>> parse_SumRequest_Values_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<SumRequest_Values_t>>
+parse_SumRequest_Values_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_SumRequest_Values_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<SumRequest_Item_t>> parse_SumRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<SumRequest_Item_t>>
+parse_SumRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<SumRequest_Item_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_SumRequest_Item_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<SumRequest_Item_t>> parse_SumRequest_Item_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<SumRequest_Item_t>>
+parse_SumRequest_Item_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_SumRequest_Item_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<SumResponse>> parse_SumResponse_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<SumResponse>>
+parse_SumResponse_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<SumResponse> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_SumResponse(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<SumResponse>> parse_SumResponse_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<SumResponse>>
+parse_SumResponse_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_SumResponse_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<SumResponse_Result_t>> parse_SumResponse_Result_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<SumResponse_Result_t>>
+parse_SumResponse_Result_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<SumResponse_Result_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_SumResponse_Result_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<SumResponse_Result_t>> parse_SumResponse_Result_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<SumResponse_Result_t>>
+parse_SumResponse_Result_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_SumResponse_Result_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<SumResponse_Count_t>> parse_SumResponse_Count_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<SumResponse_Count_t>>
+parse_SumResponse_Count_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<SumResponse_Count_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_SumResponse_Count_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<SumResponse_Count_t>> parse_SumResponse_Count_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<SumResponse_Count_t>>
+parse_SumResponse_Count_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_SumResponse_Count_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsRequest>> parse_StatsRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<StatsRequest>>
+parse_StatsRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<StatsRequest> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_StatsRequest(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsRequest>> parse_StatsRequest_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<StatsRequest>>
+parse_StatsRequest_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsRequest_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsRequest_Values_t>> parse_StatsRequest_Values_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<StatsRequest_Values_t>>
+parse_StatsRequest_Values_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<StatsRequest_Values_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_StatsRequest_Values_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsRequest_Values_t>> parse_StatsRequest_Values_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<StatsRequest_Values_t>>
+parse_StatsRequest_Values_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsRequest_Values_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsRequest_Item_t>> parse_StatsRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<StatsRequest_Item_t>>
+parse_StatsRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<StatsRequest_Item_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_StatsRequest_Item_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsRequest_Item_t>> parse_StatsRequest_Item_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<StatsRequest_Item_t>>
+parse_StatsRequest_Item_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsRequest_Item_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsRequest_Include_median_t>> parse_StatsRequest_Include_median_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<StatsRequest_Include_median_t>>
+parse_StatsRequest_Include_median_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<StatsRequest_Include_median_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_StatsRequest_Include_median_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsRequest_Include_median_t>> parse_StatsRequest_Include_median_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<StatsRequest_Include_median_t>>
+parse_StatsRequest_Include_median_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsRequest_Include_median_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsResponse>> parse_StatsResponse_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<StatsResponse>>
+parse_StatsResponse_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<StatsResponse> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_StatsResponse(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsResponse>> parse_StatsResponse_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<StatsResponse>>
+parse_StatsResponse_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsResponse_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Min_t>> parse_StatsResponse_Min_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Min_t>>
+parse_StatsResponse_Min_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<StatsResponse_Min_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_StatsResponse_Min_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Min_t>> parse_StatsResponse_Min_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Min_t>>
+parse_StatsResponse_Min_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsResponse_Min_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Max_t>> parse_StatsResponse_Max_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Max_t>>
+parse_StatsResponse_Max_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<StatsResponse_Max_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_StatsResponse_Max_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Max_t>> parse_StatsResponse_Max_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Max_t>>
+parse_StatsResponse_Max_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsResponse_Max_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Mean_t>> parse_StatsResponse_Mean_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Mean_t>>
+parse_StatsResponse_Mean_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<StatsResponse_Mean_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_StatsResponse_Mean_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Mean_t>> parse_StatsResponse_Mean_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Mean_t>>
+parse_StatsResponse_Mean_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsResponse_Mean_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Sum_t>> parse_StatsResponse_Sum_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Sum_t>>
+parse_StatsResponse_Sum_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<StatsResponse_Sum_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_StatsResponse_Sum_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Sum_t>> parse_StatsResponse_Sum_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Sum_t>>
+parse_StatsResponse_Sum_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsResponse_Sum_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Count_t>> parse_StatsResponse_Count_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Count_t>>
+parse_StatsResponse_Count_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<StatsResponse_Count_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_StatsResponse_Count_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Count_t>> parse_StatsResponse_Count_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Count_t>>
+parse_StatsResponse_Count_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsResponse_Count_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Median_t>> parse_StatsResponse_Median_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Median_t>>
+parse_StatsResponse_Median_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<StatsResponse_Median_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_StatsResponse_Median_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<StatsResponse_Median_t>> parse_StatsResponse_Median_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<StatsResponse_Median_t>>
+parse_StatsResponse_Median_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_StatsResponse_Median_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest>> parse_RegisterRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest>>
+parse_RegisterRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<RegisterRequest> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_RegisterRequest(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest>> parse_RegisterRequest_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest>>
+parse_RegisterRequest_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_RegisterRequest_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Username_t>> parse_RegisterRequest_Username_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Username_t>>
+parse_RegisterRequest_Username_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<RegisterRequest_Username_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_RegisterRequest_Username_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Username_t>> parse_RegisterRequest_Username_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Username_t>>
+parse_RegisterRequest_Username_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_RegisterRequest_Username_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Email_t>> parse_RegisterRequest_Email_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Email_t>>
+parse_RegisterRequest_Email_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<RegisterRequest_Email_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_RegisterRequest_Email_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Email_t>> parse_RegisterRequest_Email_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Email_t>>
+parse_RegisterRequest_Email_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_RegisterRequest_Email_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Password_t>> parse_RegisterRequest_Password_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Password_t>>
+parse_RegisterRequest_Password_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<RegisterRequest_Password_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_RegisterRequest_Password_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Password_t>> parse_RegisterRequest_Password_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Password_t>>
+parse_RegisterRequest_Password_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_RegisterRequest_Password_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Age_t>> parse_RegisterRequest_Age_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Age_t>>
+parse_RegisterRequest_Age_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<RegisterRequest_Age_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_RegisterRequest_Age_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Age_t>> parse_RegisterRequest_Age_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Age_t>>
+parse_RegisterRequest_Age_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_RegisterRequest_Age_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Tags_t>> parse_RegisterRequest_Tags_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Tags_t>>
+parse_RegisterRequest_Tags_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<RegisterRequest_Tags_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_RegisterRequest_Tags_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Tags_t>> parse_RegisterRequest_Tags_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Tags_t>>
+parse_RegisterRequest_Tags_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_RegisterRequest_Tags_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Item_t>> parse_RegisterRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Item_t>>
+parse_RegisterRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<RegisterRequest_Item_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_RegisterRequest_Item_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Item_t>> parse_RegisterRequest_Item_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<RegisterRequest_Item_t>>
+parse_RegisterRequest_Item_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_RegisterRequest_Item_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<UserRole>> parse_UserRole_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<UserRole>>
+parse_UserRole_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<UserRole> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_UserRole(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<UserRole>> parse_UserRole_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<UserRole>>
+parse_UserRole_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UserRole_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<UserResponse>> parse_UserResponse_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<UserResponse>>
+parse_UserResponse_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<UserResponse> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_UserResponse(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<UserResponse>> parse_UserResponse_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<UserResponse>>
+parse_UserResponse_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UserResponse_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<UserResponse_Id_t>> parse_UserResponse_Id_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<UserResponse_Id_t>>
+parse_UserResponse_Id_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<UserResponse_Id_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_UserResponse_Id_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<UserResponse_Id_t>> parse_UserResponse_Id_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<UserResponse_Id_t>>
+parse_UserResponse_Id_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UserResponse_Id_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<UserResponse_Username_t>> parse_UserResponse_Username_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<UserResponse_Username_t>>
+parse_UserResponse_Username_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<UserResponse_Username_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_UserResponse_Username_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<UserResponse_Username_t>> parse_UserResponse_Username_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<UserResponse_Username_t>>
+parse_UserResponse_Username_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UserResponse_Username_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<UserResponse_Email_t>> parse_UserResponse_Email_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<UserResponse_Email_t>>
+parse_UserResponse_Email_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<UserResponse_Email_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_UserResponse_Email_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<UserResponse_Email_t>> parse_UserResponse_Email_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<UserResponse_Email_t>>
+parse_UserResponse_Email_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UserResponse_Email_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<UserResponse_Created_at_t>> parse_UserResponse_Created_at_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<UserResponse_Created_at_t>>
+parse_UserResponse_Created_at_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<UserResponse_Created_at_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_UserResponse_Created_at_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<UserResponse_Created_at_t>> parse_UserResponse_Created_at_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<UserResponse_Created_at_t>>
+parse_UserResponse_Created_at_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UserResponse_Created_at_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemCategory>> parse_ItemCategory_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<ItemCategory>>
+parse_ItemCategory_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<ItemCategory> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_ItemCategory(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemCategory>> parse_ItemCategory_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<ItemCategory>>
+parse_ItemCategory_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemCategory_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<Item>> parse_Item_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<Item>>
+parse_Item_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<Item> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_Item(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<Item>> parse_Item_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<Item>> parse_Item_array(std::string_view json,
+                                                                       monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_Item_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<Item_Id_t>> parse_Item_Id_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<Item_Id_t>>
+parse_Item_Id_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<Item_Id_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_Item_Id_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<Item_Id_t>> parse_Item_Id_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<Item_Id_t>>
+parse_Item_Id_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_Item_Id_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<Item_Name_t>> parse_Item_Name_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<Item_Name_t>>
+parse_Item_Name_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<Item_Name_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_Item_Name_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<Item_Name_t>> parse_Item_Name_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<Item_Name_t>>
+parse_Item_Name_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_Item_Name_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<Item_Description_t>> parse_Item_Description_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<Item_Description_t>>
+parse_Item_Description_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<Item_Description_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_Item_Description_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<Item_Description_t>> parse_Item_Description_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<Item_Description_t>>
+parse_Item_Description_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_Item_Description_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<Item_Price_t>> parse_Item_Price_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<Item_Price_t>>
+parse_Item_Price_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<Item_Price_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_Item_Price_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<Item_Price_t>> parse_Item_Price_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<Item_Price_t>>
+parse_Item_Price_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_Item_Price_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<Item_Stock_t>> parse_Item_Stock_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<Item_Stock_t>>
+parse_Item_Stock_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<Item_Stock_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_Item_Stock_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<Item_Stock_t>> parse_Item_Stock_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<Item_Stock_t>>
+parse_Item_Stock_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_Item_Stock_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<Item_Tags_t>> parse_Item_Tags_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<Item_Tags_t>>
+parse_Item_Tags_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<Item_Tags_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_Item_Tags_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<Item_Tags_t>> parse_Item_Tags_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<Item_Tags_t>>
+parse_Item_Tags_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_Item_Tags_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<Item_Item_t>> parse_Item_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<Item_Item_t>>
+parse_Item_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<Item_Item_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_Item_Item_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<Item_Item_t>> parse_Item_Item_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<Item_Item_t>>
+parse_Item_Item_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_Item_Item_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata>> parse_ItemMetadata_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata>>
+parse_ItemMetadata_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<ItemMetadata> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_ItemMetadata(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata>> parse_ItemMetadata_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata>>
+parse_ItemMetadata_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemMetadata_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Weight_kg_t>> parse_ItemMetadata_Weight_kg_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Weight_kg_t>>
+parse_ItemMetadata_Weight_kg_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<ItemMetadata_Weight_kg_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_ItemMetadata_Weight_kg_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Weight_kg_t>> parse_ItemMetadata_Weight_kg_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Weight_kg_t>>
+parse_ItemMetadata_Weight_kg_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemMetadata_Weight_kg_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Dimensions_t>> parse_ItemMetadata_Dimensions_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Dimensions_t>>
+parse_ItemMetadata_Dimensions_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<ItemMetadata_Dimensions_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_ItemMetadata_Dimensions_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Dimensions_t>> parse_ItemMetadata_Dimensions_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Dimensions_t>>
+parse_ItemMetadata_Dimensions_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemMetadata_Dimensions_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Manufacturer_t>> parse_ItemMetadata_Manufacturer_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Manufacturer_t>>
+parse_ItemMetadata_Manufacturer_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<ItemMetadata_Manufacturer_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_ItemMetadata_Manufacturer_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Manufacturer_t>> parse_ItemMetadata_Manufacturer_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Manufacturer_t>>
+parse_ItemMetadata_Manufacturer_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemMetadata_Manufacturer_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Sku_t>> parse_ItemMetadata_Sku_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Sku_t>>
+parse_ItemMetadata_Sku_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<ItemMetadata_Sku_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_ItemMetadata_Sku_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Sku_t>> parse_ItemMetadata_Sku_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<ItemMetadata_Sku_t>>
+parse_ItemMetadata_Sku_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemMetadata_Sku_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest>> parse_CreateItemRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest>>
+parse_CreateItemRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<CreateItemRequest> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_CreateItemRequest(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest>> parse_CreateItemRequest_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest>>
+parse_CreateItemRequest_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_CreateItemRequest_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Name_t>> parse_CreateItemRequest_Name_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Name_t>>
+parse_CreateItemRequest_Name_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<CreateItemRequest_Name_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_CreateItemRequest_Name_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Name_t>> parse_CreateItemRequest_Name_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Name_t>>
+parse_CreateItemRequest_Name_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_CreateItemRequest_Name_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Description_t>> parse_CreateItemRequest_Description_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Description_t>>
+parse_CreateItemRequest_Description_t_array(katana::serde::json_cursor& cur,
+                                            monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<CreateItemRequest_Description_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_CreateItemRequest_Description_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Description_t>> parse_CreateItemRequest_Description_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Description_t>>
+parse_CreateItemRequest_Description_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_CreateItemRequest_Description_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Price_t>> parse_CreateItemRequest_Price_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Price_t>>
+parse_CreateItemRequest_Price_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<CreateItemRequest_Price_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_CreateItemRequest_Price_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Price_t>> parse_CreateItemRequest_Price_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Price_t>>
+parse_CreateItemRequest_Price_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_CreateItemRequest_Price_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Stock_t>> parse_CreateItemRequest_Stock_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Stock_t>>
+parse_CreateItemRequest_Stock_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<CreateItemRequest_Stock_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_CreateItemRequest_Stock_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Stock_t>> parse_CreateItemRequest_Stock_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Stock_t>>
+parse_CreateItemRequest_Stock_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_CreateItemRequest_Stock_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Tags_t>> parse_CreateItemRequest_Tags_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Tags_t>>
+parse_CreateItemRequest_Tags_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<CreateItemRequest_Tags_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_CreateItemRequest_Tags_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Tags_t>> parse_CreateItemRequest_Tags_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Tags_t>>
+parse_CreateItemRequest_Tags_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_CreateItemRequest_Tags_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Item_t>> parse_CreateItemRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Item_t>>
+parse_CreateItemRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<CreateItemRequest_Item_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_CreateItemRequest_Item_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Item_t>> parse_CreateItemRequest_Item_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<CreateItemRequest_Item_t>>
+parse_CreateItemRequest_Item_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_CreateItemRequest_Item_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest>> parse_UpdateItemRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest>>
+parse_UpdateItemRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<UpdateItemRequest> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_UpdateItemRequest(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest>> parse_UpdateItemRequest_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest>>
+parse_UpdateItemRequest_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UpdateItemRequest_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Name_t>> parse_UpdateItemRequest_Name_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Name_t>>
+parse_UpdateItemRequest_Name_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<UpdateItemRequest_Name_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_UpdateItemRequest_Name_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Name_t>> parse_UpdateItemRequest_Name_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Name_t>>
+parse_UpdateItemRequest_Name_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UpdateItemRequest_Name_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Description_t>> parse_UpdateItemRequest_Description_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Description_t>>
+parse_UpdateItemRequest_Description_t_array(katana::serde::json_cursor& cur,
+                                            monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<UpdateItemRequest_Description_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_UpdateItemRequest_Description_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Description_t>> parse_UpdateItemRequest_Description_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Description_t>>
+parse_UpdateItemRequest_Description_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UpdateItemRequest_Description_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Price_t>> parse_UpdateItemRequest_Price_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Price_t>>
+parse_UpdateItemRequest_Price_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<UpdateItemRequest_Price_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_UpdateItemRequest_Price_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Price_t>> parse_UpdateItemRequest_Price_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Price_t>>
+parse_UpdateItemRequest_Price_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UpdateItemRequest_Price_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Stock_t>> parse_UpdateItemRequest_Stock_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Stock_t>>
+parse_UpdateItemRequest_Stock_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<UpdateItemRequest_Stock_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_UpdateItemRequest_Stock_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Stock_t>> parse_UpdateItemRequest_Stock_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Stock_t>>
+parse_UpdateItemRequest_Stock_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UpdateItemRequest_Stock_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Tags_t>> parse_UpdateItemRequest_Tags_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Tags_t>>
+parse_UpdateItemRequest_Tags_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<UpdateItemRequest_Tags_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_UpdateItemRequest_Tags_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Tags_t>> parse_UpdateItemRequest_Tags_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Tags_t>>
+parse_UpdateItemRequest_Tags_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UpdateItemRequest_Tags_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Item_t>> parse_UpdateItemRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Item_t>>
+parse_UpdateItemRequest_Item_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<UpdateItemRequest_Item_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_UpdateItemRequest_Item_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Item_t>> parse_UpdateItemRequest_Item_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<UpdateItemRequest_Item_t>>
+parse_UpdateItemRequest_Item_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_UpdateItemRequest_Item_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemList>> parse_ItemList_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<ItemList>>
+parse_ItemList_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<ItemList> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_ItemList(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemList>> parse_ItemList_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<ItemList>>
+parse_ItemList_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemList_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemList_Items_t>> parse_ItemList_Items_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<ItemList_Items_t>>
+parse_ItemList_Items_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<ItemList_Items_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_ItemList_Items_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemList_Items_t>> parse_ItemList_Items_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<ItemList_Items_t>>
+parse_ItemList_Items_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemList_Items_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemList_Total_t>> parse_ItemList_Total_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<ItemList_Total_t>>
+parse_ItemList_Total_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<ItemList_Total_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_ItemList_Total_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemList_Total_t>> parse_ItemList_Total_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<ItemList_Total_t>>
+parse_ItemList_Total_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemList_Total_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemList_Limit_t>> parse_ItemList_Limit_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<ItemList_Limit_t>>
+parse_ItemList_Limit_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<ItemList_Limit_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_ItemList_Limit_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemList_Limit_t>> parse_ItemList_Limit_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<ItemList_Limit_t>>
+parse_ItemList_Limit_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemList_Limit_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemList_Offset_t>> parse_ItemList_Offset_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<ItemList_Offset_t>>
+parse_ItemList_Offset_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<ItemList_Offset_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_ItemList_Offset_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<ItemList_Offset_t>> parse_ItemList_Offset_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<ItemList_Offset_t>>
+parse_ItemList_Offset_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_ItemList_Offset_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<EchoRequest>> parse_EchoRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<EchoRequest>>
+parse_EchoRequest_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<EchoRequest> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_EchoRequest(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<EchoRequest>> parse_EchoRequest_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<EchoRequest>>
+parse_EchoRequest_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_EchoRequest_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<EchoRequest_Message_t>> parse_EchoRequest_Message_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<EchoRequest_Message_t>>
+parse_EchoRequest_Message_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<EchoRequest_Message_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_EchoRequest_Message_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<EchoRequest_Message_t>> parse_EchoRequest_Message_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<EchoRequest_Message_t>>
+parse_EchoRequest_Message_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_EchoRequest_Message_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<EchoRequest_Repeat_t>> parse_EchoRequest_Repeat_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<EchoRequest_Repeat_t>>
+parse_EchoRequest_Repeat_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<EchoRequest_Repeat_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_EchoRequest_Repeat_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<EchoRequest_Repeat_t>> parse_EchoRequest_Repeat_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<EchoRequest_Repeat_t>>
+parse_EchoRequest_Repeat_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_EchoRequest_Repeat_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<EchoRequest_Uppercase_t>> parse_EchoRequest_Uppercase_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<EchoRequest_Uppercase_t>>
+parse_EchoRequest_Uppercase_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<EchoRequest_Uppercase_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_EchoRequest_Uppercase_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<EchoRequest_Uppercase_t>> parse_EchoRequest_Uppercase_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<EchoRequest_Uppercase_t>>
+parse_EchoRequest_Uppercase_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_EchoRequest_Uppercase_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<EchoResponse>> parse_EchoResponse_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<EchoResponse>>
+parse_EchoResponse_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<EchoResponse> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_EchoResponse(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<EchoResponse>> parse_EchoResponse_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<EchoResponse>>
+parse_EchoResponse_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_EchoResponse_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<EchoResponse_Message_t>> parse_EchoResponse_Message_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<EchoResponse_Message_t>>
+parse_EchoResponse_Message_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<EchoResponse_Message_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_EchoResponse_Message_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<EchoResponse_Message_t>> parse_EchoResponse_Message_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<EchoResponse_Message_t>>
+parse_EchoResponse_Message_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_EchoResponse_Message_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<EchoResponse_Length_t>> parse_EchoResponse_Length_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<EchoResponse_Length_t>>
+parse_EchoResponse_Length_t_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<EchoResponse_Length_t> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_EchoResponse_Length_t(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<EchoResponse_Length_t>> parse_EchoResponse_Length_t_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<EchoResponse_Length_t>>
+parse_EchoResponse_Length_t_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_EchoResponse_Length_t_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<list_items_param_limit>> parse_list_items_param_limit_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<list_items_param_limit>>
+parse_list_items_param_limit_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<list_items_param_limit> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_list_items_param_limit(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<list_items_param_limit>> parse_list_items_param_limit_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<list_items_param_limit>>
+parse_list_items_param_limit_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_list_items_param_limit_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<list_items_param_offset>> parse_list_items_param_offset_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<list_items_param_offset>>
+parse_list_items_param_offset_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<list_items_param_offset> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_list_items_param_offset(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<list_items_param_offset>> parse_list_items_param_offset_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<list_items_param_offset>>
+parse_list_items_param_offset_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_list_items_param_offset_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<create_item_param_X_Request_Id>> parse_create_item_param_X_Request_Id_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<create_item_param_X_Request_Id>>
+parse_create_item_param_X_Request_Id_array(katana::serde::json_cursor& cur,
+                                           monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<create_item_param_X_Request_Id> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_create_item_param_X_Request_Id(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<create_item_param_X_Request_Id>> parse_create_item_param_X_Request_Id_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<create_item_param_X_Request_Id>>
+parse_create_item_param_X_Request_Id_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_create_item_param_X_Request_Id_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<create_item_param_session>> parse_create_item_param_session_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<create_item_param_session>>
+parse_create_item_param_session_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<create_item_param_session> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_create_item_param_session(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<create_item_param_session>> parse_create_item_param_session_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<create_item_param_session>>
+parse_create_item_param_session_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_create_item_param_session_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<get_item_param_id>> parse_get_item_param_id_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<get_item_param_id>>
+parse_get_item_param_id_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<get_item_param_id> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_get_item_param_id(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<get_item_param_id>> parse_get_item_param_id_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<get_item_param_id>>
+parse_get_item_param_id_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_get_item_param_id_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<update_item_param_id>> parse_update_item_param_id_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<update_item_param_id>>
+parse_update_item_param_id_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<update_item_param_id> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_update_item_param_id(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<update_item_param_id>> parse_update_item_param_id_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<update_item_param_id>>
+parse_update_item_param_id_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_update_item_param_id_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<delete_item_param_id>> parse_delete_item_param_id_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<delete_item_param_id>>
+parse_delete_item_param_id_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<delete_item_param_id> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_delete_item_param_id(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<delete_item_param_id>> parse_delete_item_param_id_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<delete_item_param_id>>
+parse_delete_item_param_id_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_delete_item_param_id_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<health_check_response>> parse_health_check_response_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<health_check_response>>
+parse_health_check_response_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<health_check_response> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_health_check_response(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<health_check_response>> parse_health_check_response_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<health_check_response>>
+parse_health_check_response_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_health_check_response_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<health_check_response_Status>> parse_health_check_response_Status_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<health_check_response_Status>>
+parse_health_check_response_Status_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<health_check_response_Status> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_health_check_response_Status(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<health_check_response_Status>> parse_health_check_response_Status_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<health_check_response_Status>>
+parse_health_check_response_Status_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_health_check_response_Status_array(cur, arena);
 }
 
-[[nodiscard]] inline std::optional<std::vector<health_check_response_Uptime_ms>> parse_health_check_response_Uptime_ms_array(katana::serde::json_cursor& cur, monotonic_arena* arena) {
-    if (!cur.try_array_start()) return std::nullopt;
+[[nodiscard]] inline std::optional<std::vector<health_check_response_Uptime_ms>>
+parse_health_check_response_Uptime_ms_array(katana::serde::json_cursor& cur,
+                                            monotonic_arena* arena) {
+    if (!cur.try_array_start())
+        return std::nullopt;
 
     std::vector<health_check_response_Uptime_ms> result;
     while (!cur.eof()) {
         cur.skip_ws();
-        if (cur.try_array_end()) break;
-        
+        if (cur.try_array_end())
+            break;
+
         // Parse object at current cursor position
         auto obj = parse_health_check_response_Uptime_ms(cur, arena);
-        if (!obj) return std::nullopt;
+        if (!obj)
+            return std::nullopt;
         result.push_back(std::move(*obj));
-        
+
         cur.try_comma();
     }
     return result;
 }
 
-[[nodiscard]] inline std::optional<std::vector<health_check_response_Uptime_ms>> parse_health_check_response_Uptime_ms_array(std::string_view json, monotonic_arena* arena) {
+[[nodiscard]] inline std::optional<std::vector<health_check_response_Uptime_ms>>
+parse_health_check_response_Uptime_ms_array(std::string_view json, monotonic_arena* arena) {
     katana::serde::json_cursor cur{json.data(), json.data() + json.size()};
     return parse_health_check_response_Uptime_ms_array(cur, arena);
 }
@@ -5634,7 +7329,8 @@ inline std::string serialize_health_check_response_Uptime_ms(const health_check_
 inline void serialize_SumRequest_array_into(const std::vector<SumRequest>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_SumRequest_into(arr[i], json);
     }
     json.push_back(']');
@@ -5647,10 +7343,12 @@ inline std::string serialize_SumRequest_array(const std::vector<SumRequest>& arr
     return json;
 }
 
-inline void serialize_SumRequest_array_into(const arena_vector<SumRequest>& arr, std::string& json) {
+inline void serialize_SumRequest_array_into(const arena_vector<SumRequest>& arr,
+                                            std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_SumRequest_into(arr[i], json);
     }
     json.push_back(']');
@@ -5663,42 +7361,50 @@ inline std::string serialize_SumRequest_array(const arena_vector<SumRequest>& ar
     return json;
 }
 
-inline void serialize_SumRequest_Values_t_array_into(const std::vector<SumRequest_Values_t>& arr, std::string& json) {
+inline void serialize_SumRequest_Values_t_array_into(const std::vector<SumRequest_Values_t>& arr,
+                                                     std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_SumRequest_Values_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_SumRequest_Values_t_array(const std::vector<SumRequest_Values_t>& arr) {
+inline std::string
+serialize_SumRequest_Values_t_array(const std::vector<SumRequest_Values_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_SumRequest_Values_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_SumRequest_Values_t_array_into(const arena_vector<SumRequest_Values_t>& arr, std::string& json) {
+inline void serialize_SumRequest_Values_t_array_into(const arena_vector<SumRequest_Values_t>& arr,
+                                                     std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_SumRequest_Values_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_SumRequest_Values_t_array(const arena_vector<SumRequest_Values_t>& arr) {
+inline std::string
+serialize_SumRequest_Values_t_array(const arena_vector<SumRequest_Values_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_SumRequest_Values_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_SumRequest_Item_t_array_into(const std::vector<SumRequest_Item_t>& arr, std::string& json) {
+inline void serialize_SumRequest_Item_t_array_into(const std::vector<SumRequest_Item_t>& arr,
+                                                   std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_SumRequest_Item_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -5711,10 +7417,12 @@ inline std::string serialize_SumRequest_Item_t_array(const std::vector<SumReques
     return json;
 }
 
-inline void serialize_SumRequest_Item_t_array_into(const arena_vector<SumRequest_Item_t>& arr, std::string& json) {
+inline void serialize_SumRequest_Item_t_array_into(const arena_vector<SumRequest_Item_t>& arr,
+                                                   std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_SumRequest_Item_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -5727,10 +7435,12 @@ inline std::string serialize_SumRequest_Item_t_array(const arena_vector<SumReque
     return json;
 }
 
-inline void serialize_SumResponse_array_into(const std::vector<SumResponse>& arr, std::string& json) {
+inline void serialize_SumResponse_array_into(const std::vector<SumResponse>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_SumResponse_into(arr[i], json);
     }
     json.push_back(']');
@@ -5743,10 +7453,12 @@ inline std::string serialize_SumResponse_array(const std::vector<SumResponse>& a
     return json;
 }
 
-inline void serialize_SumResponse_array_into(const arena_vector<SumResponse>& arr, std::string& json) {
+inline void serialize_SumResponse_array_into(const arena_vector<SumResponse>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_SumResponse_into(arr[i], json);
     }
     json.push_back(']');
@@ -5759,74 +7471,88 @@ inline std::string serialize_SumResponse_array(const arena_vector<SumResponse>& 
     return json;
 }
 
-inline void serialize_SumResponse_Result_t_array_into(const std::vector<SumResponse_Result_t>& arr, std::string& json) {
+inline void serialize_SumResponse_Result_t_array_into(const std::vector<SumResponse_Result_t>& arr,
+                                                      std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_SumResponse_Result_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_SumResponse_Result_t_array(const std::vector<SumResponse_Result_t>& arr) {
+inline std::string
+serialize_SumResponse_Result_t_array(const std::vector<SumResponse_Result_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_SumResponse_Result_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_SumResponse_Result_t_array_into(const arena_vector<SumResponse_Result_t>& arr, std::string& json) {
+inline void serialize_SumResponse_Result_t_array_into(const arena_vector<SumResponse_Result_t>& arr,
+                                                      std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_SumResponse_Result_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_SumResponse_Result_t_array(const arena_vector<SumResponse_Result_t>& arr) {
+inline std::string
+serialize_SumResponse_Result_t_array(const arena_vector<SumResponse_Result_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_SumResponse_Result_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_SumResponse_Count_t_array_into(const std::vector<SumResponse_Count_t>& arr, std::string& json) {
+inline void serialize_SumResponse_Count_t_array_into(const std::vector<SumResponse_Count_t>& arr,
+                                                     std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_SumResponse_Count_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_SumResponse_Count_t_array(const std::vector<SumResponse_Count_t>& arr) {
+inline std::string
+serialize_SumResponse_Count_t_array(const std::vector<SumResponse_Count_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_SumResponse_Count_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_SumResponse_Count_t_array_into(const arena_vector<SumResponse_Count_t>& arr, std::string& json) {
+inline void serialize_SumResponse_Count_t_array_into(const arena_vector<SumResponse_Count_t>& arr,
+                                                     std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_SumResponse_Count_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_SumResponse_Count_t_array(const arena_vector<SumResponse_Count_t>& arr) {
+inline std::string
+serialize_SumResponse_Count_t_array(const arena_vector<SumResponse_Count_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_SumResponse_Count_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsRequest_array_into(const std::vector<StatsRequest>& arr, std::string& json) {
+inline void serialize_StatsRequest_array_into(const std::vector<StatsRequest>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsRequest_into(arr[i], json);
     }
     json.push_back(']');
@@ -5839,10 +7565,12 @@ inline std::string serialize_StatsRequest_array(const std::vector<StatsRequest>&
     return json;
 }
 
-inline void serialize_StatsRequest_array_into(const arena_vector<StatsRequest>& arr, std::string& json) {
+inline void serialize_StatsRequest_array_into(const arena_vector<StatsRequest>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsRequest_into(arr[i], json);
     }
     json.push_back(']');
@@ -5855,106 +7583,128 @@ inline std::string serialize_StatsRequest_array(const arena_vector<StatsRequest>
     return json;
 }
 
-inline void serialize_StatsRequest_Values_t_array_into(const std::vector<StatsRequest_Values_t>& arr, std::string& json) {
+inline void
+serialize_StatsRequest_Values_t_array_into(const std::vector<StatsRequest_Values_t>& arr,
+                                           std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsRequest_Values_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsRequest_Values_t_array(const std::vector<StatsRequest_Values_t>& arr) {
+inline std::string
+serialize_StatsRequest_Values_t_array(const std::vector<StatsRequest_Values_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsRequest_Values_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsRequest_Values_t_array_into(const arena_vector<StatsRequest_Values_t>& arr, std::string& json) {
+inline void
+serialize_StatsRequest_Values_t_array_into(const arena_vector<StatsRequest_Values_t>& arr,
+                                           std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsRequest_Values_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsRequest_Values_t_array(const arena_vector<StatsRequest_Values_t>& arr) {
+inline std::string
+serialize_StatsRequest_Values_t_array(const arena_vector<StatsRequest_Values_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsRequest_Values_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsRequest_Item_t_array_into(const std::vector<StatsRequest_Item_t>& arr, std::string& json) {
+inline void serialize_StatsRequest_Item_t_array_into(const std::vector<StatsRequest_Item_t>& arr,
+                                                     std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsRequest_Item_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsRequest_Item_t_array(const std::vector<StatsRequest_Item_t>& arr) {
+inline std::string
+serialize_StatsRequest_Item_t_array(const std::vector<StatsRequest_Item_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsRequest_Item_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsRequest_Item_t_array_into(const arena_vector<StatsRequest_Item_t>& arr, std::string& json) {
+inline void serialize_StatsRequest_Item_t_array_into(const arena_vector<StatsRequest_Item_t>& arr,
+                                                     std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsRequest_Item_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsRequest_Item_t_array(const arena_vector<StatsRequest_Item_t>& arr) {
+inline std::string
+serialize_StatsRequest_Item_t_array(const arena_vector<StatsRequest_Item_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsRequest_Item_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsRequest_Include_median_t_array_into(const std::vector<StatsRequest_Include_median_t>& arr, std::string& json) {
+inline void serialize_StatsRequest_Include_median_t_array_into(
+    const std::vector<StatsRequest_Include_median_t>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsRequest_Include_median_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsRequest_Include_median_t_array(const std::vector<StatsRequest_Include_median_t>& arr) {
+inline std::string serialize_StatsRequest_Include_median_t_array(
+    const std::vector<StatsRequest_Include_median_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsRequest_Include_median_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsRequest_Include_median_t_array_into(const arena_vector<StatsRequest_Include_median_t>& arr, std::string& json) {
+inline void serialize_StatsRequest_Include_median_t_array_into(
+    const arena_vector<StatsRequest_Include_median_t>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsRequest_Include_median_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsRequest_Include_median_t_array(const arena_vector<StatsRequest_Include_median_t>& arr) {
+inline std::string serialize_StatsRequest_Include_median_t_array(
+    const arena_vector<StatsRequest_Include_median_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsRequest_Include_median_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsResponse_array_into(const std::vector<StatsResponse>& arr, std::string& json) {
+inline void serialize_StatsResponse_array_into(const std::vector<StatsResponse>& arr,
+                                               std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsResponse_into(arr[i], json);
     }
     json.push_back(']');
@@ -5967,10 +7717,12 @@ inline std::string serialize_StatsResponse_array(const std::vector<StatsResponse
     return json;
 }
 
-inline void serialize_StatsResponse_array_into(const arena_vector<StatsResponse>& arr, std::string& json) {
+inline void serialize_StatsResponse_array_into(const arena_vector<StatsResponse>& arr,
+                                               std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsResponse_into(arr[i], json);
     }
     json.push_back(']');
@@ -5983,202 +7735,244 @@ inline std::string serialize_StatsResponse_array(const arena_vector<StatsRespons
     return json;
 }
 
-inline void serialize_StatsResponse_Min_t_array_into(const std::vector<StatsResponse_Min_t>& arr, std::string& json) {
+inline void serialize_StatsResponse_Min_t_array_into(const std::vector<StatsResponse_Min_t>& arr,
+                                                     std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsResponse_Min_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsResponse_Min_t_array(const std::vector<StatsResponse_Min_t>& arr) {
+inline std::string
+serialize_StatsResponse_Min_t_array(const std::vector<StatsResponse_Min_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsResponse_Min_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsResponse_Min_t_array_into(const arena_vector<StatsResponse_Min_t>& arr, std::string& json) {
+inline void serialize_StatsResponse_Min_t_array_into(const arena_vector<StatsResponse_Min_t>& arr,
+                                                     std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsResponse_Min_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsResponse_Min_t_array(const arena_vector<StatsResponse_Min_t>& arr) {
+inline std::string
+serialize_StatsResponse_Min_t_array(const arena_vector<StatsResponse_Min_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsResponse_Min_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsResponse_Max_t_array_into(const std::vector<StatsResponse_Max_t>& arr, std::string& json) {
+inline void serialize_StatsResponse_Max_t_array_into(const std::vector<StatsResponse_Max_t>& arr,
+                                                     std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsResponse_Max_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsResponse_Max_t_array(const std::vector<StatsResponse_Max_t>& arr) {
+inline std::string
+serialize_StatsResponse_Max_t_array(const std::vector<StatsResponse_Max_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsResponse_Max_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsResponse_Max_t_array_into(const arena_vector<StatsResponse_Max_t>& arr, std::string& json) {
+inline void serialize_StatsResponse_Max_t_array_into(const arena_vector<StatsResponse_Max_t>& arr,
+                                                     std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsResponse_Max_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsResponse_Max_t_array(const arena_vector<StatsResponse_Max_t>& arr) {
+inline std::string
+serialize_StatsResponse_Max_t_array(const arena_vector<StatsResponse_Max_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsResponse_Max_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsResponse_Mean_t_array_into(const std::vector<StatsResponse_Mean_t>& arr, std::string& json) {
+inline void serialize_StatsResponse_Mean_t_array_into(const std::vector<StatsResponse_Mean_t>& arr,
+                                                      std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsResponse_Mean_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsResponse_Mean_t_array(const std::vector<StatsResponse_Mean_t>& arr) {
+inline std::string
+serialize_StatsResponse_Mean_t_array(const std::vector<StatsResponse_Mean_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsResponse_Mean_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsResponse_Mean_t_array_into(const arena_vector<StatsResponse_Mean_t>& arr, std::string& json) {
+inline void serialize_StatsResponse_Mean_t_array_into(const arena_vector<StatsResponse_Mean_t>& arr,
+                                                      std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsResponse_Mean_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsResponse_Mean_t_array(const arena_vector<StatsResponse_Mean_t>& arr) {
+inline std::string
+serialize_StatsResponse_Mean_t_array(const arena_vector<StatsResponse_Mean_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsResponse_Mean_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsResponse_Sum_t_array_into(const std::vector<StatsResponse_Sum_t>& arr, std::string& json) {
+inline void serialize_StatsResponse_Sum_t_array_into(const std::vector<StatsResponse_Sum_t>& arr,
+                                                     std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsResponse_Sum_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsResponse_Sum_t_array(const std::vector<StatsResponse_Sum_t>& arr) {
+inline std::string
+serialize_StatsResponse_Sum_t_array(const std::vector<StatsResponse_Sum_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsResponse_Sum_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsResponse_Sum_t_array_into(const arena_vector<StatsResponse_Sum_t>& arr, std::string& json) {
+inline void serialize_StatsResponse_Sum_t_array_into(const arena_vector<StatsResponse_Sum_t>& arr,
+                                                     std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsResponse_Sum_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsResponse_Sum_t_array(const arena_vector<StatsResponse_Sum_t>& arr) {
+inline std::string
+serialize_StatsResponse_Sum_t_array(const arena_vector<StatsResponse_Sum_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsResponse_Sum_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsResponse_Count_t_array_into(const std::vector<StatsResponse_Count_t>& arr, std::string& json) {
+inline void
+serialize_StatsResponse_Count_t_array_into(const std::vector<StatsResponse_Count_t>& arr,
+                                           std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsResponse_Count_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsResponse_Count_t_array(const std::vector<StatsResponse_Count_t>& arr) {
+inline std::string
+serialize_StatsResponse_Count_t_array(const std::vector<StatsResponse_Count_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsResponse_Count_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsResponse_Count_t_array_into(const arena_vector<StatsResponse_Count_t>& arr, std::string& json) {
+inline void
+serialize_StatsResponse_Count_t_array_into(const arena_vector<StatsResponse_Count_t>& arr,
+                                           std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsResponse_Count_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsResponse_Count_t_array(const arena_vector<StatsResponse_Count_t>& arr) {
+inline std::string
+serialize_StatsResponse_Count_t_array(const arena_vector<StatsResponse_Count_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsResponse_Count_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsResponse_Median_t_array_into(const std::vector<StatsResponse_Median_t>& arr, std::string& json) {
+inline void
+serialize_StatsResponse_Median_t_array_into(const std::vector<StatsResponse_Median_t>& arr,
+                                            std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsResponse_Median_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsResponse_Median_t_array(const std::vector<StatsResponse_Median_t>& arr) {
+inline std::string
+serialize_StatsResponse_Median_t_array(const std::vector<StatsResponse_Median_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsResponse_Median_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_StatsResponse_Median_t_array_into(const arena_vector<StatsResponse_Median_t>& arr, std::string& json) {
+inline void
+serialize_StatsResponse_Median_t_array_into(const arena_vector<StatsResponse_Median_t>& arr,
+                                            std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_StatsResponse_Median_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_StatsResponse_Median_t_array(const arena_vector<StatsResponse_Median_t>& arr) {
+inline std::string
+serialize_StatsResponse_Median_t_array(const arena_vector<StatsResponse_Median_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_StatsResponse_Median_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_RegisterRequest_array_into(const std::vector<RegisterRequest>& arr, std::string& json) {
+inline void serialize_RegisterRequest_array_into(const std::vector<RegisterRequest>& arr,
+                                                 std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_RegisterRequest_into(arr[i], json);
     }
     json.push_back(']');
@@ -6191,10 +7985,12 @@ inline std::string serialize_RegisterRequest_array(const std::vector<RegisterReq
     return json;
 }
 
-inline void serialize_RegisterRequest_array_into(const arena_vector<RegisterRequest>& arr, std::string& json) {
+inline void serialize_RegisterRequest_array_into(const arena_vector<RegisterRequest>& arr,
+                                                 std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_RegisterRequest_into(arr[i], json);
     }
     json.push_back(']');
@@ -6207,192 +8003,240 @@ inline std::string serialize_RegisterRequest_array(const arena_vector<RegisterRe
     return json;
 }
 
-inline void serialize_RegisterRequest_Username_t_array_into(const std::vector<RegisterRequest_Username_t>& arr, std::string& json) {
+inline void
+serialize_RegisterRequest_Username_t_array_into(const std::vector<RegisterRequest_Username_t>& arr,
+                                                std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_RegisterRequest_Username_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_RegisterRequest_Username_t_array(const std::vector<RegisterRequest_Username_t>& arr) {
+inline std::string
+serialize_RegisterRequest_Username_t_array(const std::vector<RegisterRequest_Username_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_RegisterRequest_Username_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_RegisterRequest_Username_t_array_into(const arena_vector<RegisterRequest_Username_t>& arr, std::string& json) {
+inline void
+serialize_RegisterRequest_Username_t_array_into(const arena_vector<RegisterRequest_Username_t>& arr,
+                                                std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_RegisterRequest_Username_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_RegisterRequest_Username_t_array(const arena_vector<RegisterRequest_Username_t>& arr) {
+inline std::string
+serialize_RegisterRequest_Username_t_array(const arena_vector<RegisterRequest_Username_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_RegisterRequest_Username_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_RegisterRequest_Email_t_array_into(const std::vector<RegisterRequest_Email_t>& arr, std::string& json) {
+inline void
+serialize_RegisterRequest_Email_t_array_into(const std::vector<RegisterRequest_Email_t>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_RegisterRequest_Email_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_RegisterRequest_Email_t_array(const std::vector<RegisterRequest_Email_t>& arr) {
+inline std::string
+serialize_RegisterRequest_Email_t_array(const std::vector<RegisterRequest_Email_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_RegisterRequest_Email_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_RegisterRequest_Email_t_array_into(const arena_vector<RegisterRequest_Email_t>& arr, std::string& json) {
+inline void
+serialize_RegisterRequest_Email_t_array_into(const arena_vector<RegisterRequest_Email_t>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_RegisterRequest_Email_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_RegisterRequest_Email_t_array(const arena_vector<RegisterRequest_Email_t>& arr) {
+inline std::string
+serialize_RegisterRequest_Email_t_array(const arena_vector<RegisterRequest_Email_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_RegisterRequest_Email_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_RegisterRequest_Password_t_array_into(const std::vector<RegisterRequest_Password_t>& arr, std::string& json) {
+inline void
+serialize_RegisterRequest_Password_t_array_into(const std::vector<RegisterRequest_Password_t>& arr,
+                                                std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_RegisterRequest_Password_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_RegisterRequest_Password_t_array(const std::vector<RegisterRequest_Password_t>& arr) {
+inline std::string
+serialize_RegisterRequest_Password_t_array(const std::vector<RegisterRequest_Password_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_RegisterRequest_Password_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_RegisterRequest_Password_t_array_into(const arena_vector<RegisterRequest_Password_t>& arr, std::string& json) {
+inline void
+serialize_RegisterRequest_Password_t_array_into(const arena_vector<RegisterRequest_Password_t>& arr,
+                                                std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_RegisterRequest_Password_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_RegisterRequest_Password_t_array(const arena_vector<RegisterRequest_Password_t>& arr) {
+inline std::string
+serialize_RegisterRequest_Password_t_array(const arena_vector<RegisterRequest_Password_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_RegisterRequest_Password_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_RegisterRequest_Age_t_array_into(const std::vector<RegisterRequest_Age_t>& arr, std::string& json) {
+inline void
+serialize_RegisterRequest_Age_t_array_into(const std::vector<RegisterRequest_Age_t>& arr,
+                                           std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_RegisterRequest_Age_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_RegisterRequest_Age_t_array(const std::vector<RegisterRequest_Age_t>& arr) {
+inline std::string
+serialize_RegisterRequest_Age_t_array(const std::vector<RegisterRequest_Age_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_RegisterRequest_Age_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_RegisterRequest_Age_t_array_into(const arena_vector<RegisterRequest_Age_t>& arr, std::string& json) {
+inline void
+serialize_RegisterRequest_Age_t_array_into(const arena_vector<RegisterRequest_Age_t>& arr,
+                                           std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_RegisterRequest_Age_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_RegisterRequest_Age_t_array(const arena_vector<RegisterRequest_Age_t>& arr) {
+inline std::string
+serialize_RegisterRequest_Age_t_array(const arena_vector<RegisterRequest_Age_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_RegisterRequest_Age_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_RegisterRequest_Tags_t_array_into(const std::vector<RegisterRequest_Tags_t>& arr, std::string& json) {
+inline void
+serialize_RegisterRequest_Tags_t_array_into(const std::vector<RegisterRequest_Tags_t>& arr,
+                                            std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_RegisterRequest_Tags_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_RegisterRequest_Tags_t_array(const std::vector<RegisterRequest_Tags_t>& arr) {
+inline std::string
+serialize_RegisterRequest_Tags_t_array(const std::vector<RegisterRequest_Tags_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_RegisterRequest_Tags_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_RegisterRequest_Tags_t_array_into(const arena_vector<RegisterRequest_Tags_t>& arr, std::string& json) {
+inline void
+serialize_RegisterRequest_Tags_t_array_into(const arena_vector<RegisterRequest_Tags_t>& arr,
+                                            std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_RegisterRequest_Tags_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_RegisterRequest_Tags_t_array(const arena_vector<RegisterRequest_Tags_t>& arr) {
+inline std::string
+serialize_RegisterRequest_Tags_t_array(const arena_vector<RegisterRequest_Tags_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_RegisterRequest_Tags_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_RegisterRequest_Item_t_array_into(const std::vector<RegisterRequest_Item_t>& arr, std::string& json) {
+inline void
+serialize_RegisterRequest_Item_t_array_into(const std::vector<RegisterRequest_Item_t>& arr,
+                                            std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_RegisterRequest_Item_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_RegisterRequest_Item_t_array(const std::vector<RegisterRequest_Item_t>& arr) {
+inline std::string
+serialize_RegisterRequest_Item_t_array(const std::vector<RegisterRequest_Item_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_RegisterRequest_Item_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_RegisterRequest_Item_t_array_into(const arena_vector<RegisterRequest_Item_t>& arr, std::string& json) {
+inline void
+serialize_RegisterRequest_Item_t_array_into(const arena_vector<RegisterRequest_Item_t>& arr,
+                                            std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_RegisterRequest_Item_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_RegisterRequest_Item_t_array(const arena_vector<RegisterRequest_Item_t>& arr) {
+inline std::string
+serialize_RegisterRequest_Item_t_array(const arena_vector<RegisterRequest_Item_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_RegisterRequest_Item_t_array_into(arr, json);
@@ -6402,7 +8246,8 @@ inline std::string serialize_RegisterRequest_Item_t_array(const arena_vector<Reg
 inline void serialize_UserRole_array_into(const std::vector<UserRole>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UserRole_into(arr[i], json);
     }
     json.push_back(']');
@@ -6418,7 +8263,8 @@ inline std::string serialize_UserRole_array(const std::vector<UserRole>& arr) {
 inline void serialize_UserRole_array_into(const arena_vector<UserRole>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UserRole_into(arr[i], json);
     }
     json.push_back(']');
@@ -6431,10 +8277,12 @@ inline std::string serialize_UserRole_array(const arena_vector<UserRole>& arr) {
     return json;
 }
 
-inline void serialize_UserResponse_array_into(const std::vector<UserResponse>& arr, std::string& json) {
+inline void serialize_UserResponse_array_into(const std::vector<UserResponse>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UserResponse_into(arr[i], json);
     }
     json.push_back(']');
@@ -6447,10 +8295,12 @@ inline std::string serialize_UserResponse_array(const std::vector<UserResponse>&
     return json;
 }
 
-inline void serialize_UserResponse_array_into(const arena_vector<UserResponse>& arr, std::string& json) {
+inline void serialize_UserResponse_array_into(const arena_vector<UserResponse>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UserResponse_into(arr[i], json);
     }
     json.push_back(']');
@@ -6463,10 +8313,12 @@ inline std::string serialize_UserResponse_array(const arena_vector<UserResponse>
     return json;
 }
 
-inline void serialize_UserResponse_Id_t_array_into(const std::vector<UserResponse_Id_t>& arr, std::string& json) {
+inline void serialize_UserResponse_Id_t_array_into(const std::vector<UserResponse_Id_t>& arr,
+                                                   std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UserResponse_Id_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -6479,10 +8331,12 @@ inline std::string serialize_UserResponse_Id_t_array(const std::vector<UserRespo
     return json;
 }
 
-inline void serialize_UserResponse_Id_t_array_into(const arena_vector<UserResponse_Id_t>& arr, std::string& json) {
+inline void serialize_UserResponse_Id_t_array_into(const arena_vector<UserResponse_Id_t>& arr,
+                                                   std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UserResponse_Id_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -6495,106 +8349,130 @@ inline std::string serialize_UserResponse_Id_t_array(const arena_vector<UserResp
     return json;
 }
 
-inline void serialize_UserResponse_Username_t_array_into(const std::vector<UserResponse_Username_t>& arr, std::string& json) {
+inline void
+serialize_UserResponse_Username_t_array_into(const std::vector<UserResponse_Username_t>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UserResponse_Username_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UserResponse_Username_t_array(const std::vector<UserResponse_Username_t>& arr) {
+inline std::string
+serialize_UserResponse_Username_t_array(const std::vector<UserResponse_Username_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UserResponse_Username_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UserResponse_Username_t_array_into(const arena_vector<UserResponse_Username_t>& arr, std::string& json) {
+inline void
+serialize_UserResponse_Username_t_array_into(const arena_vector<UserResponse_Username_t>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UserResponse_Username_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UserResponse_Username_t_array(const arena_vector<UserResponse_Username_t>& arr) {
+inline std::string
+serialize_UserResponse_Username_t_array(const arena_vector<UserResponse_Username_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UserResponse_Username_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UserResponse_Email_t_array_into(const std::vector<UserResponse_Email_t>& arr, std::string& json) {
+inline void serialize_UserResponse_Email_t_array_into(const std::vector<UserResponse_Email_t>& arr,
+                                                      std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UserResponse_Email_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UserResponse_Email_t_array(const std::vector<UserResponse_Email_t>& arr) {
+inline std::string
+serialize_UserResponse_Email_t_array(const std::vector<UserResponse_Email_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UserResponse_Email_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UserResponse_Email_t_array_into(const arena_vector<UserResponse_Email_t>& arr, std::string& json) {
+inline void serialize_UserResponse_Email_t_array_into(const arena_vector<UserResponse_Email_t>& arr,
+                                                      std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UserResponse_Email_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UserResponse_Email_t_array(const arena_vector<UserResponse_Email_t>& arr) {
+inline std::string
+serialize_UserResponse_Email_t_array(const arena_vector<UserResponse_Email_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UserResponse_Email_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UserResponse_Created_at_t_array_into(const std::vector<UserResponse_Created_at_t>& arr, std::string& json) {
+inline void
+serialize_UserResponse_Created_at_t_array_into(const std::vector<UserResponse_Created_at_t>& arr,
+                                               std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UserResponse_Created_at_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UserResponse_Created_at_t_array(const std::vector<UserResponse_Created_at_t>& arr) {
+inline std::string
+serialize_UserResponse_Created_at_t_array(const std::vector<UserResponse_Created_at_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UserResponse_Created_at_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UserResponse_Created_at_t_array_into(const arena_vector<UserResponse_Created_at_t>& arr, std::string& json) {
+inline void
+serialize_UserResponse_Created_at_t_array_into(const arena_vector<UserResponse_Created_at_t>& arr,
+                                               std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UserResponse_Created_at_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UserResponse_Created_at_t_array(const arena_vector<UserResponse_Created_at_t>& arr) {
+inline std::string
+serialize_UserResponse_Created_at_t_array(const arena_vector<UserResponse_Created_at_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UserResponse_Created_at_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_ItemCategory_array_into(const std::vector<ItemCategory>& arr, std::string& json) {
+inline void serialize_ItemCategory_array_into(const std::vector<ItemCategory>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemCategory_into(arr[i], json);
     }
     json.push_back(']');
@@ -6607,10 +8485,12 @@ inline std::string serialize_ItemCategory_array(const std::vector<ItemCategory>&
     return json;
 }
 
-inline void serialize_ItemCategory_array_into(const arena_vector<ItemCategory>& arr, std::string& json) {
+inline void serialize_ItemCategory_array_into(const arena_vector<ItemCategory>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemCategory_into(arr[i], json);
     }
     json.push_back(']');
@@ -6626,7 +8506,8 @@ inline std::string serialize_ItemCategory_array(const arena_vector<ItemCategory>
 inline void serialize_Item_array_into(const std::vector<Item>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_into(arr[i], json);
     }
     json.push_back(']');
@@ -6642,7 +8523,8 @@ inline std::string serialize_Item_array(const std::vector<Item>& arr) {
 inline void serialize_Item_array_into(const arena_vector<Item>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_into(arr[i], json);
     }
     json.push_back(']');
@@ -6658,7 +8540,8 @@ inline std::string serialize_Item_array(const arena_vector<Item>& arr) {
 inline void serialize_Item_Id_t_array_into(const std::vector<Item_Id_t>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_Id_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -6674,7 +8557,8 @@ inline std::string serialize_Item_Id_t_array(const std::vector<Item_Id_t>& arr) 
 inline void serialize_Item_Id_t_array_into(const arena_vector<Item_Id_t>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_Id_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -6687,10 +8571,12 @@ inline std::string serialize_Item_Id_t_array(const arena_vector<Item_Id_t>& arr)
     return json;
 }
 
-inline void serialize_Item_Name_t_array_into(const std::vector<Item_Name_t>& arr, std::string& json) {
+inline void serialize_Item_Name_t_array_into(const std::vector<Item_Name_t>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_Name_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -6703,10 +8589,12 @@ inline std::string serialize_Item_Name_t_array(const std::vector<Item_Name_t>& a
     return json;
 }
 
-inline void serialize_Item_Name_t_array_into(const arena_vector<Item_Name_t>& arr, std::string& json) {
+inline void serialize_Item_Name_t_array_into(const arena_vector<Item_Name_t>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_Name_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -6719,10 +8607,12 @@ inline std::string serialize_Item_Name_t_array(const arena_vector<Item_Name_t>& 
     return json;
 }
 
-inline void serialize_Item_Description_t_array_into(const std::vector<Item_Description_t>& arr, std::string& json) {
+inline void serialize_Item_Description_t_array_into(const std::vector<Item_Description_t>& arr,
+                                                    std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_Description_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -6735,10 +8625,12 @@ inline std::string serialize_Item_Description_t_array(const std::vector<Item_Des
     return json;
 }
 
-inline void serialize_Item_Description_t_array_into(const arena_vector<Item_Description_t>& arr, std::string& json) {
+inline void serialize_Item_Description_t_array_into(const arena_vector<Item_Description_t>& arr,
+                                                    std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_Description_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -6751,10 +8643,12 @@ inline std::string serialize_Item_Description_t_array(const arena_vector<Item_De
     return json;
 }
 
-inline void serialize_Item_Price_t_array_into(const std::vector<Item_Price_t>& arr, std::string& json) {
+inline void serialize_Item_Price_t_array_into(const std::vector<Item_Price_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_Price_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -6767,10 +8661,12 @@ inline std::string serialize_Item_Price_t_array(const std::vector<Item_Price_t>&
     return json;
 }
 
-inline void serialize_Item_Price_t_array_into(const arena_vector<Item_Price_t>& arr, std::string& json) {
+inline void serialize_Item_Price_t_array_into(const arena_vector<Item_Price_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_Price_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -6783,10 +8679,12 @@ inline std::string serialize_Item_Price_t_array(const arena_vector<Item_Price_t>
     return json;
 }
 
-inline void serialize_Item_Stock_t_array_into(const std::vector<Item_Stock_t>& arr, std::string& json) {
+inline void serialize_Item_Stock_t_array_into(const std::vector<Item_Stock_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_Stock_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -6799,10 +8697,12 @@ inline std::string serialize_Item_Stock_t_array(const std::vector<Item_Stock_t>&
     return json;
 }
 
-inline void serialize_Item_Stock_t_array_into(const arena_vector<Item_Stock_t>& arr, std::string& json) {
+inline void serialize_Item_Stock_t_array_into(const arena_vector<Item_Stock_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_Stock_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -6815,10 +8715,12 @@ inline std::string serialize_Item_Stock_t_array(const arena_vector<Item_Stock_t>
     return json;
 }
 
-inline void serialize_Item_Tags_t_array_into(const std::vector<Item_Tags_t>& arr, std::string& json) {
+inline void serialize_Item_Tags_t_array_into(const std::vector<Item_Tags_t>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_Tags_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -6831,10 +8733,12 @@ inline std::string serialize_Item_Tags_t_array(const std::vector<Item_Tags_t>& a
     return json;
 }
 
-inline void serialize_Item_Tags_t_array_into(const arena_vector<Item_Tags_t>& arr, std::string& json) {
+inline void serialize_Item_Tags_t_array_into(const arena_vector<Item_Tags_t>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_Tags_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -6847,10 +8751,12 @@ inline std::string serialize_Item_Tags_t_array(const arena_vector<Item_Tags_t>& 
     return json;
 }
 
-inline void serialize_Item_Item_t_array_into(const std::vector<Item_Item_t>& arr, std::string& json) {
+inline void serialize_Item_Item_t_array_into(const std::vector<Item_Item_t>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_Item_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -6863,10 +8769,12 @@ inline std::string serialize_Item_Item_t_array(const std::vector<Item_Item_t>& a
     return json;
 }
 
-inline void serialize_Item_Item_t_array_into(const arena_vector<Item_Item_t>& arr, std::string& json) {
+inline void serialize_Item_Item_t_array_into(const arena_vector<Item_Item_t>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_Item_Item_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -6879,10 +8787,12 @@ inline std::string serialize_Item_Item_t_array(const arena_vector<Item_Item_t>& 
     return json;
 }
 
-inline void serialize_ItemMetadata_array_into(const std::vector<ItemMetadata>& arr, std::string& json) {
+inline void serialize_ItemMetadata_array_into(const std::vector<ItemMetadata>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemMetadata_into(arr[i], json);
     }
     json.push_back(']');
@@ -6895,10 +8805,12 @@ inline std::string serialize_ItemMetadata_array(const std::vector<ItemMetadata>&
     return json;
 }
 
-inline void serialize_ItemMetadata_array_into(const arena_vector<ItemMetadata>& arr, std::string& json) {
+inline void serialize_ItemMetadata_array_into(const arena_vector<ItemMetadata>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemMetadata_into(arr[i], json);
     }
     json.push_back(']');
@@ -6911,106 +8823,130 @@ inline std::string serialize_ItemMetadata_array(const arena_vector<ItemMetadata>
     return json;
 }
 
-inline void serialize_ItemMetadata_Weight_kg_t_array_into(const std::vector<ItemMetadata_Weight_kg_t>& arr, std::string& json) {
+inline void
+serialize_ItemMetadata_Weight_kg_t_array_into(const std::vector<ItemMetadata_Weight_kg_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemMetadata_Weight_kg_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_ItemMetadata_Weight_kg_t_array(const std::vector<ItemMetadata_Weight_kg_t>& arr) {
+inline std::string
+serialize_ItemMetadata_Weight_kg_t_array(const std::vector<ItemMetadata_Weight_kg_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_ItemMetadata_Weight_kg_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_ItemMetadata_Weight_kg_t_array_into(const arena_vector<ItemMetadata_Weight_kg_t>& arr, std::string& json) {
+inline void
+serialize_ItemMetadata_Weight_kg_t_array_into(const arena_vector<ItemMetadata_Weight_kg_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemMetadata_Weight_kg_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_ItemMetadata_Weight_kg_t_array(const arena_vector<ItemMetadata_Weight_kg_t>& arr) {
+inline std::string
+serialize_ItemMetadata_Weight_kg_t_array(const arena_vector<ItemMetadata_Weight_kg_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_ItemMetadata_Weight_kg_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_ItemMetadata_Dimensions_t_array_into(const std::vector<ItemMetadata_Dimensions_t>& arr, std::string& json) {
+inline void
+serialize_ItemMetadata_Dimensions_t_array_into(const std::vector<ItemMetadata_Dimensions_t>& arr,
+                                               std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemMetadata_Dimensions_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_ItemMetadata_Dimensions_t_array(const std::vector<ItemMetadata_Dimensions_t>& arr) {
+inline std::string
+serialize_ItemMetadata_Dimensions_t_array(const std::vector<ItemMetadata_Dimensions_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_ItemMetadata_Dimensions_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_ItemMetadata_Dimensions_t_array_into(const arena_vector<ItemMetadata_Dimensions_t>& arr, std::string& json) {
+inline void
+serialize_ItemMetadata_Dimensions_t_array_into(const arena_vector<ItemMetadata_Dimensions_t>& arr,
+                                               std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemMetadata_Dimensions_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_ItemMetadata_Dimensions_t_array(const arena_vector<ItemMetadata_Dimensions_t>& arr) {
+inline std::string
+serialize_ItemMetadata_Dimensions_t_array(const arena_vector<ItemMetadata_Dimensions_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_ItemMetadata_Dimensions_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_ItemMetadata_Manufacturer_t_array_into(const std::vector<ItemMetadata_Manufacturer_t>& arr, std::string& json) {
+inline void serialize_ItemMetadata_Manufacturer_t_array_into(
+    const std::vector<ItemMetadata_Manufacturer_t>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemMetadata_Manufacturer_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_ItemMetadata_Manufacturer_t_array(const std::vector<ItemMetadata_Manufacturer_t>& arr) {
+inline std::string
+serialize_ItemMetadata_Manufacturer_t_array(const std::vector<ItemMetadata_Manufacturer_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_ItemMetadata_Manufacturer_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_ItemMetadata_Manufacturer_t_array_into(const arena_vector<ItemMetadata_Manufacturer_t>& arr, std::string& json) {
+inline void serialize_ItemMetadata_Manufacturer_t_array_into(
+    const arena_vector<ItemMetadata_Manufacturer_t>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemMetadata_Manufacturer_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_ItemMetadata_Manufacturer_t_array(const arena_vector<ItemMetadata_Manufacturer_t>& arr) {
+inline std::string
+serialize_ItemMetadata_Manufacturer_t_array(const arena_vector<ItemMetadata_Manufacturer_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_ItemMetadata_Manufacturer_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_ItemMetadata_Sku_t_array_into(const std::vector<ItemMetadata_Sku_t>& arr, std::string& json) {
+inline void serialize_ItemMetadata_Sku_t_array_into(const std::vector<ItemMetadata_Sku_t>& arr,
+                                                    std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemMetadata_Sku_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -7023,10 +8959,12 @@ inline std::string serialize_ItemMetadata_Sku_t_array(const std::vector<ItemMeta
     return json;
 }
 
-inline void serialize_ItemMetadata_Sku_t_array_into(const arena_vector<ItemMetadata_Sku_t>& arr, std::string& json) {
+inline void serialize_ItemMetadata_Sku_t_array_into(const arena_vector<ItemMetadata_Sku_t>& arr,
+                                                    std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemMetadata_Sku_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -7039,10 +8977,12 @@ inline std::string serialize_ItemMetadata_Sku_t_array(const arena_vector<ItemMet
     return json;
 }
 
-inline void serialize_CreateItemRequest_array_into(const std::vector<CreateItemRequest>& arr, std::string& json) {
+inline void serialize_CreateItemRequest_array_into(const std::vector<CreateItemRequest>& arr,
+                                                   std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_CreateItemRequest_into(arr[i], json);
     }
     json.push_back(']');
@@ -7055,10 +8995,12 @@ inline std::string serialize_CreateItemRequest_array(const std::vector<CreateIte
     return json;
 }
 
-inline void serialize_CreateItemRequest_array_into(const arena_vector<CreateItemRequest>& arr, std::string& json) {
+inline void serialize_CreateItemRequest_array_into(const arena_vector<CreateItemRequest>& arr,
+                                                   std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_CreateItemRequest_into(arr[i], json);
     }
     json.push_back(']');
@@ -7071,202 +9013,250 @@ inline std::string serialize_CreateItemRequest_array(const arena_vector<CreateIt
     return json;
 }
 
-inline void serialize_CreateItemRequest_Name_t_array_into(const std::vector<CreateItemRequest_Name_t>& arr, std::string& json) {
+inline void
+serialize_CreateItemRequest_Name_t_array_into(const std::vector<CreateItemRequest_Name_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_CreateItemRequest_Name_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_CreateItemRequest_Name_t_array(const std::vector<CreateItemRequest_Name_t>& arr) {
+inline std::string
+serialize_CreateItemRequest_Name_t_array(const std::vector<CreateItemRequest_Name_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_CreateItemRequest_Name_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_CreateItemRequest_Name_t_array_into(const arena_vector<CreateItemRequest_Name_t>& arr, std::string& json) {
+inline void
+serialize_CreateItemRequest_Name_t_array_into(const arena_vector<CreateItemRequest_Name_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_CreateItemRequest_Name_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_CreateItemRequest_Name_t_array(const arena_vector<CreateItemRequest_Name_t>& arr) {
+inline std::string
+serialize_CreateItemRequest_Name_t_array(const arena_vector<CreateItemRequest_Name_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_CreateItemRequest_Name_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_CreateItemRequest_Description_t_array_into(const std::vector<CreateItemRequest_Description_t>& arr, std::string& json) {
+inline void serialize_CreateItemRequest_Description_t_array_into(
+    const std::vector<CreateItemRequest_Description_t>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_CreateItemRequest_Description_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_CreateItemRequest_Description_t_array(const std::vector<CreateItemRequest_Description_t>& arr) {
+inline std::string serialize_CreateItemRequest_Description_t_array(
+    const std::vector<CreateItemRequest_Description_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_CreateItemRequest_Description_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_CreateItemRequest_Description_t_array_into(const arena_vector<CreateItemRequest_Description_t>& arr, std::string& json) {
+inline void serialize_CreateItemRequest_Description_t_array_into(
+    const arena_vector<CreateItemRequest_Description_t>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_CreateItemRequest_Description_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_CreateItemRequest_Description_t_array(const arena_vector<CreateItemRequest_Description_t>& arr) {
+inline std::string serialize_CreateItemRequest_Description_t_array(
+    const arena_vector<CreateItemRequest_Description_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_CreateItemRequest_Description_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_CreateItemRequest_Price_t_array_into(const std::vector<CreateItemRequest_Price_t>& arr, std::string& json) {
+inline void
+serialize_CreateItemRequest_Price_t_array_into(const std::vector<CreateItemRequest_Price_t>& arr,
+                                               std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_CreateItemRequest_Price_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_CreateItemRequest_Price_t_array(const std::vector<CreateItemRequest_Price_t>& arr) {
+inline std::string
+serialize_CreateItemRequest_Price_t_array(const std::vector<CreateItemRequest_Price_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_CreateItemRequest_Price_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_CreateItemRequest_Price_t_array_into(const arena_vector<CreateItemRequest_Price_t>& arr, std::string& json) {
+inline void
+serialize_CreateItemRequest_Price_t_array_into(const arena_vector<CreateItemRequest_Price_t>& arr,
+                                               std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_CreateItemRequest_Price_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_CreateItemRequest_Price_t_array(const arena_vector<CreateItemRequest_Price_t>& arr) {
+inline std::string
+serialize_CreateItemRequest_Price_t_array(const arena_vector<CreateItemRequest_Price_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_CreateItemRequest_Price_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_CreateItemRequest_Stock_t_array_into(const std::vector<CreateItemRequest_Stock_t>& arr, std::string& json) {
+inline void
+serialize_CreateItemRequest_Stock_t_array_into(const std::vector<CreateItemRequest_Stock_t>& arr,
+                                               std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_CreateItemRequest_Stock_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_CreateItemRequest_Stock_t_array(const std::vector<CreateItemRequest_Stock_t>& arr) {
+inline std::string
+serialize_CreateItemRequest_Stock_t_array(const std::vector<CreateItemRequest_Stock_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_CreateItemRequest_Stock_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_CreateItemRequest_Stock_t_array_into(const arena_vector<CreateItemRequest_Stock_t>& arr, std::string& json) {
+inline void
+serialize_CreateItemRequest_Stock_t_array_into(const arena_vector<CreateItemRequest_Stock_t>& arr,
+                                               std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_CreateItemRequest_Stock_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_CreateItemRequest_Stock_t_array(const arena_vector<CreateItemRequest_Stock_t>& arr) {
+inline std::string
+serialize_CreateItemRequest_Stock_t_array(const arena_vector<CreateItemRequest_Stock_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_CreateItemRequest_Stock_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_CreateItemRequest_Tags_t_array_into(const std::vector<CreateItemRequest_Tags_t>& arr, std::string& json) {
+inline void
+serialize_CreateItemRequest_Tags_t_array_into(const std::vector<CreateItemRequest_Tags_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_CreateItemRequest_Tags_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_CreateItemRequest_Tags_t_array(const std::vector<CreateItemRequest_Tags_t>& arr) {
+inline std::string
+serialize_CreateItemRequest_Tags_t_array(const std::vector<CreateItemRequest_Tags_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_CreateItemRequest_Tags_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_CreateItemRequest_Tags_t_array_into(const arena_vector<CreateItemRequest_Tags_t>& arr, std::string& json) {
+inline void
+serialize_CreateItemRequest_Tags_t_array_into(const arena_vector<CreateItemRequest_Tags_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_CreateItemRequest_Tags_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_CreateItemRequest_Tags_t_array(const arena_vector<CreateItemRequest_Tags_t>& arr) {
+inline std::string
+serialize_CreateItemRequest_Tags_t_array(const arena_vector<CreateItemRequest_Tags_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_CreateItemRequest_Tags_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_CreateItemRequest_Item_t_array_into(const std::vector<CreateItemRequest_Item_t>& arr, std::string& json) {
+inline void
+serialize_CreateItemRequest_Item_t_array_into(const std::vector<CreateItemRequest_Item_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_CreateItemRequest_Item_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_CreateItemRequest_Item_t_array(const std::vector<CreateItemRequest_Item_t>& arr) {
+inline std::string
+serialize_CreateItemRequest_Item_t_array(const std::vector<CreateItemRequest_Item_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_CreateItemRequest_Item_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_CreateItemRequest_Item_t_array_into(const arena_vector<CreateItemRequest_Item_t>& arr, std::string& json) {
+inline void
+serialize_CreateItemRequest_Item_t_array_into(const arena_vector<CreateItemRequest_Item_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_CreateItemRequest_Item_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_CreateItemRequest_Item_t_array(const arena_vector<CreateItemRequest_Item_t>& arr) {
+inline std::string
+serialize_CreateItemRequest_Item_t_array(const arena_vector<CreateItemRequest_Item_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_CreateItemRequest_Item_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UpdateItemRequest_array_into(const std::vector<UpdateItemRequest>& arr, std::string& json) {
+inline void serialize_UpdateItemRequest_array_into(const std::vector<UpdateItemRequest>& arr,
+                                                   std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UpdateItemRequest_into(arr[i], json);
     }
     json.push_back(']');
@@ -7279,10 +9269,12 @@ inline std::string serialize_UpdateItemRequest_array(const std::vector<UpdateIte
     return json;
 }
 
-inline void serialize_UpdateItemRequest_array_into(const arena_vector<UpdateItemRequest>& arr, std::string& json) {
+inline void serialize_UpdateItemRequest_array_into(const arena_vector<UpdateItemRequest>& arr,
+                                                   std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UpdateItemRequest_into(arr[i], json);
     }
     json.push_back(']');
@@ -7295,192 +9287,238 @@ inline std::string serialize_UpdateItemRequest_array(const arena_vector<UpdateIt
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Name_t_array_into(const std::vector<UpdateItemRequest_Name_t>& arr, std::string& json) {
+inline void
+serialize_UpdateItemRequest_Name_t_array_into(const std::vector<UpdateItemRequest_Name_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UpdateItemRequest_Name_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UpdateItemRequest_Name_t_array(const std::vector<UpdateItemRequest_Name_t>& arr) {
+inline std::string
+serialize_UpdateItemRequest_Name_t_array(const std::vector<UpdateItemRequest_Name_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UpdateItemRequest_Name_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Name_t_array_into(const arena_vector<UpdateItemRequest_Name_t>& arr, std::string& json) {
+inline void
+serialize_UpdateItemRequest_Name_t_array_into(const arena_vector<UpdateItemRequest_Name_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UpdateItemRequest_Name_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UpdateItemRequest_Name_t_array(const arena_vector<UpdateItemRequest_Name_t>& arr) {
+inline std::string
+serialize_UpdateItemRequest_Name_t_array(const arena_vector<UpdateItemRequest_Name_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UpdateItemRequest_Name_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Description_t_array_into(const std::vector<UpdateItemRequest_Description_t>& arr, std::string& json) {
+inline void serialize_UpdateItemRequest_Description_t_array_into(
+    const std::vector<UpdateItemRequest_Description_t>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UpdateItemRequest_Description_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UpdateItemRequest_Description_t_array(const std::vector<UpdateItemRequest_Description_t>& arr) {
+inline std::string serialize_UpdateItemRequest_Description_t_array(
+    const std::vector<UpdateItemRequest_Description_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UpdateItemRequest_Description_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Description_t_array_into(const arena_vector<UpdateItemRequest_Description_t>& arr, std::string& json) {
+inline void serialize_UpdateItemRequest_Description_t_array_into(
+    const arena_vector<UpdateItemRequest_Description_t>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UpdateItemRequest_Description_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UpdateItemRequest_Description_t_array(const arena_vector<UpdateItemRequest_Description_t>& arr) {
+inline std::string serialize_UpdateItemRequest_Description_t_array(
+    const arena_vector<UpdateItemRequest_Description_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UpdateItemRequest_Description_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Price_t_array_into(const std::vector<UpdateItemRequest_Price_t>& arr, std::string& json) {
+inline void
+serialize_UpdateItemRequest_Price_t_array_into(const std::vector<UpdateItemRequest_Price_t>& arr,
+                                               std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UpdateItemRequest_Price_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UpdateItemRequest_Price_t_array(const std::vector<UpdateItemRequest_Price_t>& arr) {
+inline std::string
+serialize_UpdateItemRequest_Price_t_array(const std::vector<UpdateItemRequest_Price_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UpdateItemRequest_Price_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Price_t_array_into(const arena_vector<UpdateItemRequest_Price_t>& arr, std::string& json) {
+inline void
+serialize_UpdateItemRequest_Price_t_array_into(const arena_vector<UpdateItemRequest_Price_t>& arr,
+                                               std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UpdateItemRequest_Price_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UpdateItemRequest_Price_t_array(const arena_vector<UpdateItemRequest_Price_t>& arr) {
+inline std::string
+serialize_UpdateItemRequest_Price_t_array(const arena_vector<UpdateItemRequest_Price_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UpdateItemRequest_Price_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Stock_t_array_into(const std::vector<UpdateItemRequest_Stock_t>& arr, std::string& json) {
+inline void
+serialize_UpdateItemRequest_Stock_t_array_into(const std::vector<UpdateItemRequest_Stock_t>& arr,
+                                               std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UpdateItemRequest_Stock_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UpdateItemRequest_Stock_t_array(const std::vector<UpdateItemRequest_Stock_t>& arr) {
+inline std::string
+serialize_UpdateItemRequest_Stock_t_array(const std::vector<UpdateItemRequest_Stock_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UpdateItemRequest_Stock_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Stock_t_array_into(const arena_vector<UpdateItemRequest_Stock_t>& arr, std::string& json) {
+inline void
+serialize_UpdateItemRequest_Stock_t_array_into(const arena_vector<UpdateItemRequest_Stock_t>& arr,
+                                               std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UpdateItemRequest_Stock_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UpdateItemRequest_Stock_t_array(const arena_vector<UpdateItemRequest_Stock_t>& arr) {
+inline std::string
+serialize_UpdateItemRequest_Stock_t_array(const arena_vector<UpdateItemRequest_Stock_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UpdateItemRequest_Stock_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Tags_t_array_into(const std::vector<UpdateItemRequest_Tags_t>& arr, std::string& json) {
+inline void
+serialize_UpdateItemRequest_Tags_t_array_into(const std::vector<UpdateItemRequest_Tags_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UpdateItemRequest_Tags_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UpdateItemRequest_Tags_t_array(const std::vector<UpdateItemRequest_Tags_t>& arr) {
+inline std::string
+serialize_UpdateItemRequest_Tags_t_array(const std::vector<UpdateItemRequest_Tags_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UpdateItemRequest_Tags_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Tags_t_array_into(const arena_vector<UpdateItemRequest_Tags_t>& arr, std::string& json) {
+inline void
+serialize_UpdateItemRequest_Tags_t_array_into(const arena_vector<UpdateItemRequest_Tags_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UpdateItemRequest_Tags_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UpdateItemRequest_Tags_t_array(const arena_vector<UpdateItemRequest_Tags_t>& arr) {
+inline std::string
+serialize_UpdateItemRequest_Tags_t_array(const arena_vector<UpdateItemRequest_Tags_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UpdateItemRequest_Tags_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Item_t_array_into(const std::vector<UpdateItemRequest_Item_t>& arr, std::string& json) {
+inline void
+serialize_UpdateItemRequest_Item_t_array_into(const std::vector<UpdateItemRequest_Item_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UpdateItemRequest_Item_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UpdateItemRequest_Item_t_array(const std::vector<UpdateItemRequest_Item_t>& arr) {
+inline std::string
+serialize_UpdateItemRequest_Item_t_array(const std::vector<UpdateItemRequest_Item_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UpdateItemRequest_Item_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_UpdateItemRequest_Item_t_array_into(const arena_vector<UpdateItemRequest_Item_t>& arr, std::string& json) {
+inline void
+serialize_UpdateItemRequest_Item_t_array_into(const arena_vector<UpdateItemRequest_Item_t>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_UpdateItemRequest_Item_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_UpdateItemRequest_Item_t_array(const arena_vector<UpdateItemRequest_Item_t>& arr) {
+inline std::string
+serialize_UpdateItemRequest_Item_t_array(const arena_vector<UpdateItemRequest_Item_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_UpdateItemRequest_Item_t_array_into(arr, json);
@@ -7490,7 +9528,8 @@ inline std::string serialize_UpdateItemRequest_Item_t_array(const arena_vector<U
 inline void serialize_ItemList_array_into(const std::vector<ItemList>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemList_into(arr[i], json);
     }
     json.push_back(']');
@@ -7506,7 +9545,8 @@ inline std::string serialize_ItemList_array(const std::vector<ItemList>& arr) {
 inline void serialize_ItemList_array_into(const arena_vector<ItemList>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemList_into(arr[i], json);
     }
     json.push_back(']');
@@ -7519,10 +9559,12 @@ inline std::string serialize_ItemList_array(const arena_vector<ItemList>& arr) {
     return json;
 }
 
-inline void serialize_ItemList_Items_t_array_into(const std::vector<ItemList_Items_t>& arr, std::string& json) {
+inline void serialize_ItemList_Items_t_array_into(const std::vector<ItemList_Items_t>& arr,
+                                                  std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemList_Items_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -7535,10 +9577,12 @@ inline std::string serialize_ItemList_Items_t_array(const std::vector<ItemList_I
     return json;
 }
 
-inline void serialize_ItemList_Items_t_array_into(const arena_vector<ItemList_Items_t>& arr, std::string& json) {
+inline void serialize_ItemList_Items_t_array_into(const arena_vector<ItemList_Items_t>& arr,
+                                                  std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemList_Items_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -7551,10 +9595,12 @@ inline std::string serialize_ItemList_Items_t_array(const arena_vector<ItemList_
     return json;
 }
 
-inline void serialize_ItemList_Total_t_array_into(const std::vector<ItemList_Total_t>& arr, std::string& json) {
+inline void serialize_ItemList_Total_t_array_into(const std::vector<ItemList_Total_t>& arr,
+                                                  std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemList_Total_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -7567,10 +9613,12 @@ inline std::string serialize_ItemList_Total_t_array(const std::vector<ItemList_T
     return json;
 }
 
-inline void serialize_ItemList_Total_t_array_into(const arena_vector<ItemList_Total_t>& arr, std::string& json) {
+inline void serialize_ItemList_Total_t_array_into(const arena_vector<ItemList_Total_t>& arr,
+                                                  std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemList_Total_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -7583,10 +9631,12 @@ inline std::string serialize_ItemList_Total_t_array(const arena_vector<ItemList_
     return json;
 }
 
-inline void serialize_ItemList_Limit_t_array_into(const std::vector<ItemList_Limit_t>& arr, std::string& json) {
+inline void serialize_ItemList_Limit_t_array_into(const std::vector<ItemList_Limit_t>& arr,
+                                                  std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemList_Limit_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -7599,10 +9649,12 @@ inline std::string serialize_ItemList_Limit_t_array(const std::vector<ItemList_L
     return json;
 }
 
-inline void serialize_ItemList_Limit_t_array_into(const arena_vector<ItemList_Limit_t>& arr, std::string& json) {
+inline void serialize_ItemList_Limit_t_array_into(const arena_vector<ItemList_Limit_t>& arr,
+                                                  std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemList_Limit_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -7615,10 +9667,12 @@ inline std::string serialize_ItemList_Limit_t_array(const arena_vector<ItemList_
     return json;
 }
 
-inline void serialize_ItemList_Offset_t_array_into(const std::vector<ItemList_Offset_t>& arr, std::string& json) {
+inline void serialize_ItemList_Offset_t_array_into(const std::vector<ItemList_Offset_t>& arr,
+                                                   std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemList_Offset_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -7631,10 +9685,12 @@ inline std::string serialize_ItemList_Offset_t_array(const std::vector<ItemList_
     return json;
 }
 
-inline void serialize_ItemList_Offset_t_array_into(const arena_vector<ItemList_Offset_t>& arr, std::string& json) {
+inline void serialize_ItemList_Offset_t_array_into(const arena_vector<ItemList_Offset_t>& arr,
+                                                   std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_ItemList_Offset_t_into(arr[i], json);
     }
     json.push_back(']');
@@ -7647,10 +9703,12 @@ inline std::string serialize_ItemList_Offset_t_array(const arena_vector<ItemList
     return json;
 }
 
-inline void serialize_EchoRequest_array_into(const std::vector<EchoRequest>& arr, std::string& json) {
+inline void serialize_EchoRequest_array_into(const std::vector<EchoRequest>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_EchoRequest_into(arr[i], json);
     }
     json.push_back(']');
@@ -7663,10 +9721,12 @@ inline std::string serialize_EchoRequest_array(const std::vector<EchoRequest>& a
     return json;
 }
 
-inline void serialize_EchoRequest_array_into(const arena_vector<EchoRequest>& arr, std::string& json) {
+inline void serialize_EchoRequest_array_into(const arena_vector<EchoRequest>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_EchoRequest_into(arr[i], json);
     }
     json.push_back(']');
@@ -7679,106 +9739,130 @@ inline std::string serialize_EchoRequest_array(const arena_vector<EchoRequest>& 
     return json;
 }
 
-inline void serialize_EchoRequest_Message_t_array_into(const std::vector<EchoRequest_Message_t>& arr, std::string& json) {
+inline void
+serialize_EchoRequest_Message_t_array_into(const std::vector<EchoRequest_Message_t>& arr,
+                                           std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_EchoRequest_Message_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_EchoRequest_Message_t_array(const std::vector<EchoRequest_Message_t>& arr) {
+inline std::string
+serialize_EchoRequest_Message_t_array(const std::vector<EchoRequest_Message_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_EchoRequest_Message_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_EchoRequest_Message_t_array_into(const arena_vector<EchoRequest_Message_t>& arr, std::string& json) {
+inline void
+serialize_EchoRequest_Message_t_array_into(const arena_vector<EchoRequest_Message_t>& arr,
+                                           std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_EchoRequest_Message_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_EchoRequest_Message_t_array(const arena_vector<EchoRequest_Message_t>& arr) {
+inline std::string
+serialize_EchoRequest_Message_t_array(const arena_vector<EchoRequest_Message_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_EchoRequest_Message_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_EchoRequest_Repeat_t_array_into(const std::vector<EchoRequest_Repeat_t>& arr, std::string& json) {
+inline void serialize_EchoRequest_Repeat_t_array_into(const std::vector<EchoRequest_Repeat_t>& arr,
+                                                      std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_EchoRequest_Repeat_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_EchoRequest_Repeat_t_array(const std::vector<EchoRequest_Repeat_t>& arr) {
+inline std::string
+serialize_EchoRequest_Repeat_t_array(const std::vector<EchoRequest_Repeat_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_EchoRequest_Repeat_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_EchoRequest_Repeat_t_array_into(const arena_vector<EchoRequest_Repeat_t>& arr, std::string& json) {
+inline void serialize_EchoRequest_Repeat_t_array_into(const arena_vector<EchoRequest_Repeat_t>& arr,
+                                                      std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_EchoRequest_Repeat_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_EchoRequest_Repeat_t_array(const arena_vector<EchoRequest_Repeat_t>& arr) {
+inline std::string
+serialize_EchoRequest_Repeat_t_array(const arena_vector<EchoRequest_Repeat_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_EchoRequest_Repeat_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_EchoRequest_Uppercase_t_array_into(const std::vector<EchoRequest_Uppercase_t>& arr, std::string& json) {
+inline void
+serialize_EchoRequest_Uppercase_t_array_into(const std::vector<EchoRequest_Uppercase_t>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_EchoRequest_Uppercase_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_EchoRequest_Uppercase_t_array(const std::vector<EchoRequest_Uppercase_t>& arr) {
+inline std::string
+serialize_EchoRequest_Uppercase_t_array(const std::vector<EchoRequest_Uppercase_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_EchoRequest_Uppercase_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_EchoRequest_Uppercase_t_array_into(const arena_vector<EchoRequest_Uppercase_t>& arr, std::string& json) {
+inline void
+serialize_EchoRequest_Uppercase_t_array_into(const arena_vector<EchoRequest_Uppercase_t>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_EchoRequest_Uppercase_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_EchoRequest_Uppercase_t_array(const arena_vector<EchoRequest_Uppercase_t>& arr) {
+inline std::string
+serialize_EchoRequest_Uppercase_t_array(const arena_vector<EchoRequest_Uppercase_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_EchoRequest_Uppercase_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_EchoResponse_array_into(const std::vector<EchoResponse>& arr, std::string& json) {
+inline void serialize_EchoResponse_array_into(const std::vector<EchoResponse>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_EchoResponse_into(arr[i], json);
     }
     json.push_back(']');
@@ -7791,10 +9875,12 @@ inline std::string serialize_EchoResponse_array(const std::vector<EchoResponse>&
     return json;
 }
 
-inline void serialize_EchoResponse_array_into(const arena_vector<EchoResponse>& arr, std::string& json) {
+inline void serialize_EchoResponse_array_into(const arena_vector<EchoResponse>& arr,
+                                              std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_EchoResponse_into(arr[i], json);
     }
     json.push_back(']');
@@ -7807,202 +9893,250 @@ inline std::string serialize_EchoResponse_array(const arena_vector<EchoResponse>
     return json;
 }
 
-inline void serialize_EchoResponse_Message_t_array_into(const std::vector<EchoResponse_Message_t>& arr, std::string& json) {
+inline void
+serialize_EchoResponse_Message_t_array_into(const std::vector<EchoResponse_Message_t>& arr,
+                                            std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_EchoResponse_Message_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_EchoResponse_Message_t_array(const std::vector<EchoResponse_Message_t>& arr) {
+inline std::string
+serialize_EchoResponse_Message_t_array(const std::vector<EchoResponse_Message_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_EchoResponse_Message_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_EchoResponse_Message_t_array_into(const arena_vector<EchoResponse_Message_t>& arr, std::string& json) {
+inline void
+serialize_EchoResponse_Message_t_array_into(const arena_vector<EchoResponse_Message_t>& arr,
+                                            std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_EchoResponse_Message_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_EchoResponse_Message_t_array(const arena_vector<EchoResponse_Message_t>& arr) {
+inline std::string
+serialize_EchoResponse_Message_t_array(const arena_vector<EchoResponse_Message_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_EchoResponse_Message_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_EchoResponse_Length_t_array_into(const std::vector<EchoResponse_Length_t>& arr, std::string& json) {
+inline void
+serialize_EchoResponse_Length_t_array_into(const std::vector<EchoResponse_Length_t>& arr,
+                                           std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_EchoResponse_Length_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_EchoResponse_Length_t_array(const std::vector<EchoResponse_Length_t>& arr) {
+inline std::string
+serialize_EchoResponse_Length_t_array(const std::vector<EchoResponse_Length_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_EchoResponse_Length_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_EchoResponse_Length_t_array_into(const arena_vector<EchoResponse_Length_t>& arr, std::string& json) {
+inline void
+serialize_EchoResponse_Length_t_array_into(const arena_vector<EchoResponse_Length_t>& arr,
+                                           std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_EchoResponse_Length_t_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_EchoResponse_Length_t_array(const arena_vector<EchoResponse_Length_t>& arr) {
+inline std::string
+serialize_EchoResponse_Length_t_array(const arena_vector<EchoResponse_Length_t>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_EchoResponse_Length_t_array_into(arr, json);
     return json;
 }
 
-inline void serialize_list_items_param_limit_array_into(const std::vector<list_items_param_limit>& arr, std::string& json) {
+inline void
+serialize_list_items_param_limit_array_into(const std::vector<list_items_param_limit>& arr,
+                                            std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_list_items_param_limit_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_list_items_param_limit_array(const std::vector<list_items_param_limit>& arr) {
+inline std::string
+serialize_list_items_param_limit_array(const std::vector<list_items_param_limit>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_list_items_param_limit_array_into(arr, json);
     return json;
 }
 
-inline void serialize_list_items_param_limit_array_into(const arena_vector<list_items_param_limit>& arr, std::string& json) {
+inline void
+serialize_list_items_param_limit_array_into(const arena_vector<list_items_param_limit>& arr,
+                                            std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_list_items_param_limit_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_list_items_param_limit_array(const arena_vector<list_items_param_limit>& arr) {
+inline std::string
+serialize_list_items_param_limit_array(const arena_vector<list_items_param_limit>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_list_items_param_limit_array_into(arr, json);
     return json;
 }
 
-inline void serialize_list_items_param_offset_array_into(const std::vector<list_items_param_offset>& arr, std::string& json) {
+inline void
+serialize_list_items_param_offset_array_into(const std::vector<list_items_param_offset>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_list_items_param_offset_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_list_items_param_offset_array(const std::vector<list_items_param_offset>& arr) {
+inline std::string
+serialize_list_items_param_offset_array(const std::vector<list_items_param_offset>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_list_items_param_offset_array_into(arr, json);
     return json;
 }
 
-inline void serialize_list_items_param_offset_array_into(const arena_vector<list_items_param_offset>& arr, std::string& json) {
+inline void
+serialize_list_items_param_offset_array_into(const arena_vector<list_items_param_offset>& arr,
+                                             std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_list_items_param_offset_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_list_items_param_offset_array(const arena_vector<list_items_param_offset>& arr) {
+inline std::string
+serialize_list_items_param_offset_array(const arena_vector<list_items_param_offset>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_list_items_param_offset_array_into(arr, json);
     return json;
 }
 
-inline void serialize_create_item_param_X_Request_Id_array_into(const std::vector<create_item_param_X_Request_Id>& arr, std::string& json) {
+inline void serialize_create_item_param_X_Request_Id_array_into(
+    const std::vector<create_item_param_X_Request_Id>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_create_item_param_X_Request_Id_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_create_item_param_X_Request_Id_array(const std::vector<create_item_param_X_Request_Id>& arr) {
+inline std::string serialize_create_item_param_X_Request_Id_array(
+    const std::vector<create_item_param_X_Request_Id>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_create_item_param_X_Request_Id_array_into(arr, json);
     return json;
 }
 
-inline void serialize_create_item_param_X_Request_Id_array_into(const arena_vector<create_item_param_X_Request_Id>& arr, std::string& json) {
+inline void serialize_create_item_param_X_Request_Id_array_into(
+    const arena_vector<create_item_param_X_Request_Id>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_create_item_param_X_Request_Id_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_create_item_param_X_Request_Id_array(const arena_vector<create_item_param_X_Request_Id>& arr) {
+inline std::string serialize_create_item_param_X_Request_Id_array(
+    const arena_vector<create_item_param_X_Request_Id>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_create_item_param_X_Request_Id_array_into(arr, json);
     return json;
 }
 
-inline void serialize_create_item_param_session_array_into(const std::vector<create_item_param_session>& arr, std::string& json) {
+inline void
+serialize_create_item_param_session_array_into(const std::vector<create_item_param_session>& arr,
+                                               std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_create_item_param_session_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_create_item_param_session_array(const std::vector<create_item_param_session>& arr) {
+inline std::string
+serialize_create_item_param_session_array(const std::vector<create_item_param_session>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_create_item_param_session_array_into(arr, json);
     return json;
 }
 
-inline void serialize_create_item_param_session_array_into(const arena_vector<create_item_param_session>& arr, std::string& json) {
+inline void
+serialize_create_item_param_session_array_into(const arena_vector<create_item_param_session>& arr,
+                                               std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_create_item_param_session_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_create_item_param_session_array(const arena_vector<create_item_param_session>& arr) {
+inline std::string
+serialize_create_item_param_session_array(const arena_vector<create_item_param_session>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_create_item_param_session_array_into(arr, json);
     return json;
 }
 
-inline void serialize_get_item_param_id_array_into(const std::vector<get_item_param_id>& arr, std::string& json) {
+inline void serialize_get_item_param_id_array_into(const std::vector<get_item_param_id>& arr,
+                                                   std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_get_item_param_id_into(arr[i], json);
     }
     json.push_back(']');
@@ -8015,10 +10149,12 @@ inline std::string serialize_get_item_param_id_array(const std::vector<get_item_
     return json;
 }
 
-inline void serialize_get_item_param_id_array_into(const arena_vector<get_item_param_id>& arr, std::string& json) {
+inline void serialize_get_item_param_id_array_into(const arena_vector<get_item_param_id>& arr,
+                                                   std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_get_item_param_id_into(arr[i], json);
     }
     json.push_back(']');
@@ -8031,163 +10167,194 @@ inline std::string serialize_get_item_param_id_array(const arena_vector<get_item
     return json;
 }
 
-inline void serialize_update_item_param_id_array_into(const std::vector<update_item_param_id>& arr, std::string& json) {
+inline void serialize_update_item_param_id_array_into(const std::vector<update_item_param_id>& arr,
+                                                      std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_update_item_param_id_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_update_item_param_id_array(const std::vector<update_item_param_id>& arr) {
+inline std::string
+serialize_update_item_param_id_array(const std::vector<update_item_param_id>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_update_item_param_id_array_into(arr, json);
     return json;
 }
 
-inline void serialize_update_item_param_id_array_into(const arena_vector<update_item_param_id>& arr, std::string& json) {
+inline void serialize_update_item_param_id_array_into(const arena_vector<update_item_param_id>& arr,
+                                                      std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_update_item_param_id_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_update_item_param_id_array(const arena_vector<update_item_param_id>& arr) {
+inline std::string
+serialize_update_item_param_id_array(const arena_vector<update_item_param_id>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_update_item_param_id_array_into(arr, json);
     return json;
 }
 
-inline void serialize_delete_item_param_id_array_into(const std::vector<delete_item_param_id>& arr, std::string& json) {
+inline void serialize_delete_item_param_id_array_into(const std::vector<delete_item_param_id>& arr,
+                                                      std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_delete_item_param_id_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_delete_item_param_id_array(const std::vector<delete_item_param_id>& arr) {
+inline std::string
+serialize_delete_item_param_id_array(const std::vector<delete_item_param_id>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_delete_item_param_id_array_into(arr, json);
     return json;
 }
 
-inline void serialize_delete_item_param_id_array_into(const arena_vector<delete_item_param_id>& arr, std::string& json) {
+inline void serialize_delete_item_param_id_array_into(const arena_vector<delete_item_param_id>& arr,
+                                                      std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_delete_item_param_id_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_delete_item_param_id_array(const arena_vector<delete_item_param_id>& arr) {
+inline std::string
+serialize_delete_item_param_id_array(const arena_vector<delete_item_param_id>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_delete_item_param_id_array_into(arr, json);
     return json;
 }
 
-inline void serialize_health_check_response_array_into(const std::vector<health_check_response>& arr, std::string& json) {
+inline void
+serialize_health_check_response_array_into(const std::vector<health_check_response>& arr,
+                                           std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_health_check_response_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_health_check_response_array(const std::vector<health_check_response>& arr) {
+inline std::string
+serialize_health_check_response_array(const std::vector<health_check_response>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_health_check_response_array_into(arr, json);
     return json;
 }
 
-inline void serialize_health_check_response_array_into(const arena_vector<health_check_response>& arr, std::string& json) {
+inline void
+serialize_health_check_response_array_into(const arena_vector<health_check_response>& arr,
+                                           std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_health_check_response_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_health_check_response_array(const arena_vector<health_check_response>& arr) {
+inline std::string
+serialize_health_check_response_array(const arena_vector<health_check_response>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_health_check_response_array_into(arr, json);
     return json;
 }
 
-inline void serialize_health_check_response_Status_array_into(const std::vector<health_check_response_Status>& arr, std::string& json) {
+inline void serialize_health_check_response_Status_array_into(
+    const std::vector<health_check_response_Status>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_health_check_response_Status_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_health_check_response_Status_array(const std::vector<health_check_response_Status>& arr) {
+inline std::string
+serialize_health_check_response_Status_array(const std::vector<health_check_response_Status>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_health_check_response_Status_array_into(arr, json);
     return json;
 }
 
-inline void serialize_health_check_response_Status_array_into(const arena_vector<health_check_response_Status>& arr, std::string& json) {
+inline void serialize_health_check_response_Status_array_into(
+    const arena_vector<health_check_response_Status>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_health_check_response_Status_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_health_check_response_Status_array(const arena_vector<health_check_response_Status>& arr) {
+inline std::string serialize_health_check_response_Status_array(
+    const arena_vector<health_check_response_Status>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_health_check_response_Status_array_into(arr, json);
     return json;
 }
 
-inline void serialize_health_check_response_Uptime_ms_array_into(const std::vector<health_check_response_Uptime_ms>& arr, std::string& json) {
+inline void serialize_health_check_response_Uptime_ms_array_into(
+    const std::vector<health_check_response_Uptime_ms>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_health_check_response_Uptime_ms_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_health_check_response_Uptime_ms_array(const std::vector<health_check_response_Uptime_ms>& arr) {
+inline std::string serialize_health_check_response_Uptime_ms_array(
+    const std::vector<health_check_response_Uptime_ms>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_health_check_response_Uptime_ms_array_into(arr, json);
     return json;
 }
 
-inline void serialize_health_check_response_Uptime_ms_array_into(const arena_vector<health_check_response_Uptime_ms>& arr, std::string& json) {
+inline void serialize_health_check_response_Uptime_ms_array_into(
+    const arena_vector<health_check_response_Uptime_ms>& arr, std::string& json) {
     json.push_back('[');
     for (size_t i = 0; i < arr.size(); ++i) {
-        if (i > 0) json.push_back(',');
+        if (i > 0)
+            json.push_back(',');
         serialize_health_check_response_Uptime_ms_into(arr[i], json);
     }
     json.push_back(']');
 }
 
-inline std::string serialize_health_check_response_Uptime_ms_array(const arena_vector<health_check_response_Uptime_ms>& arr) {
+inline std::string serialize_health_check_response_Uptime_ms_array(
+    const arena_vector<health_check_response_Uptime_ms>& arr) {
     std::string json;
     json.reserve(arr.size() * 32 + 2);
     serialize_health_check_response_Uptime_ms_array_into(arr, json);
     return json;
 }
-

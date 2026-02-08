@@ -65,7 +65,8 @@ public:
     std::optional<stored_item> get(int64_t id) const {
         std::lock_guard lock(mu_);
         auto it = items_.find(id);
-        if (it == items_.end()) return std::nullopt;
+        if (it == items_.end())
+            return std::nullopt;
         return it->second;
     }
 
@@ -74,8 +75,10 @@ public:
         std::vector<stored_item> result;
         int skip = 0;
         for (const auto& [_, item] : items_) {
-            if (skip++ < offset) continue;
-            if (static_cast<int>(result.size()) >= limit) break;
+            if (skip++ < offset)
+                continue;
+            if (static_cast<int>(result.size()) >= limit)
+                break;
             result.push_back(item);
         }
         return result;
@@ -89,12 +92,17 @@ public:
     bool update(int64_t id, const UpdateItemRequest& req) {
         std::lock_guard lock(mu_);
         auto it = items_.find(id);
-        if (it == items_.end()) return false;
+        if (it == items_.end())
+            return false;
         auto& item = it->second;
-        if (!req.name.empty()) item.name.assign(req.name.data(), req.name.size());
-        if (!req.description.empty()) item.description.assign(req.description.data(), req.description.size());
-        if (req.price != 0.0) item.price = req.price;
-        if (req.stock != 0) item.stock = req.stock;
+        if (!req.name.empty())
+            item.name.assign(req.name.data(), req.name.size());
+        if (!req.description.empty())
+            item.description.assign(req.description.data(), req.description.size());
+        if (req.price != 0.0)
+            item.price = req.price;
+        if (req.stock != 0)
+            item.stock = req.stock;
         if (!req.tags.empty()) {
             item.tags.clear();
             for (const auto& t : req.tags)
@@ -141,14 +149,14 @@ static Item to_dto(const item_store::stored_item& src, monotonic_arena& arena) {
 class benchmark_handler : public generated::api_handler {
 public:
     explicit benchmark_handler(item_store& store)
-        : store_(store)
-        , start_time_(std::chrono::steady_clock::now()) {}
+        : store_(store), start_time_(std::chrono::steady_clock::now()) {}
 
     // --- Compute ---
 
     response compute_sum(const SumRequest& req) override {
         double sum = 0.0;
-        for (double v : req.values) sum += v;
+        for (double v : req.values)
+            sum += v;
 
         auto& arena = handler_context::arena();
         SumResponse resp(&arena);
@@ -162,8 +170,10 @@ public:
         double sum = 0.0, mn = vals[0], mx = vals[0];
         for (double v : vals) {
             sum += v;
-            if (v < mn) mn = v;
-            if (v > mx) mx = v;
+            if (v < mn)
+                mn = v;
+            if (v > mx)
+                mx = v;
         }
 
         auto& arena = handler_context::arena();
@@ -178,9 +188,7 @@ public:
             std::vector<double> sorted(vals.begin(), vals.end());
             std::sort(sorted.begin(), sorted.end());
             size_t n = sorted.size();
-            resp.median = (n % 2 == 0)
-                ? (sorted[n / 2 - 1] + sorted[n / 2]) / 2.0
-                : sorted[n / 2];
+            resp.median = (n % 2 == 0) ? (sorted[n / 2 - 1] + sorted[n / 2]) / 2.0 : sorted[n / 2];
         }
 
         return response::json(serialize_StatsResponse(resp));
@@ -192,9 +200,12 @@ public:
         // Validation already performed by generated code.
         auto& arena = handler_context::arena();
         UserResponse resp(&arena);
-        resp.id = arena_string<>("550e8400-e29b-41d4-a716-446655440000", arena_allocator<char>(&arena));
-        resp.username = arena_string<>(req.username.data(), req.username.size(), arena_allocator<char>(&arena));
-        resp.email = arena_string<>(req.email.data(), req.email.size(), arena_allocator<char>(&arena));
+        resp.id =
+            arena_string<>("550e8400-e29b-41d4-a716-446655440000", arena_allocator<char>(&arena));
+        resp.username =
+            arena_string<>(req.username.data(), req.username.size(), arena_allocator<char>(&arena));
+        resp.email =
+            arena_string<>(req.email.data(), req.email.size(), arena_allocator<char>(&arena));
         resp.role = req.role;
         resp.created_at = arena_string<>("2025-01-01T00:00:00Z", arena_allocator<char>(&arena));
         return response::json(serialize_UserResponse(resp));
@@ -227,7 +238,8 @@ public:
                          const CreateItemRequest& body) override {
         int64_t id = store_.create(body);
         auto item_opt = store_.get(id);
-        if (!item_opt) return response::error(problem_details::internal_error());
+        if (!item_opt)
+            return response::error(problem_details::internal_server_error());
 
         auto& arena = handler_context::arena();
         Item dto = to_dto(*item_opt, arena);
@@ -267,7 +279,8 @@ public:
         if (repeat_count > 1) {
             std::string base = msg;
             msg.reserve(base.size() * static_cast<size_t>(repeat_count));
-            for (int i = 1; i < repeat_count; ++i) msg += base;
+            for (int i = 1; i < repeat_count; ++i)
+                msg += base;
         }
 
         if (req.uppercase) {
@@ -303,7 +316,8 @@ private:
 static uint16_t read_port() {
     if (const char* v = std::getenv("PORT")) {
         int p = std::atoi(v);
-        if (p > 0 && p < 65536) return static_cast<uint16_t>(p);
+        if (p > 0 && p < 65536)
+            return static_cast<uint16_t>(p);
     }
     return 9090;
 }
@@ -317,8 +331,7 @@ int main() {
     const uint16_t workers = static_cast<uint16_t>(
         std::min<uint32_t>(std::max(1u, std::thread::hardware_concurrency()), 64));
 
-    std::cout << "KATANA Benchmark API on :" << port
-              << " (" << workers << " workers)\n"
+    std::cout << "KATANA Benchmark API on :" << port << " (" << workers << " workers)\n"
               << "Endpoints:\n"
               << "  POST /compute/sum        - sum array of doubles\n"
               << "  POST /compute/stats      - min/max/mean/median\n"
@@ -334,8 +347,6 @@ int main() {
     return http::server(router)
         .listen(port)
         .workers(workers)
-        .on_start([&]() {
-            std::cout << "Server ready." << std::endl;
-        })
+        .on_start([&]() { std::cout << "Server ready." << std::endl; })
         .run();
 }

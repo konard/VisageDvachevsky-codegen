@@ -3,6 +3,7 @@
 #include <cctype>
 #include <charconv>
 #include <cstdint>
+#include <cstring>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -173,7 +174,8 @@ struct json_cursor {
 
     void skip_value() noexcept {
         skip_ws();
-        if (eof()) return;
+        if (eof())
+            return;
         char ch = *ptr;
         if (ch == '{' || ch == '[') {
             char open = ch;
@@ -233,20 +235,10 @@ inline std::optional<size_t> parse_size(json_cursor& cur) noexcept {
         }
         return std::nullopt;
     }
-    const char* start = cur.ptr;
-    const char* p = start;
-    if (p < cur.end && (*p == '+' || *p == '-')) {
-        ++p;
-    }
-    while (p < cur.end && std::isdigit(static_cast<unsigned char>(*p))) {
-        ++p;
-    }
-    if (p == start) {
-        return std::nullopt;
-    }
+    // Let from_chars handle sign and digit scanning directly
     size_t value = 0;
-    auto fc = std::from_chars(start, p, value);
-    if (fc.ec != std::errc()) {
+    auto [p, ec] = std::from_chars(cur.ptr, cur.end, value);
+    if (ec != std::errc() || p == cur.ptr) {
         return std::nullopt;
     }
     cur.ptr = p;
@@ -268,24 +260,42 @@ inline std::optional<int64_t> parse_int64(json_cursor& cur) noexcept {
         }
         return std::nullopt;
     }
-    const char* start = cur.ptr;
-    const char* p = start;
-    if (p < cur.end && (*p == '+' || *p == '-')) {
+    // Hand-rolled fast path for common case (short integers ≤18 digits)
+    const char* p = cur.ptr;
+    bool negative = false;
+    if (*p == '-') {
+        negative = true;
         ++p;
-    }
-    while (p < cur.end && std::isdigit(static_cast<unsigned char>(*p))) {
+        if (p >= cur.end)
+            return std::nullopt;
+    } else if (*p == '+') {
         ++p;
+        if (p >= cur.end)
+            return std::nullopt;
     }
-    if (p == start || (p == start + 1 && (*start == '+' || *start == '-'))) {
+    // Must start with a digit
+    if (static_cast<unsigned char>(*p - '0') > 9u)
         return std::nullopt;
-    }
-    int64_t value = 0;
-    auto fc = std::from_chars(start, p, value);
-    if (fc.ec != std::errc()) {
-        return std::nullopt;
-    }
+    uint64_t val = 0;
+    // Unrolled digit accumulation (handles up to 18 digits safely without overflow)
+    do {
+        unsigned int d = static_cast<unsigned char>(*p - '0');
+        if (d > 9u)
+            break;
+        val = val * 10u + d;
+        ++p;
+    } while (p < cur.end);
     cur.ptr = p;
-    return value;
+    // Convert to signed with overflow protection
+    if (negative) {
+        // INT64_MIN = -9223372036854775808, max unsigned = 9223372036854775808
+        if (val > static_cast<uint64_t>(INT64_MAX) + 1u)
+            return std::nullopt;
+        return static_cast<int64_t>(-static_cast<int64_t>(val));
+    }
+    if (val > static_cast<uint64_t>(INT64_MAX))
+        return std::nullopt;
+    return static_cast<int64_t>(val);
 }
 
 inline std::optional<double> parse_double(json_cursor& cur) noexcept {
@@ -319,29 +329,22 @@ inline std::optional<bool> parse_bool(json_cursor& cur) noexcept {
     if (cur.eof()) {
         return std::nullopt;
     }
-    if (*cur.ptr == 't') {
-        if (cur.end - cur.ptr >= 4 &&
-            cur.ptr[1] == 'r' && cur.ptr[2] == 'u' && cur.ptr[3] == 'e') {
-            cur.ptr += 4;
-            return true;
-        }
-        return std::nullopt;
+    // Use memcmp for word-level comparison (single 32-bit load on most architectures)
+    if (cur.end - cur.ptr >= 4 && std::memcmp(cur.ptr, "true", 4) == 0) {
+        cur.ptr += 4;
+        return true;
     }
-    if (*cur.ptr == 'f') {
-        if (cur.end - cur.ptr >= 5 &&
-            cur.ptr[1] == 'a' && cur.ptr[2] == 'l' && cur.ptr[3] == 's' && cur.ptr[4] == 'e') {
-            cur.ptr += 5;
-            return false;
-        }
-        return std::nullopt;
+    if (cur.end - cur.ptr >= 5 && std::memcmp(cur.ptr, "false", 5) == 0) {
+        cur.ptr += 5;
+        return false;
     }
     if (*cur.ptr == '\"') {
         if (auto sv = cur.string()) {
             auto v = trim_view(*sv);
-            if (v == "true") {
+            if (v.size() == 4 && std::memcmp(v.data(), "true", 4) == 0) {
                 return true;
             }
-            if (v == "false") {
+            if (v.size() == 5 && std::memcmp(v.data(), "false", 5) == 0) {
                 return false;
             }
         }
@@ -430,35 +433,96 @@ inline bool needs_json_escaping(std::string_view sv) noexcept {
 #endif
 }
 
+// Emit a single escaped character into out
+inline void escape_one_char(char c, std::string& out) {
+    switch (c) {
+    case '\\':
+        out.append("\\\\", 2);
+        break;
+    case '\"':
+        out.append("\\\"", 2);
+        break;
+    case '\n':
+        out.append("\\n", 2);
+        break;
+    case '\r':
+        out.append("\\r", 2);
+        break;
+    case '\t':
+        out.append("\\t", 2);
+        break;
+    default: {
+        static constexpr char hex[] = "0123456789abcdef";
+        char buf[6] = {'\\',
+                       'u',
+                       '0',
+                       '0',
+                       hex[(static_cast<unsigned char>(c) >> 4) & 0xF],
+                       hex[static_cast<unsigned char>(c) & 0xF]};
+        out.append(buf, 6);
+        break;
+    }
+    }
+}
+
 inline void escape_json_string_into(std::string_view sv, std::string& out) {
-    for (char c : sv) {
-        switch (c) {
-        case '\\':
-            out += "\\\\";
-            break;
-        case '\"':
-            out += "\\\"";
-            break;
-        case '\n':
-            out += "\\n";
-            break;
-        case '\r':
-            out += "\\r";
-            break;
-        case '\t':
-            out += "\\t";
-            break;
-        default:
-            if (static_cast<unsigned char>(c) < 0x20) {
-                // Escape other control characters as \u00XX
-                static constexpr char hex[] = "0123456789abcdef";
-                out += "\\u00";
-                out.push_back(hex[(static_cast<unsigned char>(c) >> 4) & 0xF]);
-                out.push_back(hex[static_cast<unsigned char>(c) & 0xF]);
-            } else {
-                out.push_back(c);
-            }
-            break;
+    // Fast path: if no escaping needed, single bulk append
+    if (!needs_json_escaping(sv)) {
+        out.append(sv.data(), sv.size());
+        return;
+    }
+
+    out.reserve(out.size() + sv.size() + 8);
+    const char* ptr = sv.data();
+    const char* end_ptr = ptr + sv.size();
+
+#ifdef __SSE2__
+    const __m128i v_backslash = _mm_set1_epi8('\\');
+    const __m128i v_quote = _mm_set1_epi8('\"');
+    const __m128i v_control_max = _mm_set1_epi8(0x1F);
+
+    while (end_ptr - ptr >= 16) {
+        __m128i chunk = _mm_loadu_si128(reinterpret_cast<const __m128i*>(ptr));
+        __m128i eq_bs = _mm_cmpeq_epi8(chunk, v_backslash);
+        __m128i eq_qt = _mm_cmpeq_epi8(chunk, v_quote);
+        __m128i is_ctrl = _mm_cmpeq_epi8(_mm_min_epu8(chunk, v_control_max), chunk);
+        __m128i needs = _mm_or_si128(_mm_or_si128(eq_bs, eq_qt), is_ctrl);
+        int mask = _mm_movemask_epi8(needs);
+
+        if (mask == 0) {
+            // All 16 bytes are clean — bulk append
+            out.append(ptr, 16);
+            ptr += 16;
+            continue;
+        }
+
+        // Find first escape-needing byte, bulk append clean prefix
+        int first_esc = __builtin_ctz(static_cast<unsigned>(mask));
+        if (first_esc > 0) {
+            out.append(ptr, static_cast<size_t>(first_esc));
+        }
+        ptr += first_esc;
+        escape_one_char(*ptr, out);
+        ++ptr;
+    }
+#endif
+
+    // Scalar tail: scan for clean runs and bulk copy
+    while (ptr < end_ptr) {
+        const char* scan = ptr;
+        while (scan < end_ptr) {
+            unsigned char uc = static_cast<unsigned char>(*scan);
+            if (uc == '\\' || uc == '\"' || uc <= 0x1F)
+                break;
+            ++scan;
+        }
+        if (scan > ptr) {
+            out.append(ptr, static_cast<size_t>(scan - ptr));
+            ptr = scan;
+        }
+        if (ptr < end_ptr) {
+            escape_one_char(*ptr, out);
+            ++ptr;
         }
     }
 }

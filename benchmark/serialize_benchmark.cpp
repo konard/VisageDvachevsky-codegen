@@ -1,18 +1,24 @@
 // benchmark/serialize_benchmark.cpp
+#include <charconv>
 #include <chrono>
 #include <cstdio>
 #include <string>
 #include <vector>
 
+#include "bench_utils.hpp"
 #include "katana/core/serde.hpp"
+
+using bench_util::clobber_memory;
+using bench_util::do_not_optimize;
 
 namespace {
 
-template<typename Fn>
-void bench(const char* name, int iterations, Fn&& fn) {
-    for (int i = 0; i < iterations / 10; ++i) fn();
+template <typename Fn> void bench(const char* name, int iterations, Fn&& fn) {
+    for (int i = 0; i < iterations / 10; ++i)
+        fn();
     auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < iterations; ++i) fn();
+    for (int i = 0; i < iterations; ++i)
+        fn();
     auto end = std::chrono::high_resolution_clock::now();
     double ns = std::chrono::duration<double, std::nano>(end - start).count();
     double ns_per = ns / iterations;
@@ -37,7 +43,7 @@ int main() {
         std::string clean = "simple_value_without_special_chars";
         bench("escape_json_string (clean, return)", N, [&] {
             auto v = katana::serde::escape_json_string(clean);
-            (void)v;
+            do_not_optimize(v);
         });
     }
     {
@@ -47,13 +53,14 @@ int main() {
         bench("escape_json_string_into (clean, append)", N, [&] {
             buf.clear();
             katana::serde::escape_json_string_into(clean, buf);
+            clobber_memory();
         });
     }
     {
         std::string dirty = "has \"quotes\" and \nnewline \t tab";
         bench("escape_json_string (dirty, return)", N, [&] {
             auto v = katana::serde::escape_json_string(dirty);
-            (void)v;
+            do_not_optimize(v);
         });
     }
     {
@@ -63,6 +70,7 @@ int main() {
         bench("escape_json_string_into (dirty, append)", N, [&] {
             buf.clear();
             katana::serde::escape_json_string_into(dirty, buf);
+            clobber_memory();
         });
     }
 
@@ -71,33 +79,33 @@ int main() {
     {
         std::string s16(16, 'a');
         bench("needs_json_escaping (16 byte clean)", N, [&] {
-            (void)katana::serde::needs_json_escaping(s16);
+            do_not_optimize(katana::serde::needs_json_escaping(s16));
         });
     }
     {
         std::string s64(64, 'a');
         bench("needs_json_escaping (64 byte clean)", N, [&] {
-            (void)katana::serde::needs_json_escaping(s64);
+            do_not_optimize(katana::serde::needs_json_escaping(s64));
         });
     }
     {
         std::string s256(256, 'a');
         bench("needs_json_escaping (256 byte clean)", N, [&] {
-            (void)katana::serde::needs_json_escaping(s256);
+            do_not_optimize(katana::serde::needs_json_escaping(s256));
         });
     }
     {
         std::string s64(64, 'a');
         s64[63] = '\\'; // escape at end
         bench("needs_json_escaping (64 byte, escape at end)", N, [&] {
-            (void)katana::serde::needs_json_escaping(s64);
+            do_not_optimize(katana::serde::needs_json_escaping(s64));
         });
     }
     {
         std::string s64(64, 'a');
         s64[0] = '\\'; // escape at start
         bench("needs_json_escaping (64 byte, escape at start)", N, [&] {
-            (void)katana::serde::needs_json_escaping(s64);
+            do_not_optimize(katana::serde::needs_json_escaping(s64));
         });
     }
 
@@ -105,9 +113,11 @@ int main() {
     std::printf("\n--- JSON Object Construction ---\n");
     {
         // Simulate serialize_into with embedded commas (no first flag)
+        // Reuse buffer across iterations to measure serialization, not allocation
+        std::string json;
+        json.reserve(200);
         bench("serialize 5-field obj (embedded commas)", N, [&] {
-            std::string json;
-            json.reserve(200);
+            json.clear();
             json.append("{\"name\":");
             json.push_back('"');
             katana::serde::escape_json_string_into("John Doe", json);
@@ -125,21 +135,25 @@ int main() {
             json.append("admin");
             json.push_back('"');
             json.push_back('}');
+            do_not_optimize(json.data());
         });
     }
     {
-        // Array of 100 integers
+        // Array of 100 integers — write directly into a flat char buffer
+        // to avoid per-element std::string operations
+        char flat[512];
         bench("serialize array 100 ints (single alloc)", N / 10, [&] {
-            std::string json;
-            json.reserve(512);
-            json.push_back('[');
+            char* p = flat;
+            *p++ = '[';
             for (int i = 0; i < 100; ++i) {
-                if (i > 0) json.push_back(',');
-                char buf[16];
-                auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), i);
-                json.append(buf, static_cast<size_t>(ptr - buf));
+                if (i > 0)
+                    *p++ = ',';
+                auto [end, ec] = std::to_chars(p, flat + sizeof(flat), i);
+                p = end;
             }
-            json.push_back(']');
+            *p++ = ']';
+            do_not_optimize(flat);
+            do_not_optimize(p);
         });
     }
 

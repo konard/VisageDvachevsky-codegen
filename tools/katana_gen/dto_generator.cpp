@@ -6,6 +6,8 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace katana_gen {
@@ -37,9 +39,12 @@ std::string extract_arena_vector_inner_type(const std::string& cpp_type) {
     int depth = 1;
     auto end = start;
     while (end < cpp_type.size() && depth > 0) {
-        if (cpp_type[end] == '<') ++depth;
-        if (cpp_type[end] == '>') --depth;
-        if (depth > 0) ++end;
+        if (cpp_type[end] == '<')
+            ++depth;
+        if (cpp_type[end] == '>')
+            --depth;
+        if (depth > 0)
+            ++end;
     }
     return cpp_type.substr(start, end - start);
 }
@@ -267,10 +272,9 @@ void generate_dto_for_schema(std::ostream& out,
         sorted_props.push_back({&prop, cpp_type, alignment_rank(cpp_type)});
     }
     // Sort by alignment descending for optimal packing (8-byte first, 1-byte last)
-    std::stable_sort(sorted_props.begin(), sorted_props.end(),
-                     [](const prop_entry& a, const prop_entry& b) {
-                         return a.align > b.align;
-                     });
+    std::stable_sort(sorted_props.begin(),
+                     sorted_props.end(),
+                     [](const prop_entry& a, const prop_entry& b) { return a.align > b.align; });
 
     if (use_pmr) {
         out << ind << "    explicit " << struct_name << "(monotonic_arena* arena = nullptr)\n";
@@ -282,12 +286,11 @@ void generate_dto_for_schema(std::ostream& out,
                 // Use semantic allocator: arena_allocator<T> for arena_vector<T>
                 auto inner = extract_arena_vector_inner_type(cpp_type);
                 out << ",\n"
-                    << ind << "          " << entry.prop->name
-                    << "(arena_allocator<" << inner << ">(arena))";
+                    << ind << "          " << entry.prop->name << "(arena_allocator<" << inner
+                    << ">(arena))";
             } else if (cpp_type.find("arena_string") != std::string::npos) {
                 out << ",\n"
-                    << ind << "          " << entry.prop->name
-                    << "(arena_allocator<char>(arena))";
+                    << ind << "          " << entry.prop->name << "(arena_allocator<char>(arena))";
             }
         }
         out << " {}\n\n";
@@ -309,7 +312,12 @@ void generate_dto_for_schema(std::ostream& out,
         out << ind << "    " << cpp_type << " " << prop->name;
         bool is_arena_type = use_pmr && (cpp_type.find("arena_string") != std::string::npos ||
                                          cpp_type.find("arena_vector") != std::string::npos);
-        if (!prop->required && !is_arena_type) {
+        // Don't use = {} for types with explicit arena constructors
+        // (object types with properties have explicit ctor when use_pmr is true)
+        bool is_arena_object = use_pmr && prop->type &&
+                               prop->type->kind == katana::openapi::schema_kind::object &&
+                               !prop->type->properties.empty();
+        if (!prop->required && !is_arena_type && !is_arena_object) {
             out << " = {}";
         }
         out << ";\n";
@@ -404,6 +412,133 @@ void generate_enum_for_schema(std::ostream& out,
     out << "}\n\n";
 }
 
+// Helper: unwrap arrays and return the innermost element type schema pointer.
+const katana::openapi::schema* unwrap_array(const katana::openapi::schema* t) {
+    while (t && t->kind == katana::openapi::schema_kind::array && t->items) {
+        t = t->items;
+    }
+    return t;
+}
+
+// Collects schema dependencies for a given schema.
+// Returns pointers to schemas that must be defined before 's'.
+// Handles both struct schemas (with properties) and type alias schemas (without properties).
+void collect_schema_deps(const document& /*doc*/,
+                         const katana::openapi::schema& s,
+                         bool /*use_pmr*/,
+                         std::vector<const katana::openapi::schema*>& deps) {
+    if (!s.properties.empty()) {
+        // Struct schema: collect deps from properties
+        for (const auto& prop : s.properties) {
+            if (!prop.type)
+                continue;
+
+            const auto* t = unwrap_array(prop.type);
+            // Object types with properties generate structs that need ordering
+            if (t && t->kind == katana::openapi::schema_kind::object && !t->properties.empty()) {
+                deps.push_back(t);
+            }
+        }
+    } else {
+        // Type alias schema (e.g., "using X = arena_vector<SomeStruct>;")
+        // Check if this alias references an object type through arrays
+        const auto* t = unwrap_array(&s);
+        if (t && t != &s && t->kind == katana::openapi::schema_kind::object &&
+            !t->properties.empty()) {
+            deps.push_back(t);
+        }
+        // Direct object reference without array wrapping
+        if (s.kind == katana::openapi::schema_kind::object && s.items) {
+            const auto* inner = unwrap_array(s.items);
+            if (inner && inner->kind == katana::openapi::schema_kind::object &&
+                !inner->properties.empty()) {
+                deps.push_back(inner);
+            }
+        }
+    }
+}
+
+// Topologically sorts schemas so that dependencies are emitted before dependents.
+// Schemas without dependencies keep their original relative order.
+std::vector<size_t> topological_sort_schemas(const document& doc, bool use_pmr) {
+    const size_t n = doc.schemas.size();
+
+    // Map schema pointer -> index in doc.schemas
+    std::unordered_map<const katana::openapi::schema*, size_t> schema_to_idx;
+    schema_to_idx.reserve(n);
+    for (size_t i = 0; i < n; ++i) {
+        schema_to_idx[&doc.schemas[i]] = i;
+    }
+
+    // Build adjacency list: adj[i] = set of indices that schema i depends on
+    std::vector<std::unordered_set<size_t>> deps(n);
+    for (size_t i = 0; i < n; ++i) {
+        std::vector<const katana::openapi::schema*> dep_schemas;
+        collect_schema_deps(doc, doc.schemas[i], use_pmr, dep_schemas);
+        for (const auto* dep : dep_schemas) {
+            auto it = schema_to_idx.find(dep);
+            if (it != schema_to_idx.end() && it->second != i) {
+                deps[i].insert(it->second);
+            }
+        }
+    }
+
+    // Kahn's algorithm for topological sort
+    std::vector<size_t> in_degree(n, 0);
+    std::vector<std::vector<size_t>> reverse_adj(n); // reverse_adj[j] = schemas that depend on j
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j : deps[i]) {
+            reverse_adj[j].push_back(i);
+            ++in_degree[i];
+        }
+    }
+
+    // Use a queue that preserves original order for schemas with same priority
+    // (stable topological sort using original index as tie-breaker)
+    std::vector<size_t> queue;
+    for (size_t i = 0; i < n; ++i) {
+        if (in_degree[i] == 0) {
+            queue.push_back(i);
+        }
+    }
+    // Sort initial queue by original index to maintain stability
+    std::sort(queue.begin(), queue.end());
+
+    std::vector<size_t> result;
+    result.reserve(n);
+    size_t front = 0;
+
+    while (front < queue.size()) {
+        size_t idx = queue[front++];
+        result.push_back(idx);
+
+        // Collect newly freed nodes
+        std::vector<size_t> newly_freed;
+        for (size_t dependent : reverse_adj[idx]) {
+            if (--in_degree[dependent] == 0) {
+                newly_freed.push_back(dependent);
+            }
+        }
+        // Sort to maintain stable order
+        std::sort(newly_freed.begin(), newly_freed.end());
+        for (size_t nf : newly_freed) {
+            queue.push_back(nf);
+        }
+    }
+
+    // If there are cycles, append remaining schemas in original order
+    if (result.size() < n) {
+        std::unordered_set<size_t> emitted(result.begin(), result.end());
+        for (size_t i = 0; i < n; ++i) {
+            if (!emitted.contains(i)) {
+                result.push_back(i);
+            }
+        }
+    }
+
+    return result;
+}
+
 } // namespace
 
 std::string generate_dtos(const document& doc, bool use_pmr) {
@@ -446,12 +581,15 @@ std::string generate_dtos(const document& doc, bool use_pmr) {
         generate_enum_for_schema(out, doc, schema);
     }
 
-    // Then generate DTOs
+    // Topologically sort schemas so dependencies are defined before dependents
+    auto sorted_indices = topological_sort_schemas(doc, use_pmr);
+
+    // Then generate DTOs in dependency order
     out << "// ============================================================\n";
     out << "// Data Transfer Objects (DTOs)\n";
     out << "// ============================================================\n\n";
-    for (const auto& schema : doc.schemas) {
-        generate_dto_for_schema(out, doc, schema, use_pmr);
+    for (size_t idx : sorted_indices) {
+        generate_dto_for_schema(out, doc, doc.schemas[idx], use_pmr);
     }
 
     return out.str();

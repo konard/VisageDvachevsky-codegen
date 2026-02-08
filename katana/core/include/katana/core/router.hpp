@@ -59,8 +59,11 @@ struct path_params {
         return std::span<const param_entry>(entries_.data(), size_);
     }
 
+    void reset() noexcept { size_ = 0; }
+
 private:
-    std::array<param_entry, MAX_PATH_PARAMS> entries_{};
+    // Uninitialized — only entries_[0..size_) are valid (written before read)
+    std::array<param_entry, MAX_PATH_PARAMS> entries_;
     size_t size_{0};
 };
 
@@ -148,22 +151,24 @@ struct path_pattern {
 
     [[nodiscard]] static split_result split_path(std::string_view path) noexcept {
         split_result out{};
-        size_t pos = 0;
-        while (pos < path.size()) {
-            if (path[pos] == '/') {
-                ++pos;
-                continue;
-            }
-            size_t next = path.find('/', pos);
-            if (next == std::string_view::npos) {
-                next = path.size();
-            }
+        const char* ptr = path.data();
+        const char* end = ptr + path.size();
+        while (ptr < end) {
+            // Skip leading slashes
+            while (ptr < end && *ptr == '/')
+                ++ptr;
+            if (ptr >= end)
+                break;
+            // Find next slash or end
+            const char* seg_start = ptr;
+            while (ptr < end && *ptr != '/')
+                ++ptr;
             if (out.count >= MAX_ROUTE_SEGMENTS) {
                 out.overflow = true;
                 return out;
             }
-            out.parts[out.count++] = path.substr(pos, next - pos);
-            pos = next;
+            out.parts[out.count++] =
+                std::string_view(seg_start, static_cast<size_t>(ptr - seg_start));
         }
         return out;
     }
@@ -338,6 +343,11 @@ public:
         uint32_t allowed_methods_mask = 0;
 
         for (const auto& entry : routes_) {
+            // Fast reject: segment count must match (avoids expensive path_params init)
+            if (entry.pattern.segment_count != split.count) {
+                continue;
+            }
+
             path_params candidate_params{};
             if (!entry.pattern.match_segments(path_segments, split.count, candidate_params)) {
                 continue;
@@ -379,14 +389,14 @@ public:
 
 private:
     static std::string_view strip_query(std::string_view uri) noexcept {
-        size_t pos = uri.find('?');
-        if (pos == std::string_view::npos) {
-            pos = uri.find('#');
+        // Scan for '?' or '#' in a single pass (common case: no query string)
+        for (size_t i = 0; i < uri.size(); ++i) {
+            char c = uri[i];
+            if (c == '?' || c == '#') {
+                return uri.substr(0, i);
+            }
         }
-        if (pos == std::string_view::npos) {
-            return uri;
-        }
-        return uri.substr(0, pos);
+        return uri;
     }
 
     std::span<const route_entry> routes_;
