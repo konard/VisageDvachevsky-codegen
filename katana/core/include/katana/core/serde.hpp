@@ -173,7 +173,8 @@ struct json_cursor {
 
     void skip_value() noexcept {
         skip_ws();
-        if (eof()) return;
+        if (eof())
+            return;
         char ch = *ptr;
         if (ch == '{' || ch == '[') {
             char open = ch;
@@ -320,16 +321,15 @@ inline std::optional<bool> parse_bool(json_cursor& cur) noexcept {
         return std::nullopt;
     }
     if (*cur.ptr == 't') {
-        if (cur.end - cur.ptr >= 4 &&
-            cur.ptr[1] == 'r' && cur.ptr[2] == 'u' && cur.ptr[3] == 'e') {
+        if (cur.end - cur.ptr >= 4 && cur.ptr[1] == 'r' && cur.ptr[2] == 'u' && cur.ptr[3] == 'e') {
             cur.ptr += 4;
             return true;
         }
         return std::nullopt;
     }
     if (*cur.ptr == 'f') {
-        if (cur.end - cur.ptr >= 5 &&
-            cur.ptr[1] == 'a' && cur.ptr[2] == 'l' && cur.ptr[3] == 's' && cur.ptr[4] == 'e') {
+        if (cur.end - cur.ptr >= 5 && cur.ptr[1] == 'a' && cur.ptr[2] == 'l' && cur.ptr[3] == 's' &&
+            cur.ptr[4] == 'e') {
             cur.ptr += 5;
             return false;
         }
