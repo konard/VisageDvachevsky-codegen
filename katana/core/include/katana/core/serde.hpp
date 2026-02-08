@@ -453,8 +453,12 @@ inline void escape_one_char(char c, std::string& out) {
         break;
     default: {
         static constexpr char hex[] = "0123456789abcdef";
-        char buf[6] = {'\\', 'u', '0', '0', hex[(static_cast<unsigned char>(c) >> 4) & 0xF],
-                        hex[static_cast<unsigned char>(c) & 0xF]};
+        char buf[6] = {'\\',
+                       'u',
+                       '0',
+                       '0',
+                       hex[(static_cast<unsigned char>(c) >> 4) & 0xF],
+                       hex[static_cast<unsigned char>(c) & 0xF]};
         out.append(buf, 6);
         break;
     }
