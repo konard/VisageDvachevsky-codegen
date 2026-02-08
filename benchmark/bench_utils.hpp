@@ -10,15 +10,13 @@ namespace bench_util {
 
 // Prevents the compiler from optimizing away a computed value.
 // The value is forced into a register/memory location but not actually used.
-template<typename T>
-inline void do_not_optimize(T const& val) {
+template <typename T> inline void do_not_optimize(T const& val) {
     asm volatile("" : : "r,m"(val) : "memory");
 }
 
 // Mutable variant: additionally prevents the compiler from assuming
 // the value hasn't changed after the asm statement.
-template<typename T>
-inline void do_not_optimize(T& val) {
+template <typename T> inline void do_not_optimize(T& val) {
     asm volatile("" : "+r,m"(val) : : "memory");
 }
 

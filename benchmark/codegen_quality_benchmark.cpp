@@ -8,8 +8,8 @@
 #include "katana/core/arena.hpp"
 #include "katana/core/serde.hpp"
 
-using bench_util::do_not_optimize;
 using bench_util::clobber_memory;
+using bench_util::do_not_optimize;
 
 // This benchmark measures codegen quality independently of the full API stack.
 // It isolates: JSON parse, serialize, validation, and key dispatch.
@@ -22,13 +22,14 @@ struct bench_result {
     double ns_per_op;
 };
 
-template<typename Fn>
-bench_result run_bench(const char* name, int iterations, Fn&& fn) {
+template <typename Fn> bench_result run_bench(const char* name, int iterations, Fn&& fn) {
     // Warmup
-    for (int i = 0; i < iterations / 10; ++i) fn();
+    for (int i = 0; i < iterations / 10; ++i)
+        fn();
 
     auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < iterations; ++i) fn();
+    for (int i = 0; i < iterations; ++i)
+        fn();
     auto end = std::chrono::high_resolution_clock::now();
 
     double ns = std::chrono::duration<double, std::nano>(end - start).count();
@@ -41,7 +42,8 @@ void print_result(const bench_result& r) {
     if (r.ns_per_op < 1000.0) {
         std::printf("  %-45s %8.1f ns    %12.0f ops/sec\n", r.name, r.ns_per_op, r.ops_per_sec);
     } else {
-        std::printf("  %-45s %8.2f us    %12.0f ops/sec\n", r.name, r.ns_per_op / 1000.0, r.ops_per_sec);
+        std::printf(
+            "  %-45s %8.2f us    %12.0f ops/sec\n", r.name, r.ns_per_op / 1000.0, r.ops_per_sec);
     }
 }
 
@@ -134,7 +136,8 @@ int main() {
     // --- skip_value ---
     std::printf("\n--- skip_value ---\n");
     {
-        std::string nested = R"({"key": "value with \"quotes\"", "nested": {"a": 1, "b": [1,2,3]}})";
+        std::string nested =
+            R"({"key": "value with \"quotes\"", "nested": {"a": 1, "b": [1,2,3]}})";
         auto r = run_bench("skip_value (nested obj with strings)", N, [&] {
             katana::serde::json_cursor cur{nested.data(), nested.data() + nested.size()};
             cur.skip_value();
@@ -153,13 +156,20 @@ int main() {
             if (cur.try_object_start()) {
                 while (!cur.eof()) {
                     cur.skip_ws();
-                    if (cur.try_object_end()) break;
+                    if (cur.try_object_end())
+                        break;
                     auto key = cur.string();
-                    if (!key || !cur.consume(':')) break;
-                    if (*key == "name") { do_not_optimize(cur.string()); }
-                    else if (*key == "age") { do_not_optimize(katana::serde::parse_int64(cur)); }
-                    else if (*key == "active") { do_not_optimize(katana::serde::parse_bool(cur)); }
-                    else { cur.skip_value(); }
+                    if (!key || !cur.consume(':'))
+                        break;
+                    if (*key == "name") {
+                        do_not_optimize(cur.string());
+                    } else if (*key == "age") {
+                        do_not_optimize(katana::serde::parse_int64(cur));
+                    } else if (*key == "active") {
+                        do_not_optimize(katana::serde::parse_bool(cur));
+                    } else {
+                        cur.skip_value();
+                    }
                     cur.try_comma();
                 }
             }
@@ -168,22 +178,58 @@ int main() {
     }
     {
         // 8-field object (length-switch)
-        std::string json8 = R"({"id":1,"name":"John","email":"j@x.com","age":30,"role":"admin","bio":"test","zip":"12345","active":true})";
+        std::string json8 =
+            R"({"id":1,"name":"John","email":"j@x.com","age":30,"role":"admin","bio":"test","zip":"12345","active":true})";
         auto r = run_bench("8-field object parse (length-switch)", N, [&] {
             katana::serde::json_cursor cur{json8.data(), json8.data() + json8.size()};
             if (cur.try_object_start()) {
                 while (!cur.eof()) {
                     cur.skip_ws();
-                    if (cur.try_object_end()) break;
+                    if (cur.try_object_end())
+                        break;
                     auto key = cur.string();
-                    if (!key || !cur.consume(':')) break;
+                    if (!key || !cur.consume(':'))
+                        break;
                     switch (key->size()) {
-                    case 2: if (*key == "id") { do_not_optimize(katana::serde::parse_int64(cur)); } else cur.skip_value(); break;
-                    case 3: if (*key == "age") { do_not_optimize(katana::serde::parse_int64(cur)); } else if (*key == "bio") { do_not_optimize(cur.string()); } else if (*key == "zip") { do_not_optimize(cur.string()); } else cur.skip_value(); break;
-                    case 4: if (*key == "name") { do_not_optimize(cur.string()); } else if (*key == "role") { do_not_optimize(cur.string()); } else cur.skip_value(); break;
-                    case 5: if (*key == "email") { do_not_optimize(cur.string()); } else cur.skip_value(); break;
-                    case 6: if (*key == "active") { do_not_optimize(katana::serde::parse_bool(cur)); } else cur.skip_value(); break;
-                    default: cur.skip_value(); break;
+                    case 2:
+                        if (*key == "id") {
+                            do_not_optimize(katana::serde::parse_int64(cur));
+                        } else
+                            cur.skip_value();
+                        break;
+                    case 3:
+                        if (*key == "age") {
+                            do_not_optimize(katana::serde::parse_int64(cur));
+                        } else if (*key == "bio") {
+                            do_not_optimize(cur.string());
+                        } else if (*key == "zip") {
+                            do_not_optimize(cur.string());
+                        } else
+                            cur.skip_value();
+                        break;
+                    case 4:
+                        if (*key == "name") {
+                            do_not_optimize(cur.string());
+                        } else if (*key == "role") {
+                            do_not_optimize(cur.string());
+                        } else
+                            cur.skip_value();
+                        break;
+                    case 5:
+                        if (*key == "email") {
+                            do_not_optimize(cur.string());
+                        } else
+                            cur.skip_value();
+                        break;
+                    case 6:
+                        if (*key == "active") {
+                            do_not_optimize(katana::serde::parse_bool(cur));
+                        } else
+                            cur.skip_value();
+                        break;
+                    default:
+                        cur.skip_value();
+                        break;
                     }
                     cur.try_comma();
                 }

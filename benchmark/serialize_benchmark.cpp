@@ -7,16 +7,17 @@
 #include "bench_utils.hpp"
 #include "katana/core/serde.hpp"
 
-using bench_util::do_not_optimize;
 using bench_util::clobber_memory;
+using bench_util::do_not_optimize;
 
 namespace {
 
-template<typename Fn>
-void bench(const char* name, int iterations, Fn&& fn) {
-    for (int i = 0; i < iterations / 10; ++i) fn();
+template <typename Fn> void bench(const char* name, int iterations, Fn&& fn) {
+    for (int i = 0; i < iterations / 10; ++i)
+        fn();
     auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < iterations; ++i) fn();
+    for (int i = 0; i < iterations; ++i)
+        fn();
     auto end = std::chrono::high_resolution_clock::now();
     double ns = std::chrono::duration<double, std::nano>(end - start).count();
     double ns_per = ns / iterations;
@@ -141,7 +142,8 @@ int main() {
             json.reserve(512);
             json.push_back('[');
             for (int i = 0; i < 100; ++i) {
-                if (i > 0) json.push_back(',');
+                if (i > 0)
+                    json.push_back(',');
                 char buf[16];
                 auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), i);
                 json.append(buf, static_cast<size_t>(ptr - buf));

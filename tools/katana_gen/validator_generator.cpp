@@ -27,9 +27,8 @@ bool try_generate_handcoded_pattern(std::ostream& out,
     // Pattern: ^[a-zA-Z0-9]+$  ->  loop with std::isalnum
     if (pattern == "^[a-zA-Z0-9]+$") {
         std::string val_expr = is_optional ? ("*" + obj_prefix) : obj_prefix;
-        std::string empty_check = is_optional
-            ? (obj_prefix + " && !" + obj_prefix + "->empty()")
-            : ("!" + obj_prefix + ".empty()");
+        std::string empty_check = is_optional ? (obj_prefix + " && !" + obj_prefix + "->empty()")
+                                              : ("!" + obj_prefix + ".empty()");
         out << "    if (" << empty_check << ") {\n";
         out << "        const auto& pv_ = " << val_expr << ";\n";
         out << "        bool pattern_ok_ = true;\n";
@@ -47,14 +46,14 @@ bool try_generate_handcoded_pattern(std::ostream& out,
     // Pattern: ^[a-zA-Z0-9_-]+$  ->  loop checking alnum, underscore, hyphen
     if (pattern == "^[a-zA-Z0-9_-]+$" || pattern == "^[a-zA-Z0-9_\\-]+$") {
         std::string val_expr = is_optional ? ("*" + obj_prefix) : obj_prefix;
-        std::string empty_check = is_optional
-            ? (obj_prefix + " && !" + obj_prefix + "->empty()")
-            : ("!" + obj_prefix + ".empty()");
+        std::string empty_check = is_optional ? (obj_prefix + " && !" + obj_prefix + "->empty()")
+                                              : ("!" + obj_prefix + ".empty()");
         out << "    if (" << empty_check << ") {\n";
         out << "        const auto& pv_ = " << val_expr << ";\n";
         out << "        bool pattern_ok_ = true;\n";
         out << "        for (unsigned char ch_ : pv_) {\n";
-        out << "            if (!std::isalnum(ch_) && ch_ != '_' && ch_ != '-') { pattern_ok_ = false; break; }\n";
+        out << "            if (!std::isalnum(ch_) && ch_ != '_' && ch_ != '-') { pattern_ok_ = "
+               "false; break; }\n";
         out << "        }\n";
         out << "        if (!pattern_ok_) {\n";
         out << "            return validation_error{\"" << prop_name
@@ -68,10 +67,9 @@ bool try_generate_handcoded_pattern(std::ostream& out,
     if (pattern == "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$" ||
         pattern == "^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$") {
         out << "    if ("
-            << (is_optional
-                    ? obj_prefix + " && !" + obj_prefix + "->empty() && !is_valid_email(" +
-                          deref_prefix + ")"
-                    : "!" + obj_prefix + ".empty() && !is_valid_email(" + obj_prefix + ")")
+            << (is_optional ? obj_prefix + " && !" + obj_prefix + "->empty() && !is_valid_email(" +
+                                  deref_prefix + ")"
+                            : "!" + obj_prefix + ".empty() && !is_valid_email(" + obj_prefix + ")")
             << ") {\n";
         out << "        return validation_error{\"" << prop_name
             << "\", validation_error_code::pattern_mismatch};\n";
@@ -82,9 +80,8 @@ bool try_generate_handcoded_pattern(std::ostream& out,
     // Pattern: ^[a-zA-Z]+$  ->  loop with std::isalpha
     if (pattern == "^[a-zA-Z]+$") {
         std::string val_expr = is_optional ? ("*" + obj_prefix) : obj_prefix;
-        std::string empty_check = is_optional
-            ? (obj_prefix + " && !" + obj_prefix + "->empty()")
-            : ("!" + obj_prefix + ".empty()");
+        std::string empty_check = is_optional ? (obj_prefix + " && !" + obj_prefix + "->empty()")
+                                              : ("!" + obj_prefix + ".empty()");
         out << "    if (" << empty_check << ") {\n";
         out << "        const auto& pv_ = " << val_expr << ";\n";
         out << "        bool pattern_ok_ = true;\n";
@@ -102,9 +99,8 @@ bool try_generate_handcoded_pattern(std::ostream& out,
     // Pattern: ^[0-9]+$  ->  loop with std::isdigit
     if (pattern == "^[0-9]+$") {
         std::string val_expr = is_optional ? ("*" + obj_prefix) : obj_prefix;
-        std::string empty_check = is_optional
-            ? (obj_prefix + " && !" + obj_prefix + "->empty()")
-            : ("!" + obj_prefix + ".empty()");
+        std::string empty_check = is_optional ? (obj_prefix + " && !" + obj_prefix + "->empty()")
+                                              : ("!" + obj_prefix + ".empty()");
         out << "    if (" << empty_check << ") {\n";
         out << "        const auto& pv_ = " << val_expr << ";\n";
         out << "        bool pattern_ok_ = true;\n";
@@ -173,7 +169,8 @@ void generate_unique_items_check(std::ostream& out,
     out << "        if (" << arr_expr << ".size() <= 64) {\n";
     out << "            // Small array: sort a copy (stack-friendly, no heap)\n";
     if (item_kind == schema_kind::string) {
-        out << "            std::vector<std::string_view> tmp_(" << arr_expr << ".begin(), " << arr_expr << ".end());\n";
+        out << "            std::vector<std::string_view> tmp_(" << arr_expr << ".begin(), "
+            << arr_expr << ".end());\n";
     } else {
         out << "            auto tmp_ = " << arr_expr << ";\n";
     }
@@ -202,8 +199,8 @@ void generate_validator_for_schema(std::ostream& out,
     // Handle top-level arrays (e.g., body: array<number>)
     if (s.kind == schema_kind::array) {
         auto struct_name = schema_identifier(doc, &s);
-        out << "[[nodiscard]] inline std::optional<validation_error> validate_" << struct_name << "(const "
-            << struct_name << "& arr) {\n";
+        out << "[[nodiscard]] inline std::optional<validation_error> validate_" << struct_name
+            << "(const " << struct_name << "& arr) {\n";
         // Suppress unused parameter warning when no array constraints
         if (!s.min_items && !s.max_items && !s.unique_items) {
             out << "    (void)arr;\n";
@@ -237,8 +234,8 @@ void generate_validator_for_schema(std::ostream& out,
     auto struct_name = schema_identifier(doc, &s);
 
     // Use unified validation_error instead of per-struct error types
-    out << "[[nodiscard]] inline std::optional<validation_error> validate_" << struct_name << "(const "
-        << struct_name << "& obj) {\n";
+    out << "[[nodiscard]] inline std::optional<validation_error> validate_" << struct_name
+        << "(const " << struct_name << "& obj) {\n";
 
     // Check if there's any actual validation logic needed
     bool has_validation = false;
@@ -253,8 +250,8 @@ void generate_validator_for_schema(std::ostream& out,
             has_validation = true;
             break;
         }
-        if (prop.required && prop.type->kind == schema_kind::array &&
-            prop.type->min_items && *prop.type->min_items > 0) {
+        if (prop.required && prop.type->kind == schema_kind::array && prop.type->min_items &&
+            *prop.type->min_items > 0) {
             has_validation = true;
             break;
         }
@@ -403,9 +400,12 @@ void generate_validator_for_schema(std::ostream& out,
             // (the !is_enum check prevents generating validation for enum types)
             if (!prop.type->pattern.empty()) {
                 // Try hand-coded validator for simple patterns first
-                if (!try_generate_handcoded_pattern(out, prop.name, is_optional,
-                                                     obj_prefix, deref_prefix,
-                                                     prop.type->pattern)) {
+                if (!try_generate_handcoded_pattern(out,
+                                                    prop.name,
+                                                    is_optional,
+                                                    obj_prefix,
+                                                    deref_prefix,
+                                                    prop.type->pattern)) {
                     // Complex pattern: fall back to std::regex with static caching
                     out << "    {\n";
                     out << "        static const std::regex re_{\""
@@ -414,8 +414,8 @@ void generate_validator_for_schema(std::ostream& out,
                         out << "        if (obj." << prop.name << " && !obj." << prop.name
                             << "->empty() && !std::regex_match(*obj." << prop.name << ", re_)) {\n";
                     } else {
-                        out << "        if (!obj." << prop.name << ".empty() && !std::regex_match(obj."
-                            << prop.name << ", re_)) {\n";
+                        out << "        if (!obj." << prop.name
+                            << ".empty() && !std::regex_match(obj." << prop.name << ", re_)) {\n";
                     }
                     out << "            return validation_error{\"" << prop.name
                         << "\", validation_error_code::pattern_mismatch};\n";
@@ -470,17 +470,18 @@ void generate_validator_for_schema(std::ostream& out,
                 bool mof_is_integral = (mof == static_cast<double>(static_cast<int64_t>(mof)));
 
                 if (is_integer_field && mof_is_integral) {
-                    // Integer field with integral multipleOf: use integer modulo (no floating point)
+                    // Integer field with integral multipleOf: use integer modulo (no floating
+                    // point)
                     out << "    if (" << (is_optional ? obj_prefix + " && " : "")
-                        << (is_optional ? deref_prefix : obj_prefix)
-                        << " % static_cast<int64_t>(" << struct_name << "::metadata::"
-                        << prop_name_upper << "_MULTIPLE_OF) != 0) {\n";
+                        << (is_optional ? deref_prefix : obj_prefix) << " % static_cast<int64_t>("
+                        << struct_name << "::metadata::" << prop_name_upper
+                        << "_MULTIPLE_OF) != 0) {\n";
                 } else {
                     // Number field or fractional multipleOf: use std::fmod
                     out << "    if (" << (is_optional ? obj_prefix + " && " : "")
-                        << "std::fmod(static_cast<double>(" << (is_optional ? deref_prefix : obj_prefix)
-                        << "), " << struct_name << "::metadata::" << prop_name_upper
-                        << "_MULTIPLE_OF) != 0.0) {\n";
+                        << "std::fmod(static_cast<double>("
+                        << (is_optional ? deref_prefix : obj_prefix) << "), " << struct_name
+                        << "::metadata::" << prop_name_upper << "_MULTIPLE_OF) != 0.0) {\n";
                 }
                 out << "        return validation_error{\"" << prop.name
                     << "\", validation_error_code::value_not_multiple_of, " << struct_name

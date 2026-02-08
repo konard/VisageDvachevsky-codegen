@@ -39,9 +39,12 @@ std::string extract_arena_vector_inner_type(const std::string& cpp_type) {
     int depth = 1;
     auto end = start;
     while (end < cpp_type.size() && depth > 0) {
-        if (cpp_type[end] == '<') ++depth;
-        if (cpp_type[end] == '>') --depth;
-        if (depth > 0) ++end;
+        if (cpp_type[end] == '<')
+            ++depth;
+        if (cpp_type[end] == '>')
+            --depth;
+        if (depth > 0)
+            ++end;
     }
     return cpp_type.substr(start, end - start);
 }
@@ -269,10 +272,9 @@ void generate_dto_for_schema(std::ostream& out,
         sorted_props.push_back({&prop, cpp_type, alignment_rank(cpp_type)});
     }
     // Sort by alignment descending for optimal packing (8-byte first, 1-byte last)
-    std::stable_sort(sorted_props.begin(), sorted_props.end(),
-                     [](const prop_entry& a, const prop_entry& b) {
-                         return a.align > b.align;
-                     });
+    std::stable_sort(sorted_props.begin(),
+                     sorted_props.end(),
+                     [](const prop_entry& a, const prop_entry& b) { return a.align > b.align; });
 
     if (use_pmr) {
         out << ind << "    explicit " << struct_name << "(monotonic_arena* arena = nullptr)\n";
@@ -284,12 +286,11 @@ void generate_dto_for_schema(std::ostream& out,
                 // Use semantic allocator: arena_allocator<T> for arena_vector<T>
                 auto inner = extract_arena_vector_inner_type(cpp_type);
                 out << ",\n"
-                    << ind << "          " << entry.prop->name
-                    << "(arena_allocator<" << inner << ">(arena))";
+                    << ind << "          " << entry.prop->name << "(arena_allocator<" << inner
+                    << ">(arena))";
             } else if (cpp_type.find("arena_string") != std::string::npos) {
                 out << ",\n"
-                    << ind << "          " << entry.prop->name
-                    << "(arena_allocator<char>(arena))";
+                    << ind << "          " << entry.prop->name << "(arena_allocator<char>(arena))";
             }
         }
         out << " {}\n\n";
@@ -429,7 +430,8 @@ void collect_schema_deps(const document& /*doc*/,
     if (!s.properties.empty()) {
         // Struct schema: collect deps from properties
         for (const auto& prop : s.properties) {
-            if (!prop.type) continue;
+            if (!prop.type)
+                continue;
 
             const auto* t = unwrap_array(prop.type);
             // Object types with properties generate structs that need ordering
@@ -441,13 +443,15 @@ void collect_schema_deps(const document& /*doc*/,
         // Type alias schema (e.g., "using X = arena_vector<SomeStruct>;")
         // Check if this alias references an object type through arrays
         const auto* t = unwrap_array(&s);
-        if (t && t != &s && t->kind == katana::openapi::schema_kind::object && !t->properties.empty()) {
+        if (t && t != &s && t->kind == katana::openapi::schema_kind::object &&
+            !t->properties.empty()) {
             deps.push_back(t);
         }
         // Direct object reference without array wrapping
         if (s.kind == katana::openapi::schema_kind::object && s.items) {
             const auto* inner = unwrap_array(s.items);
-            if (inner && inner->kind == katana::openapi::schema_kind::object && !inner->properties.empty()) {
+            if (inner && inner->kind == katana::openapi::schema_kind::object &&
+                !inner->properties.empty()) {
                 deps.push_back(inner);
             }
         }
