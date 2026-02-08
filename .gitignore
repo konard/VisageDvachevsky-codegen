@@ -31,3 +31,7 @@ profiling_results/
 
 # Debug/test artifacts
 debug_test.cpp
+
+# Build and test logs
+*.log
+ci-logs/

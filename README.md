@@ -18,6 +18,7 @@ KATANA — серверный фреймворк на C++ для разрабо�
 ## Последние обновления
 
 <!-- LATEST_UPDATE_START -->
+* 08.02 — (fix) codegen ordering, router bindings, validator warnings, benchmark accuracy (see PR #2)
 * 27.12 13:59 — (fix) codegen tools, add examples (c83d377)
 <!-- LATEST_UPDATE_END -->
 
@@ -252,10 +253,12 @@ if (result) {
 ### 📈 Качество бенчмарков
 
 <!-- BENCH_SUMMARY_START -->
-* Отчёт сгенерирован 2025-12-27 13:49:26.
-* Keep-alive: throughput 11747.917 req/s, p99 0.095 ms, 492364 samples.
-* Масштабирование: 128 коннектов — 222313.2 req/s; 8 потоков — 271700.5 req/s.
-* Устойчивость: sustained 38076.05 req/s, всего 190390 requests.
+* Отчёт сгенерирован 2026-02-08.
+* JSON parsing: parse_int64 163M ops/sec, parse_bool 483M ops/sec.
+* Serialization: serialize 5-field obj 13M ops/sec, SIMD needs_json_escaping 187M ops/sec.
+* Router dispatch: 794K ops/sec (hits), p50 0.64 μs, p99 1.05 μs.
+* HTTP Parser: 1.4M ops/sec (complete requests), p99 1.24 μs.
+* Core runtime: Ring buffer 333M ops/sec (single-thread), Arena alloc+reset 24M ops/sec.
 <!-- BENCH_SUMMARY_END -->
 
 ---
