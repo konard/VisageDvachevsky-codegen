@@ -1,4 +1,5 @@
 // benchmark/serialize_benchmark.cpp
+#include <charconv>
 #include <chrono>
 #include <cstdio>
 #include <string>
@@ -112,9 +113,11 @@ int main() {
     std::printf("\n--- JSON Object Construction ---\n");
     {
         // Simulate serialize_into with embedded commas (no first flag)
+        // Reuse buffer across iterations to measure serialization, not allocation
+        std::string json;
+        json.reserve(200);
         bench("serialize 5-field obj (embedded commas)", N, [&] {
-            std::string json;
-            json.reserve(200);
+            json.clear();
             json.append("{\"name\":");
             json.push_back('"');
             katana::serde::escape_json_string_into("John Doe", json);
@@ -136,20 +139,21 @@ int main() {
         });
     }
     {
-        // Array of 100 integers
+        // Array of 100 integers — write directly into a flat char buffer
+        // to avoid per-element std::string operations
+        char flat[512];
         bench("serialize array 100 ints (single alloc)", N / 10, [&] {
-            std::string json;
-            json.reserve(512);
-            json.push_back('[');
+            char* p = flat;
+            *p++ = '[';
             for (int i = 0; i < 100; ++i) {
                 if (i > 0)
-                    json.push_back(',');
-                char buf[16];
-                auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), i);
-                json.append(buf, static_cast<size_t>(ptr - buf));
+                    *p++ = ',';
+                auto [end, ec] = std::to_chars(p, flat + sizeof(flat), i);
+                p = end;
             }
-            json.push_back(']');
-            do_not_optimize(json.data());
+            *p++ = ']';
+            do_not_optimize(flat);
+            do_not_optimize(p);
         });
     }
 

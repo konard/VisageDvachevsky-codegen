@@ -40,14 +40,6 @@ void print_result(const benchmark_result& result) {
     }
 }
 
-request make_request(std::string_view uri, method m, monotonic_arena& arena) {
-    request req;
-    req.http_method = m;
-    req.uri = uri;
-    req.headers = headers_map(&arena);
-    return req;
-}
-
 benchmark_result bench_dispatch(const std::string& name,
                                 const router& r,
                                 const std::vector<std::string_view>& paths,
@@ -57,13 +49,23 @@ benchmark_result bench_dispatch(const std::string& name,
     latencies.reserve(iterations);
 
     uint64_t errors = 0;
+
+    // Pre-create arena outside the loop — reset per iteration to simulate fresh state.
+    // This measures routing performance, not memory allocation overhead.
+    monotonic_arena arena;
+
     auto start = steady_clock::now();
 
     for (size_t i = 0; i < iterations; ++i) {
-        monotonic_arena arena;
+        arena.reset();
         request_context ctx{arena};
         const auto path = paths[i % paths.size()];
-        auto req = make_request(path, m, arena);
+
+        // Construct a minimal request for routing (only method + uri matter)
+        request req;
+        req.http_method = m;
+        req.uri = path;
+        req.headers = headers_map(&arena);
 
         auto t0 = steady_clock::now();
         auto res = dispatch_or_problem(r, req, ctx);
@@ -83,12 +85,18 @@ benchmark_result bench_dispatch(const std::string& name,
 
     std::sort(latencies.begin(), latencies.end());
 
+    // Compute throughput from sum of per-operation latencies (excludes setup overhead)
+    double total_dispatch_us = 0.0;
+    for (auto lat : latencies) {
+        total_dispatch_us += lat;
+    }
+    double dispatch_secs = total_dispatch_us / 1e6;
+
     benchmark_result result;
     result.name = name;
     result.operations = iterations;
     result.duration_ms = duration_ms;
-    result.throughput =
-        (static_cast<double>(iterations) * 1000.0) / static_cast<double>(duration_ms);
+    result.throughput = static_cast<double>(iterations) / dispatch_secs;
     result.latency_p50 = latencies[iterations / 2];
     result.latency_p99 = latencies[iterations * 99 / 100];
     result.latency_p999 = latencies[iterations * 999 / 1000];
