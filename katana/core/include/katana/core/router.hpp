@@ -342,8 +342,45 @@ public:
         bool path_matched = false;
         uint32_t allowed_methods_mask = 0;
 
+        // Two-phase dispatch for better cache locality:
+        // Phase 1: Find matching method routes (fast path)
+        // Phase 2: Only collect allowed methods if no exact match found
+
+        // Phase 1: Try to find an exact method match first
         for (const auto& entry : routes_) {
-            // Fast reject: segment count must match (avoids expensive path_params init)
+            // Fast reject: segment count must match
+            if (entry.pattern.segment_count != split.count) {
+                continue;
+            }
+
+            // Fast reject: method must match for phase 1
+            if (entry.method != req.http_method) {
+                continue;
+            }
+
+            path_params candidate_params{};
+            if (!entry.pattern.match_segments(path_segments, split.count, candidate_params)) {
+                continue;
+            }
+
+            // Found a match!
+            int score = entry.pattern.specificity_score();
+            if (!best_route || score > best_score) {
+                best_route = &entry;
+                best_score = score;
+                best_params = candidate_params;
+            }
+        }
+
+        // If we found a matching route, return immediately
+        if (best_route) {
+            ctx.params = best_params;
+            return dispatch_result{
+                best_route->middleware.run(req, ctx, best_route->handler), true, 0};
+        }
+
+        // Phase 2: No method match - check if path exists with other methods
+        for (const auto& entry : routes_) {
             if (entry.pattern.segment_count != split.count) {
                 continue;
             }
@@ -355,32 +392,14 @@ public:
 
             path_matched = true;
             allowed_methods_mask |= method_bit(entry.method);
-            if (entry.method != req.http_method) {
-                continue;
-            }
-
-            int score = entry.pattern.specificity_score();
-            if (!best_route || score > best_score) {
-                best_route = &entry;
-                best_score = score;
-                best_params = candidate_params;
-            }
         }
 
-        if (!best_route) {
-            if (path_matched) {
-                return dispatch_result{
-                    std::unexpected(make_error_code(error_code::method_not_allowed)),
-                    true,
-                    allowed_methods_mask};
-            }
-            return dispatch_result{
-                std::unexpected(make_error_code(error_code::not_found)), false, 0};
+        if (path_matched) {
+            return dispatch_result{std::unexpected(make_error_code(error_code::method_not_allowed)),
+                                   true,
+                                   allowed_methods_mask};
         }
-
-        ctx.params = best_params;
-        return dispatch_result{
-            best_route->middleware.run(req, ctx, best_route->handler), true, allowed_methods_mask};
+        return dispatch_result{std::unexpected(make_error_code(error_code::not_found)), false, 0};
     }
 
     result<response> dispatch(const request& req, request_context& ctx) const {
