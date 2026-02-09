@@ -250,10 +250,10 @@ int main() {
 
     // Paths for 405 testing on large router (wrong method)
     std::vector<std::string_view> large_method_mismatch_paths = {
-        "/api/v1/users",        // GET route, test with POST
-        "/api/v1/posts",        // GET+POST, test with DELETE
-        "/api/v1/auth/login",   // POST route, test with GET
-        "/admin/dashboard",     // GET route, test with PUT
+        "/api/v1/users",      // GET route, test with POST
+        "/api/v1/posts",      // GET+POST, test with DELETE
+        "/api/v1/auth/login", // POST route, test with GET
+        "/admin/dashboard",   // GET route, test with PUT
     };
 
     // Edge-case paths: very long paths, deep nesting
@@ -276,11 +276,12 @@ int main() {
 
     std::cout << "\n--- Small Route Table (6 routes) ---\n";
 
-    auto hit = bench_dispatch("Router dispatch (hits)", small_router, happy_paths, method::get, iterations);
-    auto miss =
-        bench_dispatch("Router dispatch (not found)", small_router, not_found_paths, method::get, iterations);
-    auto method_na =
-        bench_dispatch("Router dispatch (405)", small_router, happy_paths, method::post, iterations);
+    auto hit = bench_dispatch(
+        "Router dispatch (hits)", small_router, happy_paths, method::get, iterations);
+    auto miss = bench_dispatch(
+        "Router dispatch (not found)", small_router, not_found_paths, method::get, iterations);
+    auto method_na = bench_dispatch(
+        "Router dispatch (405)", small_router, happy_paths, method::post, iterations);
 
     print_result(hit);
     print_result(miss);
@@ -289,13 +290,18 @@ int main() {
     std::cout << "\n--- Large Route Table (64 routes) ---\n";
 
     // Warmup large router
-    auto warmup_large = bench_dispatch("Warmup (large)", large_router, large_happy_paths, method::get, 10000);
+    auto warmup_large =
+        bench_dispatch("Warmup (large)", large_router, large_happy_paths, method::get, 10000);
     (void)warmup_large;
 
-    auto large_hit = bench_dispatch("Large router (hits)", large_router, large_happy_paths, method::get, iterations);
-    auto large_miss = bench_dispatch("Large router (not found)", large_router, not_found_paths, method::get, iterations);
-    auto large_405 = bench_dispatch("Large router (405)", large_router, large_method_mismatch_paths, method::del, iterations);
-    auto large_edge = bench_dispatch("Large router (edge cases)", large_router, edge_case_paths, method::get, iterations);
+    auto large_hit = bench_dispatch(
+        "Large router (hits)", large_router, large_happy_paths, method::get, iterations);
+    auto large_miss = bench_dispatch(
+        "Large router (not found)", large_router, not_found_paths, method::get, iterations);
+    auto large_405 = bench_dispatch(
+        "Large router (405)", large_router, large_method_mismatch_paths, method::del, iterations);
+    auto large_edge = bench_dispatch(
+        "Large router (edge cases)", large_router, edge_case_paths, method::get, iterations);
 
     print_result(large_hit);
     print_result(large_miss);
@@ -307,10 +313,13 @@ int main() {
     std::cout << "========================================\n";
     std::cout << "Small router (6 routes):\n";
     std::cout << "  Hits: " << std::fixed << std::setprecision(0) << hit.throughput << " ops/sec\n";
-    std::cout << "  405:  " << std::fixed << std::setprecision(0) << method_na.throughput << " ops/sec\n";
+    std::cout << "  405:  " << std::fixed << std::setprecision(0) << method_na.throughput
+              << " ops/sec\n";
     std::cout << "Large router (64 routes):\n";
-    std::cout << "  Hits: " << std::fixed << std::setprecision(0) << large_hit.throughput << " ops/sec\n";
-    std::cout << "  405:  " << std::fixed << std::setprecision(0) << large_405.throughput << " ops/sec\n";
+    std::cout << "  Hits: " << std::fixed << std::setprecision(0) << large_hit.throughput
+              << " ops/sec\n";
+    std::cout << "  405:  " << std::fixed << std::setprecision(0) << large_405.throughput
+              << " ops/sec\n";
 
     return 0;
 }
