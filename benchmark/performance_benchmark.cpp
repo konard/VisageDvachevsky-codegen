@@ -493,6 +493,107 @@ benchmark_result benchmark_arena_small_allocs() {
     return result;
 }
 
+benchmark_result benchmark_simd_crlf_32kb() {
+    const size_t num_operations = 30000;
+    const size_t sample_rate = 15;
+    std::vector<double> latencies;
+    latencies.reserve(num_operations / sample_rate + 2);
+
+    // 32KB buffer with CRLF near the end
+    std::string test_data(32 * 1024, 'X');
+    test_data.replace(test_data.size() - 4, 4, "AB\r\n");
+
+    auto start = steady_clock::now();
+
+    for (size_t i = 0; i < num_operations;) {
+        size_t batch = std::min(sample_rate, num_operations - i);
+        auto op_start = steady_clock::now();
+        size_t batch_end = i + batch;
+        for (; i < batch_end; ++i) {
+            const char* result = simd::find_crlf(test_data.data(), test_data.size());
+            if (result == nullptr) {
+                std::cerr << "CRLF search (32KB buffer) failed!\n";
+            }
+        }
+        auto op_end = steady_clock::now();
+
+        double latency_us =
+            static_cast<double>(duration_cast<nanoseconds>(op_end - op_start).count()) /
+            (1000.0 * static_cast<double>(batch));
+        latencies.push_back(latency_us);
+    }
+
+    auto end = steady_clock::now();
+    auto duration_ms = static_cast<uint64_t>(duration_cast<milliseconds>(end - start).count());
+
+    std::sort(latencies.begin(), latencies.end());
+
+    benchmark_result result;
+    result.name = "SIMD CRLF Search (32KB buffer)";
+    result.operations = num_operations;
+    result.duration_ms = duration_ms;
+    result.throughput = (num_operations * 1000.0) / static_cast<double>(duration_ms);
+    result.latency_p50 = percentile(latencies, 0.50);
+    result.latency_p99 = percentile(latencies, 0.99);
+    result.latency_p999 = percentile(latencies, 0.999);
+
+    return result;
+}
+
+benchmark_result benchmark_ring_buffer_2x2() {
+    const size_t num_operations = 1000000;
+    const int num_threads = 2;
+    ring_buffer_queue<int> queue(4096, /*enable_spsc_fast_path=*/false);
+
+    auto start = steady_clock::now();
+
+    std::vector<std::thread> producers;
+    std::vector<std::thread> consumers;
+
+    for (int t = 0; t < num_threads; ++t) {
+        producers.emplace_back([&] {
+            for (size_t i = 0; i < num_operations / num_threads; ++i) {
+                while (!queue.try_push(static_cast<int>(i))) {
+                    cpu_pause();
+                }
+            }
+        });
+    }
+
+    for (int t = 0; t < num_threads; ++t) {
+        consumers.emplace_back([&] {
+            size_t consumed = 0;
+            while (consumed < num_operations / num_threads) {
+                int val;
+                if (queue.try_pop(val)) {
+                    ++consumed;
+                } else {
+                    cpu_pause();
+                }
+            }
+        });
+    }
+
+    for (auto& t : producers)
+        t.join();
+    for (auto& t : consumers)
+        t.join();
+
+    auto end = steady_clock::now();
+    auto duration_ms = static_cast<uint64_t>(duration_cast<milliseconds>(end - start).count());
+
+    benchmark_result result;
+    result.name = "Ring Buffer Queue (Concurrent 2x2)";
+    result.operations = num_operations;
+    result.duration_ms = duration_ms;
+    result.throughput = (num_operations * 1000.0) / static_cast<double>(duration_ms);
+    result.latency_p50 = 0.0;
+    result.latency_p99 = 0.0;
+    result.latency_p999 = 0.0;
+
+    return result;
+}
+
 benchmark_result benchmark_http_parser_fragmented() {
     const size_t num_operations = 50000;
     const size_t sample_rate = 20;
@@ -585,43 +686,51 @@ int main() {
 
     std::vector<benchmark_result> results;
 
-    std::cout << "\n[1/10] Benchmarking ring_buffer_queue (single thread)...\n";
+    std::cout << "\n[1/12] Benchmarking ring_buffer_queue (single thread)...\n";
     results.push_back(benchmark_ring_buffer_queue());
     print_result(results.back());
 
-    std::cout << "\n[2/10] Benchmarking ring_buffer_queue (concurrent)...\n";
+    std::cout << "\n[2/12] Benchmarking ring_buffer_queue (concurrent 2x2)...\n";
+    results.push_back(benchmark_ring_buffer_2x2());
+    print_result(results.back());
+
+    std::cout << "\n[3/12] Benchmarking ring_buffer_queue (concurrent 4x4)...\n";
     results.push_back(benchmark_ring_buffer_concurrent());
     print_result(results.back());
 
-    std::cout << "\n[3/10] Benchmarking ring_buffer_queue (high contention)...\n";
+    std::cout << "\n[4/12] Benchmarking ring_buffer_queue (high contention 8x8)...\n";
     results.push_back(benchmark_ring_buffer_high_contention());
     print_result(results.back());
 
-    std::cout << "\n[4/10] Benchmarking circular_buffer...\n";
+    std::cout << "\n[5/12] Benchmarking circular_buffer...\n";
     results.push_back(benchmark_circular_buffer());
     print_result(results.back());
 
-    std::cout << "\n[5/10] Benchmarking SIMD CRLF search (1.5KB)...\n";
+    std::cout << "\n[6/12] Benchmarking SIMD CRLF search (1.5KB)...\n";
     results.push_back(benchmark_simd_crlf_search());
     print_result(results.back());
 
-    std::cout << "\n[6/10] Benchmarking SIMD CRLF search (16KB)...\n";
+    std::cout << "\n[7/12] Benchmarking SIMD CRLF search (16KB)...\n";
     results.push_back(benchmark_simd_crlf_large_buffer());
     print_result(results.back());
 
-    std::cout << "\n[7/10] Benchmarking HTTP parser (full message)...\n";
+    std::cout << "\n[8/12] Benchmarking SIMD CRLF search (32KB)...\n";
+    results.push_back(benchmark_simd_crlf_32kb());
+    print_result(results.back());
+
+    std::cout << "\n[9/12] Benchmarking HTTP parser (full message)...\n";
     results.push_back(benchmark_http_parser());
     print_result(results.back());
 
-    std::cout << "\n[8/10] Benchmarking HTTP parser (fragmented)...\n";
+    std::cout << "\n[10/12] Benchmarking HTTP parser (fragmented)...\n";
     results.push_back(benchmark_http_parser_fragmented());
     print_result(results.back());
 
-    std::cout << "\n[9/10] Benchmarking arena allocations...\n";
+    std::cout << "\n[11/12] Benchmarking arena allocations...\n";
     results.push_back(benchmark_arena_small_allocs());
     print_result(results.back());
 
-    std::cout << "\n[10/10] Benchmarking memory allocations...\n";
+    std::cout << "\n[12/12] Benchmarking memory allocations...\n";
     results.push_back(benchmark_memory_allocations());
     print_result(results.back());
 
@@ -630,7 +739,7 @@ int main() {
     std::cout << "========================================\n";
 
     for (const auto& result : results) {
-        std::cout << std::left << std::setw(40) << result.name << ": " << std::fixed
+        std::cout << std::left << std::setw(42) << result.name << ": " << std::fixed
                   << std::setprecision(0) << result.throughput << " ops/sec\n";
     }
 

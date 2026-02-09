@@ -1,4 +1,5 @@
 // benchmark/serialize_benchmark.cpp
+#include <array>
 #include <charconv>
 #include <chrono>
 #include <cstdio>
@@ -142,7 +143,7 @@ int main() {
         // Array of 100 integers — write directly into a flat char buffer
         // to avoid per-element std::string operations
         char flat[512];
-        bench("serialize array 100 ints (single alloc)", N / 10, [&] {
+        bench("serialize array 100 ints (to_chars)", N / 10, [&] {
             char* p = flat;
             *p++ = '[';
             for (int i = 0; i < 100; ++i) {
@@ -154,6 +155,34 @@ int main() {
             *p++ = ']';
             do_not_optimize(flat);
             do_not_optimize(p);
+        });
+    }
+    {
+        // Optimized array serialization using lookup tables
+        std::array<int, 100> arr;
+        for (int i = 0; i < 100; ++i) {
+            arr[i] = i;
+        }
+        std::string buf;
+        buf.reserve(512);
+        bench("serialize array 100 ints (optimized)", N / 10, [&] {
+            buf.clear();
+            katana::serde::serialize_int_array_into(arr.data(), arr.size(), buf);
+            do_not_optimize(buf.data());
+        });
+    }
+    {
+        // Large array serialization test
+        std::array<int, 1000> arr;
+        for (int i = 0; i < 1000; ++i) {
+            arr[i] = i * 7 + 13; // Mix of different digit counts
+        }
+        std::string buf;
+        buf.reserve(8192);
+        bench("serialize array 1000 ints (optimized)", N / 100, [&] {
+            buf.clear();
+            katana::serde::serialize_int_array_into(arr.data(), arr.size(), buf);
+            do_not_optimize(buf.data());
         });
     }
 
