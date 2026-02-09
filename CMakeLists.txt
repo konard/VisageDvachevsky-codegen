@@ -145,6 +145,7 @@ if(ENABLE_EXAMPLES)
     add_subdirectory(examples/codegen/validation_api)
     add_subdirectory(examples/codegen/text_api)
     add_subdirectory(examples/codegen/benchmark_api)
+    add_subdirectory(examples/codegen/task_api)
 endif()
 
 if(ENABLE_TOOLS)
